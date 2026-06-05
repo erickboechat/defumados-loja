@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Finalizar Pedido - Defumados AC</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <style>
+    .checkout-container { max-width: 600px; margin: 2rem auto; background: white; padding: 2rem; border-radius: var(--borda-radius); box-shadow: var(--sombra); }
+    .form-group { margin-bottom: 1.2rem; }
+    .form-group label { display: block; font-weight: 500; margin-bottom: 0.4rem; }
+    .form-group input, .form-group textarea {
+      width: 100%; padding: 0.8rem; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 1rem; box-sizing: border-box;
+    }
+    .cep-wrapper { display: flex; gap: 0.5rem; align-items: center; }
+    .cep-wrapper input { flex: 1; }
+    #cep-status { font-size: 0.85rem; margin-top: 0.3rem; display: block; min-height: 1.2rem; }
+    .frete-badge { display: inline-block; padding: 0.4rem 0.8rem; border-radius: 6px; font-weight: 500; margin: 0.5rem 0; }
+    .frete-badge.fixo { background: #dcfce7; color: #166534; }
+    .frete-badge.consulta { background: #fef3c7; color: #92400e; }
+    .resumo-pedido { background: #f8fafc; padding: 1rem; border-radius: 8px; border: 1px solid #e2e8f0; margin: 1.5rem 0; }
+     .resumo-pedido p { margin: 0.5rem 0; display: flex; justify-content: space-between; }
+     .total-final { font-size: 1.3rem; font-weight: bold; color: var(--cor-primaria); border-top: 2px dashed #e2e8f0; padding-top: 0.5rem; margin-top: 0.5rem; }
+     .resumo-collapse { border: 1px solid #e2e8f0; border-radius: 8px; margin-bottom: 1.5rem; overflow: hidden; }
+     .resumo-collapse-header { display: flex; align-items: center; justify-content: space-between; padding: 0.8rem 1rem; cursor: pointer; background: #f8fafc; font-weight: 500; user-select: none; }
+     .resumo-collapse-header:hover { background: #f1f5f9; }
+     .resumo-collapse-chevron { width: 20px; height: 20px; transition: transform 0.3s; }
+     .resumo-collapse-chevron.open { transform: rotate(180deg); }
+     .resumo-collapse-body { max-height: 0; overflow: hidden; transition: max-height 0.35s ease; }
+     .resumo-collapse-body.open { max-height: 600px; }
+     .resumo-collapse-body-inner { padding: 0.5rem 1rem 1rem; border-top: 1px solid #e2e8f0; }
+     .resumo-item { display: flex; justify-content: space-between; align-items: center; padding: 0.4rem 0; font-size: 0.9rem; border-bottom: 1px solid #f1f5f9; }
+     .resumo-item:last-child { border-bottom: none; }
+     .resumo-item-qtd { color: #666; min-width: 2.5rem; }
+     .resumo-item-nome { flex: 1; }
+     .resumo-item-subtotal { font-weight: 500; white-space: nowrap; }
+    .btn-enviar { width: 100%; background: var(--cor-sucesso); color: white; padding: 1rem; border-radius: 8px; font-weight: 600; font-size: 1.1rem; border: none; cursor: pointer; transition: all 0.2s; }
+    .btn-enviar:hover { background: #128C7E; transform: translateY(-2px); }
+    .btn-enviar:disabled { background: #ccc; cursor: not-allowed; transform: none; }
+    .voltar { display: block; text-align: center; margin-top: 1rem; color: var(--cor-texto-claro); text-decoration: none; }
+  </style>
+</head>
+<body>
+  <header>{% include 'header.html' %}</header>
+  
+  <main class="checkout-container">
+    <h2>Finalizar Pedido</h2>
+    
+    <form action="/checkout/process" method="POST" id="checkout-form">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <div class="form-group">
+        <label for="cep">CEP de Entrega *</label>
+        <div class="cep-wrapper">
+          <input type="text" id="cep" name="cep" required placeholder="00000-000" maxlength="9">
+          <small style="color:#666; white-space:nowrap;">Usado para calcular o frete</small>
+        </div>
+        <span id="cep-status"></span>
+      </div>
+
+      <div class="form-group">
+        <label for="endereco">Endereço *</label>
+        <input type="text" id="endereco" name="endereco" required placeholder="Rua, avenida...">
+      </div>
+
+      <div style="display:flex; gap:0.8rem;">
+        <div class="form-group" style="flex:1;">
+          <label for="numero">Número *</label>
+          <input type="text" id="numero" name="numero" required placeholder="Nº">
+        </div>
+        <div class="form-group" style="flex:2;">
+          <label for="complemento">Complemento</label>
+          <input type="text" id="complemento" name="complemento" placeholder="Apto, bloco... (opcional)">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="referencia">Referência</label>
+        <input type="text" id="referencia" name="referencia" placeholder="Próximo a... (opcional)">
+      </div>
+
+      <div class="form-group">
+        <label for="bairro">Bairro *</label>
+        <input type="text" id="bairro" name="bairro" required placeholder="Seu bairro">
+      </div>
+
+      <div style="display:flex; gap:0.8rem;">
+        <div class="form-group" style="flex:2;">
+          <label for="cidade">Cidade *</label>
+          <input type="text" id="cidade" name="cidade" required placeholder="Cidade">
+        </div>
+        <div class="form-group" style="flex:1;">
+          <label for="estado">Estado *</label>
+          <input type="text" id="estado" name="estado" required placeholder="UF" maxlength="2">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="nome">Nome Completo *</label>
+        <input type="text" id="nome" name="nome" required placeholder="Seu nome completo">
+      </div>
+
+      <div class="form-group">
+        <label for="email">E-mail</label>
+          <input type="email" id="email" name="email" placeholder="seu@email.com">
+      </div>
+      
+      <div class="form-group">
+        <label for="telefone">Telefone/WhatsApp *</label>
+        <input type="tel" id="telefone" name="telefone" required placeholder="(11) 99999-9999">
+      </div>
+
+      <div class="resumo-collapse">
+        <div class="resumo-collapse-header" onclick="toggleResumo()">
+          <span>📋 Resumo do Pedido</span>
+          <svg class="resumo-collapse-chevron" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd"/>
+          </svg>
+        </div>
+        <div id="resumo-body" class="resumo-collapse-body">
+          <div class="resumo-collapse-body-inner" id="resumo-itens"></div>
+        </div>
+      </div>
+
+      <div id="frete-box" style="display:none; margin: 1.5rem 0; padding: 1rem; background: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0;">
+        <div style="font-weight: 500; margin-bottom: 0.5rem;">🚚 Condição de Entrega:</div>
+        <span id="frete-badge" class="frete-badge"></span>
+        <p id="frete-obs" style="font-size: 0.85rem; color: #666; margin: 0.5rem 0 0;"></p>
+      </div>
+
+      <div class="resumo-pedido">
+        <p><span>Subtotal Produtos:</span> <span>R$ <span id="resumo-subtotal">0,00</span></span></p>
+        <p><span>Frete:</span> <span id="resumo-frete">-</span></p>
+        <p class="total-final"><span>TOTAL:</span> <span>R$ <span id="resumo-total">0,00</span></span></p>
+      </div>
+      
+      <!-- Campo hidden para o carrinho -->
+      <input type="hidden" name="carrinho_json" id="carrinho-hidden">
+      
+      <!-- Botão único de submit -->
+       <input type="hidden" name="frete_tipo" id="frete-tipo-hidden">
+       <input type="hidden" name="frete_valor" id="frete-valor-hidden">
+       <input type="hidden" name="frete_texto" id="frete-texto-hidden">
+       <label class="lgpd-checkbox" style="margin:1rem 0;">
+         <input type="checkbox" id="checkout-consent" name="lgpd_consent" value="1" required>
+         <span>Autorizo o tratamento dos meus dados conforme a <a href="/politicas#privacidade" target="_blank">Política de Privacidade</a>.</span>
+       </label>
+       <div id="btn-wrapper" style="position:relative;">
+         <div id="btn-overlay" style="position:absolute;inset:0;z-index:5;display:none;cursor:pointer;" onclick="mostrarErros()"></div>
+         <button type="submit" id="btn-enviar" class="btn-enviar" disabled>📲 Enviar Pedido no WhatsApp</button>
+       </div>
+       <p id="btn-erro-msg" style="color:#dc2626;font-size:0.9rem;text-align:center;margin:0.5rem 0 0;display:none;"> Preencha todos os campos obrigatórios e aceite a Política de Privacidade.</p>
+      
+      <a href="/" class="voltar">← Voltar para a loja</a>
+    </form>
+  </main>
+
+  <script>
+  // Configurações de frete
+  const AREAS_FIXAS = [
+    'botafogo', 'catete', 'copacabana', 'cosme velho', 'flamengo', 'gávea', 'glória', 'humaitá',
+    'ipanema', 'jardim botânico', 'lagoa', 'laranjeiras', 'leblon', 'leme', 'são conrado', 'urca', 'vidigal',
+    'gloria', 'humaita', 'jardim botanico', 'sao conrado',
+    'barra da tijuca', 'barra olímpica', 'barra olimpica', 'recreio dos bandeirantes',
+    'vargem grande', 'vargem pequena', 'tijuca', 'vila isabel', 'rio comprido', 'lapa', 'santa tereza', 'alto da boa vista', 'itanhangá', 'joá', 'centro'
+  ];
+  const VALOR_FIXO = 15.00;
+  const normalize = str => str.toLowerCase().trim().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+
+  const cepInput = document.getElementById('cep');
+  const cepStatus = document.getElementById('cep-status');
+  const enderecoInput = document.getElementById('endereco');
+  const numeroInput = document.getElementById('numero');
+  const complementoInput = document.getElementById('complemento');
+  const bairroInput = document.getElementById('bairro');
+  const cidadeInput = document.getElementById('cidade');
+  const estadoInput = document.getElementById('estado');
+  const freteBox = document.getElementById('frete-box');
+  const freteBadge = document.getElementById('frete-badge');
+  const freteObs = document.getElementById('frete-obs');
+  const resumoSubtotal = document.getElementById('resumo-subtotal');
+  const resumoFrete = document.getElementById('resumo-frete');
+  const resumoTotal = document.getElementById('resumo-total');
+  const btnEnviar = document.getElementById('btn-enviar');
+
+  const carrinho = JSON.parse(localStorage.getItem('defumados_carrinho') || '[]');
+  const subtotal = carrinho.reduce((sum, i) => sum + (i.preco * i.qtd), 0);
+  resumoSubtotal.textContent = subtotal.toFixed(2).replace('.', ',');
+  resumoTotal.textContent = subtotal.toFixed(2).replace('.', ',');
+
+  let freteAtual = { tipo: 'pendente', valor: 0, texto: '' };
+  let cepResolvido = false;
+
+  function checkFormValidity() {
+    const required = document.querySelectorAll('#checkout-form [required]');
+    const allFilled = Array.from(required).every(el => {
+      if (el.type === 'checkbox') return el.checked;
+      return el.value.trim() !== '';
+    });
+    const valido = allFilled && cepResolvido;
+    btnEnviar.disabled = !valido;
+    const overlay = document.getElementById('btn-overlay');
+    if (overlay) overlay.style.display = valido ? 'none' : 'block';
+    if (valido) {
+      const msg = document.getElementById('btn-erro-msg');
+      if (msg) msg.style.display = 'none';
+    }
+  }
+
+  function mostrarErros() {
+    const msg = document.getElementById('btn-erro-msg');
+    if (msg) msg.style.display = 'block';
+    document.querySelectorAll('#checkout-form [required]').forEach(el => {
+      const vazio = el.type === 'checkbox' ? !el.checked : el.value.trim() === '';
+      if (vazio) {
+        if (el.type === 'checkbox') {
+          const label = el.closest('.lgpd-checkbox');
+          if (label) {
+            label.style.borderColor = '#dc2626';
+            label.style.boxShadow = '0 0 0 2px rgba(220,38,38,0.15)';
+          }
+        } else {
+          el.style.borderColor = '#dc2626';
+          el.style.boxShadow = '0 0 0 2px rgba(220,38,38,0.15)';
+        }
+        el.addEventListener('input', function limpar() {
+          if (el.type === 'checkbox') {
+            const label = el.closest('.lgpd-checkbox');
+            if (label) {
+              label.style.borderColor = '';
+              label.style.boxShadow = '';
+            }
+          } else {
+            this.style.borderColor = '';
+            this.style.boxShadow = '';
+          }
+          this.removeEventListener('input', limpar);
+        }, { once: true });
+        el.addEventListener('change', function limpar() {
+          const label = el.closest('.lgpd-checkbox');
+          if (label) {
+            label.style.borderColor = '';
+            label.style.boxShadow = '';
+          }
+          this.removeEventListener('change', limpar);
+        }, { once: true });
+      }
+    });
+    if (cepInput.value.replace(/\D/g, '').length === 8 && !cepResolvido) {
+      cepStatus.textContent = '⚠️ Consulte o CEP antes de continuar.';
+      cepStatus.style.color = '#dc2626';
+    }
+  }
+
+  // Monitora todos os campos obrigatórios + consentimento
+  document.querySelectorAll('#checkout-form [required]').forEach(el => {
+    el.addEventListener('input', checkFormValidity);
+    el.addEventListener('change', checkFormValidity);
+  });
+  checkFormValidity(); // estado inicial
+
+  // Máscara CEP
+  cepInput.addEventListener('input', e => { 
+    e.target.value = e.target.value.replace(/\D/g, '').replace(/^(\d{5})(\d)/, '$1-$2').slice(0, 9); 
+  });
+
+  // Buscar CEP
+  cepInput.addEventListener('blur', async () => {
+    const cep = cepInput.value.replace(/\D/g, '');
+    if (cep.length !== 8) return;
+    
+    cepStatus.textContent = '⏳ Consultando endereço...';
+    btnEnviar.disabled = true;
+
+    try {
+      const res = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
+      const data = await res.json();
+      
+      if (data.erro) throw new Error('CEP não encontrado');
+      
+      enderecoInput.value = data.logradouro || '';
+      if (data.bairro) bairroInput.value = data.bairro;
+      cidadeInput.value = data.localidade || '';
+      estadoInput.value = data.uf || '';
+      
+      const bairroNorm = normalize(data.bairro || '');
+      const isFixa = AREAS_FIXAS.some(area => normalize(area) === bairroNorm);
+      
+      freteBox.style.display = 'block';
+      if (isFixa) {
+        freteAtual = { tipo: 'fixo', valor: VALOR_FIXO, texto: `Entrega Padrão - R$ ${VALOR_FIXO.toFixed(2).replace('.', ',')}` };
+        freteBadge.className = 'frete-badge fixo';
+        freteBadge.textContent = `✅ Tarifa Fixa - R$ ${VALOR_FIXO.toFixed(2).replace('.', ',')}`;
+        freteObs.textContent = 'Bairro dentro da área de entrega padrão.';
+        resumoFrete.textContent = `R$ ${VALOR_FIXO.toFixed(2).replace('.', ',')}`;
+        resumoTotal.textContent = (subtotal + VALOR_FIXO).toFixed(2).replace('.', ',');
+        cepResolvido = true;
+        checkFormValidity();
+        // Preenche campos hidden para o backend
+document.getElementById('frete-tipo-hidden').value = 'fixo';
+document.getElementById('frete-valor-hidden').value = VALOR_FIXO;
+document.getElementById('frete-texto-hidden').value = freteAtual.texto;
+      } else {
+        freteAtual = { tipo: 'consulta', valor: 0, texto: 'Frete sob consulta' };
+        freteBadge.className = 'frete-badge consulta';
+        freteBadge.textContent = '📦 Sob Consulta';
+        freteObs.textContent = 'Sua região será orçada via WhatsApp.';
+        resumoFrete.textContent = 'A combinar';
+        resumoTotal.textContent = subtotal.toFixed(2).replace('.', ',') + ' + frete';
+        cepResolvido = true;
+        checkFormValidity();
+        // Preenche campos hidden para o backend
+document.getElementById('frete-tipo-hidden').value = 'consulta';
+document.getElementById('frete-valor-hidden').value = 0;
+document.getElementById('frete-texto-hidden').value = freteAtual.texto;
+      }
+      cepStatus.textContent = '✅ Endereço encontrado';
+    } catch (err) {
+      freteBox.style.display = 'none';
+      resumoFrete.textContent = '-';
+      resumoTotal.textContent = subtotal.toFixed(2).replace('.', ',');
+      cepResolvido = false;
+      checkFormValidity();
+      cepStatus.textContent = '⚠️ ' + (err.message || 'CEP inválido');
+      freteAtual = { tipo: 'pendente', valor: 0, texto: '' };
+    }
+  });
+
+  // Máscara de telefone
+  document.getElementById('telefone').addEventListener('input', function(e) {
+    let val = e.target.value.replace(/\D/g, '').slice(0, 11);
+    if (val.length <= 10) {
+      val = val.replace(/^(\d{2})(\d{4})(\d{0,4})/, '($1) $2-$3');
+    } else {
+      val = val.replace(/^(\d{2})(\d{5})(\d{0,4})/, '($1) $2-$3');
+    }
+    e.target.value = val;
+  });
+
+  // Resumo do Pedido colapsável
+  function toggleResumo() {
+    const body = document.getElementById('resumo-body');
+    const chevron = document.querySelector('.resumo-collapse-chevron');
+    const aberto = body.classList.toggle('open');
+    chevron.classList.toggle('open', aberto);
+    if (aberto) renderResumoItens();
+  }
+
+  function renderResumoItens() {
+    const container = document.getElementById('resumo-itens');
+    const cart = JSON.parse(localStorage.getItem('defumados_carrinho') || '[]');
+    if (cart.length === 0) {
+      container.innerHTML = '<div style="text-align:center;color:#999;padding:0.5rem 0;">Nenhum item no carrinho</div>';
+      return;
+    }
+    container.innerHTML = cart.map(item => {
+      const sub = (item.preco * item.qtd).toFixed(2).replace('.', ',');
+      return `<div class="resumo-item">
+        <span class="resumo-item-qtd">${item.qtd}x</span>
+        <span class="resumo-item-nome">${item.nome}</span>
+        <span class="resumo-item-subtotal">R$ ${sub}</span>
+      </div>`;
+    }).join('');
+  }
+
+  // Preparar carrinho, LIMPAR e enviar
+document.getElementById('checkout-form').addEventListener('submit', function() {
+  // 1. Pega os dados do carrinho
+  const cart = JSON.parse(localStorage.getItem('defumados_carrinho') || '[]');
+  document.getElementById('carrinho-hidden').value = JSON.stringify(cart);
+  
+  // 2. LIMPA o carrinho IMEDIATAMENTE ao clicar em enviar
+  localStorage.removeItem('defumados_carrinho');
+  
+  // 3. Atualiza os contadores visualmente na tela (UX melhor)
+  const fabCount = document.getElementById('fab-cart-count');
+  if (fabCount) fabCount.textContent = '0';
+  
+  const headerCount = document.getElementById('header-cart-count');
+  if (headerCount) {
+    headerCount.textContent = '0';
+    headerCount.classList.add('hidden');
+  }
+  
+  // O formulário continua o envio normalmente para o backend
+});
+</script>
+
+  {% include 'footer.html' %}
+</body>
+</html>

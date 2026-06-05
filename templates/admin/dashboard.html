@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin - Defumados AC</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+{% include 'header.html' %}
+<main class="admin-container">
+  <div class="admin-tabs">
+  <a href="/admin" class="admin-tab active">📦 Produtos</a>
+  <a href="/admin/pedidos" class="admin-tab">📋 Pedidos</a>
+</div>
+  <div class="admin-header">
+    <h1>📊 Painel Administrativo</h1>
+    <div>
+      <span>Bem-vindo, Admin!</span>
+      <a href="/admin/logout" class="btn-logout">Sair</a>
+    </div>
+  </div>
+
+  <section class="admin-section">
+    <h2>➕ Adicionar Novo Produto</h2>
+    <form method="POST" action="/admin/add" class="admin-form" enctype="multipart/form-data">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <div class="form-grid">
+        <input type="text" name="nome" placeholder="Nome do Produto" required>
+        <input type="text" name="preco" placeholder="Preço (ex: 29.90 ou 29,90)" required>
+        <input type="text" name="peso" placeholder="Peso (ex: 500g, 1kg)">
+        <textarea name="ingredientes" rows="2" placeholder="Ingredientes (ex: Carne, sal, alho, pimenta)"></textarea>
+        <div>
+          <textarea name="imagens" rows="3" placeholder="Ou cole URLs das imagens, uma por linha"></textarea>
+          <label class="upload-label">
+            📁 Ou faça upload:
+            <input type="file" name="imagens_upload" multiple accept="image/*" class="upload-input">
+          </label>
+        </div>
+        <label class="checkbox-estoque"><input type="checkbox" name="estoque" checked><span class="toggle-track"></span> Em Estoque</label>
+      </div>
+      <textarea name="descricao" rows="3" placeholder="Descrição completa..." required></textarea>
+      <button type="submit" class="btn-primary">Salvar Produto</button>
+    </form>
+  </section>
+
+  <section class="admin-section">
+    <h2>📦 Catálogo Atual (<span>{{ produtos|length }}</span>)</h2>
+    <div class="admin-table-wrapper">
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Img</th>
+            <th>Nome</th>
+            <th>Preço</th>
+            <th>Estoque</th>
+            <th>Ações</th>
+          </tr>
+        </thead>
+        <tbody>
+  {% for p in produtos %}
+  <tr>
+    <td>{{ p.id }}</td>
+    <td>
+  {% if p.imagens and p.imagens[0] %}
+    <img src="{{ p.imagens[0] }}" alt="img" class="thumb" onerror="this.src='https://via.placeholder.com/40?text=?'">
+  {% else %}
+    <img src="https://via.placeholder.com/40?text=?" alt="sem img" class="thumb">
+  {% endif %}
+</td>
+    <td>{{ p.nome }}
+      {% set qtd_avisos = avisos_count.get(p.id, 0) %}
+      {% if qtd_avisos > 0 %}
+        <span class="aviso-badge">{{ qtd_avisos }} 🔔</span>
+      {% endif %}
+    </td>
+    <td>R$ {{ "%.2f"|format(p.preco) }}</td>
+    <td>
+      <span class="btn-stock btn-sm {% if p.estoque %}in-stock{% else %}out-stock{% endif %}" style="display:inline-block; text-align:center;">
+        {{ '✅ Em Estoque' if p.estoque else '❌ Esgotado' }}
+      </span>
+    </td>
+    <td>
+      <div class="admin-acoes">
+        {% if not p.estoque or avisos_count.get(p.id, 0) > 0 %}
+        <a href="/admin/notificar/{{ p.id }}" class="btn-notify btn-sm">🔔 Notificar</a>
+        {% endif %}
+        <form method="POST" action="/admin/visivel/{{ p.id }}" class="form-inline">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <button type="submit" class="btn-stock btn-sm {% if p.visivel %}in-stock{% else %}out-stock{% endif %}">
+            {{ '👁️' if p.visivel else '🚫' }}
+          </button>
+        </form>
+        <button onclick="toggleEdit({{ p.id }})" class="btn-edit btn-sm">✏️</button>
+        <form method="POST" action="/admin/deletar/{{ p.id }}" class="form-inline" onsubmit="return confirm('Tem certeza que deseja EXCLUIR este produto permanentemente?');">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <button type="submit" class="btn-stock btn-sm out-stock">🗑️</button>
+        </form>
+      </div>
+    </td>
+  </tr>
+  <tr class="edit-row hidden" id="edit-{{ p.id }}">
+    <td colspan="6">
+      <form method="POST" action="/admin/edit/{{ p.id }}" enctype="multipart/form-data" class="edit-form-inline">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <div class="edit-grid">
+          <input type="text" name="nome" value="{{ p.nome }}" required placeholder="Nome">
+          <input type="text" name="preco" value="{{ p.preco }}" required placeholder="Preço">
+          <input type="text" name="peso" value="{{ p.peso if p.peso else '' }}" placeholder="Peso">
+          <textarea name="ingredientes" rows="2" placeholder="Ingredientes">{{ p.ingredientes if p.ingredientes else '' }}</textarea>
+          <textarea name="descricao" rows="2" required placeholder="Descrição">{{ p.descricao }}</textarea>
+          <div>
+            <textarea name="imagens" rows="2" placeholder="URLs das imagens, uma por linha">{% for img in p.imagens %}{{ img }}
+{% endfor %}</textarea>
+            <label class="upload-label" style="display:block; margin-top:0.3rem;">
+              📁 Upload:
+              <input type="file" name="imagens_upload" multiple accept="image/*" class="upload-input">
+            </label>
+          </div>
+          <label class="checkbox-estoque">
+            <input type="checkbox" name="estoque" {{ 'checked' if p.estoque else '' }}><span class="toggle-track"></span> Em Estoque
+          </label>
+        </div>
+        <div class="edit-actions" style="margin-top:0.5rem;">
+          <button type="submit" class="btn-save-green">💾 Salvar</button>
+          <button type="button" onclick="toggleEdit({{ p.id }})" class="btn-cancel-gray">❌ Cancelar</button>
+        </div>
+      </form>
+    </td>
+  </tr>
+  {% endfor %}
+</tbody>
+      </table>
+    </div>
+
+    {% if total_paginas > 1 %}
+    <div class="pagination-bar">
+      <span class="pagination-info">Página {{ page }} de {{ total_paginas }}</span>
+      <div class="pagination-links">
+        {% if page > 1 %}
+        <a href="/admin?page={{ page - 1 }}" class="pagination-link">⬅ Anterior</a>
+        {% endif %}
+        {% if page < total_paginas %}
+        <a href="/admin?page={{ page + 1 }}" class="pagination-link next">Próximo ➡</a>
+        {% endif %}
+      </div>
+    </div>
+    {% endif %}
+  </section>
+</main>
+{% include 'footer.html' %}
+<script>
+  function toggleEdit(id) {
+    document.getElementById('edit-' + id).classList.toggle('hidden');
+  }
+</script>
+</body>
+</html>

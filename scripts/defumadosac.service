@@ -1,0 +1,28 @@
+# systemd service — Defumados AC
+# Copie para: /etc/systemd/system/defumadosac.service
+# Depois:
+#   sudo systemctl daemon-reload
+#   sudo systemctl enable defumadosac
+#   sudo systemctl start defumadosac
+#   sudo systemctl status defumadosac
+
+[Unit]
+Description=Defumados AC - Loja Virtual
+After=network.target
+
+[Service]
+Type=simple
+User=deploy
+WorkingDirectory=/home/deploy/defumados-loja
+EnvironmentFile=/home/deploy/defumados-loja/.env
+ExecStart=/home/deploy/defumados-loja/venv/bin/python /home/deploy/defumados-loja/run_production.py
+Restart=always
+RestartSec=5
+
+# Segurança
+PrivateTmp=true
+ProtectSystem=full
+NoNewPrivileges=true
+
+[Install]
+WantedBy=multi-user.target

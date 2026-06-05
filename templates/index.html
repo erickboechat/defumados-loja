@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Defumados AC - Loja Online</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <header>
+  {% include 'header.html' %}
+</header>
+  
+<!-- Busca -->
+<div class="search-wrapper">
+  <form action="/" method="GET" class="search-form">
+    <input type="text" name="q" class="search-input" placeholder="Buscar produtos..." value="{{ search }}">
+    <input type="hidden" name="sort" value="{{ current_sort }}">
+    <button type="submit" class="search-btn">🔍</button>
+    {% if search %}
+    <a href="/?sort={{ current_sort }}" class="search-clear">✕</a>
+    {% endif %}
+  </form>
+</div>
+
+<!-- Filtro de Ordenação -->
+<div class="sort-select-wrapper">
+  <label for="sort-select" class="sort-label">Ordenar por:</label>
+  <select id="sort-select" class="sort-select" onchange="window.location.href=this.value">
+    <option value="/?sort=nome{% if search %}&q={{ search }}{% endif %}" {% if current_sort == 'nome' %}selected{% endif %}>A-Z</option>
+    <option value="/?sort=nome_desc{% if search %}&q={{ search }}{% endif %}" {% if current_sort == 'nome_desc' %}selected{% endif %}>Z-A</option>
+    <option value="/?sort=preco_asc{% if search %}&q={{ search }}{% endif %}" {% if current_sort == 'preco_asc' %}selected{% endif %}>Menor Preço</option>
+    <option value="/?sort=preco_desc{% if search %}&q={{ search }}{% endif %}" {% if current_sort == 'preco_desc' %}selected{% endif %}>Maior Preço</option>
+    <option value="/?sort=vendas{% if search %}&q={{ search }}{% endif %}" {% if current_sort == 'vendas' %}selected{% endif %}>🔥 Mais Vendidos</option>
+  </select>
+</div>
+
+  <main>
+
+    {% if search and produtos|length == 0 %}
+    <div style="text-align:center;padding:3rem 1rem;width:100%;color:var(--cor-texto-claro);">
+      <p style="font-size:1.3rem;margin-bottom:0.5rem;">🔍 Nenhum produto encontrado para "<strong>{{ search }}</strong>"</p>
+      <a href="/" style="color:var(--cor-primaria);font-weight:600;">← Limpar busca</a>
+    </div>
+    {% endif %}
+
+    <section class="produtos-grid">
+      {% for p in produtos %}
+<div class="produto-card" onclick="window.location.href='/produto/{{ p.id }}'" style="cursor:pointer" data-imagens='{{ p.imagens|tojson|safe }}'>
+  <div class="imagem-container">
+  <img src="{{ p.imagens[0] | webp_smart }}" 
+       alt="{{ p.nome }}" 
+       loading="lazy" 
+       decoding="async"
+       onerror="this.onerror=null; this.src='https://via.placeholder.com/300x300?text=Sem+Foto'"
+       class="card-img">
+  
+  <button class="img-nav img-prev" onclick="event.stopPropagation(); navegarImagem(this, -1)" aria-label="Anterior"></button>
+  <button class="img-nav img-next" onclick="event.stopPropagation(); navegarImagem(this, 1)" aria-label="Próximo"></button>
+
+  <!-- Só aparece se ESTIVER FORA de estoque -->
+  {% if not p.estoque %}
+    <span class="badge-estoque esgotado">Esgotado</span>
+  {% endif %}
+</div>
+  <div class="info">
+    <h3>{{ p.nome }}</h3>
+    <p class="descricao">{{ p.descricao|striptags|truncate(100) }}</p>
+    <p class="preco">R$ {{ "%.2f"|format(p.preco) }}</p>
+    {% if p.estoque %}
+      <!-- Botão agora é secundário, o clique no card é a ação principal -->
+      <button class="btn-add" onclick="event.stopPropagation(); Carrinho.add({{ p.id }}, '{{ p.nome }}', {{ p.preco }})">Adicionar</button>
+    {% else %}
+      <button class="btn-esgotado" onclick="event.stopPropagation(); abrirModalAviso({{ p.id }}, '{{ p.nome }}')">🔔 Avisar</button>
+    {% endif %}
+  </div>
+</div>
+      {% endfor %}
+    </section>
+    
+    <aside id="carrinho-section" class="carrinho-sidebar">
+  <h2>🛒 Seu Pedido</h2>
+  <div id="carrinho-items"></div>
+  <div class="carrinho-resumo">
+    <p class="carrinho-total">Total: R$ <span id="total-carrinho">0,00</span></p>
+    <a href="/checkout" id="btn-checkout" class="btn-checkout hidden">Finalizar no WhatsApp →</a>
+  </div>
+</aside>
+  </main>
+
+  <!-- Modal Avisar quando chegar -->
+  <div id="modal-aviso" class="modal-aviso-overlay" style="display:none;" onclick="fecharModalAviso(event)">
+    <div class="modal-aviso-box" onclick="event.stopPropagation()">
+      <button class="modal-aviso-close" onclick="fecharModalAviso()">✕</button>
+      <h3 style="margin-top:0;">🔔 Avisar quando chegar</h3>
+      <p id="aviso-produto-nome" style="color:#666; font-size:0.9rem; margin-bottom:1.2rem;"></p>
+      <form id="form-aviso" onsubmit="enviarAviso(event)">
+        <input type="hidden" id="aviso-produto-id" value="">
+        <div class="form-group">
+          <label for="aviso-nome">Seu nome *</label>
+          <input type="text" id="aviso-nome" required placeholder="Nome completo">
+        </div>
+        <div class="form-group">
+          <label for="aviso-email">E-mail</label>
+          <input type="email" id="aviso-email" placeholder="seu@email.com">
+        </div>
+        <div class="form-group">
+          <label for="aviso-telefone">WhatsApp</label>
+          <input type="tel" id="aviso-telefone" placeholder="(21) 99999-9999">
+        </div>
+        <button type="submit" class="btn-add-grande" style="width:100%;">📩 Enviar Aviso</button>
+        <label class="lgpd-checkbox" style="margin-top:0.8rem;">
+          <input type="checkbox" id="aviso-consent" required>
+          <span>Autorizo o tratamento dos meus dados conforme a <a href="/politicas#privacidade" target="_blank">Política de Privacidade</a>.</span>
+        </label>
+        <p id="aviso-msg" style="text-align:center; margin-top:0.8rem; font-size:0.9rem;"></p>
+      </form>
+    </div>
+  </div>
+
+  {% include 'footer.html' %}
+
+<script>
+  function navegarImagem(btn, direcao) {
+    const container = btn.closest('.imagem-container');
+    const card = container.closest('.produto-card');
+    const imagens = JSON.parse(card.dataset.imagens || '[]');
+    if (imagens.length < 2) return;
+    const img = container.querySelector('.card-img');
+    let idx = parseInt(img.dataset.idx || '0');
+    idx = (idx + direcao + imagens.length) % imagens.length;
+    img.src = imagens[idx];
+    img.dataset.idx = idx;
+  }
+
+  function abrirModalAviso(id, nome) {
+    document.getElementById('aviso-produto-id').value = id;
+    document.getElementById('aviso-produto-nome').textContent = 'Receba uma mensagem quando ' + nome + ' voltar ao estoque.';
+    document.getElementById('modal-aviso').style.display = 'flex';
+  }
+  function fecharModalAviso(e) {
+    if (!e || e.target === document.getElementById('modal-aviso')) {
+      document.getElementById('modal-aviso').style.display = 'none';
+    }
+  }
+  document.getElementById('modal-aviso').addEventListener('click', fecharModalAviso);
+
+  document.getElementById('aviso-telefone').addEventListener('input', function(e) {
+    let val = e.target.value.replace(/\D/g, '').slice(0, 11);
+    if (val.length <= 10) {
+      val = val.replace(/^(\d{2})(\d{4})(\d{0,4})/, '($1) $2-$3');
+    } else {
+      val = val.replace(/^(\d{2})(\d{5})(\d{0,4})/, '($1) $2-$3');
+    }
+    e.target.value = val;
+  });
+
+  async function enviarAviso(event) {
+    event.preventDefault();
+    const btn = event.target.querySelector('button[type="submit"]');
+    const msg = document.getElementById('aviso-msg');
+    btn.disabled = true;
+    btn.textContent = 'Enviando...';
+    try {
+      const res = await fetch('/api/avisar-estoque', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          produto_id: parseInt(document.getElementById('aviso-produto-id').value),
+          nome: document.getElementById('aviso-nome').value.trim(),
+          email: document.getElementById('aviso-email').value.trim(),
+          telefone: document.getElementById('aviso-telefone').value.trim()
+        })
+      });
+      const data = await res.json();
+      if (data.success) {
+        msg.style.color = '#166534';
+        msg.textContent = '✅ Aviso registrado! Você será notificado quando o produto voltar.';
+        event.target.querySelectorAll('input').forEach(i => i.value = '');
+      } else {
+        throw new Error(data.erro || 'Erro ao registrar');
+      }
+    } catch (err) {
+      msg.style.color = '#991b1b';
+      msg.textContent = '❌ ' + (err.message || 'Erro de conexão');
+    } finally {
+      btn.disabled = false;
+      btn.textContent = '📩 Enviar Aviso';
+    }
+  }
+</script>
+</body>
+</html>

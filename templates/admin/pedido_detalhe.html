@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pedido #{{ pedido.id }} - Admin</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  {% include 'header.html' %}
+  
+  <main class="admin-container admin-narrow">
+    <!-- Abas de Navegação -->
+    <div class="admin-tabs">
+      <a href="/admin" class="admin-tab">📦 Produtos</a>
+      <a href="/admin/pedidos" class="admin-tab active">📋 Pedidos</a>
+    </div>
+
+    <h2 class="pedido-titulo">📋 Detalhes do Pedido #{{ pedido.id }}</h2>
+
+    <div class="pedido-container">
+      
+      <!-- COLUNA ESQUERDA: DADOS -->
+      <div>
+        <div class="box">
+          <h3>👤 Dados do Cliente</h3>
+          <div class="info-row"><span class="info-label">Nome:</span><span class="info-value">{{ pedido.cliente_nome }}</span></div>
+          <div class="info-row"><span class="info-label">Telefone:</span><span class="info-value">{{ pedido.cliente_telefone }}</span></div>
+          {% if pedido.email %}
+          <div class="info-row"><span class="info-label">E-mail:</span><span class="info-value">{{ pedido.email }}</span></div>
+          {% endif %}
+        </div>
+
+        <div class="box">
+          <h3>📍 Endereço de Entrega</h3>
+          <div class="info-row"><span class="info-label">CEP:</span><span class="info-value">{{ pedido.cep or '-' }}</span></div>
+          <div class="info-row"><span class="info-label">Endereço:</span><span class="info-value info-value-left">{{ pedido.endereco }}, {{ pedido.numero_casa or 's/n' }}{% if pedido.complemento %} - {{ pedido.complemento }}{% endif %}</span></div>
+          <div class="info-row"><span class="info-label">Bairro:</span><span class="info-value">{{ pedido.bairro }}</span></div>
+          <div class="info-row"><span class="info-label">Cidade/Estado:</span><span class="info-value">{{ pedido.cidade or '-' }}/{{ pedido.estado or '-' }}</span></div>
+          {% if pedido.referencia %}
+          <div class="info-row"><span class="info-label">Referência:</span><span class="info-value">{{ pedido.referencia }}</span></div>
+          {% endif %}
+        </div>
+
+        <div class="box">
+          <h3>🚚 Condições de Frete</h3>
+          <div class="info-row"><span class="info-label">Tipo de Entrega:</span><span class="info-value">{{ pedido.forma_entrega }}</span></div>
+          <div class="info-row"><span class="info-label">Frete:</span><span class="info-value">{{ pedido.frete_texto or 'A combinar' }}</span></div>
+          {% if pedido.frete_valor > 0 %}
+          <div class="info-row"><span class="info-label">Valor Frete:</span><span class="info-value">R$ {{ "%.2f"|format(pedido.frete_valor) }}</span></div>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- COLUNA DIREITA: PEDIDO E AÇÕES -->
+      <div>
+                <div class="box">
+          <h3>🛒 Resumo do Pedido</h3>
+          
+          <div class="items-section">
+            <strong>Itens:</strong>
+            {% for item in pedido.itens %}
+              <div class="info-row">
+                <span>{{ item.qtd }}x {{ item.nome }}</span>
+                <span>R$ {{ "%.2f"|format(item.preco * item.qtd) }}</span>
+              </div>
+            {% endfor %}
+          </div>
+          
+          <div class="info-row subtotal-row">
+            <span class="info-label">Subtotal Produtos:</span>
+            <span class="info-value">R$ {{ "%.2f"|format(pedido.total) }}</span>
+          </div>
+          
+          {% if pedido.frete_valor and pedido.frete_valor > 0 %}
+          <div class="info-row">
+            <span class="info-label">Frete:</span>
+            <span class="info-value">R$ {{ "%.2f"|format(pedido.frete_valor) }}</span>
+          </div>
+          {% else %}
+          <div class="info-row">
+            <span class="info-label">Frete:</span>
+            <span class="info-value info-value-muted">A combinar</span>
+          </div>
+          {% endif %}
+          
+          <div class="total-destaque">
+            TOTAL GERAL: R$ {{ "%.2f"|format(pedido.total + (pedido.frete_valor or 0)) }}
+          </div>
+        </div>
+
+        <div class="box">
+          <h3>⚙️ Status do Pedido</h3>
+          <form method="POST" action="/admin/pedidos/{{ pedido.id }}/status">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <select name="status" class="status-select">
+              <option value="registrado" {% if pedido.status=='registrado' %}selected{% endif %}>⏳ Registrado</option>
+              <option value="concluido" {% if pedido.status=='concluido' %}selected{% endif %}>✅ Concluído</option>
+              <option value="cancelado" {% if pedido.status=='cancelado' %}selected{% endif %}>❌ Cancelado</option>
+            </select>
+            <button type="submit" class="btn-save btn-full">Salvar Alteração</button>
+          </form>
+          
+          <form method="POST" action="/admin/pedidos/{{ pedido.id }}/delete" onsubmit="return confirm('Tem certeza que deseja EXCLUIR este pedido permanentemente?');">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <button type="submit" class="btn-delete">🗑️ Excluir Pedido</button>
+          </form>
+        </div>
+      </div>
+
+    </div>
+  </main>
+  {% include 'footer.html' %}
+</body>
+</html>

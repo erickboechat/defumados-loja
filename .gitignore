@@ -1,0 +1,59 @@
+# Environment
+.env
+.env.local
+*.env
+
+# Database
+*.db
+*.db-journal
+*.db-wal
+*.db-shm
+
+# Secrets (do not commit)
+admin.json
+
+# Python
+__pycache__/
+*.py[cod]
+venv/
+.venv/
+*.egg-info/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Uploads & generated files
+static/uploads/produtos/*.jpg
+static/uploads/produtos/*.png
+static/uploads/produtos/*.gif
+!static/uploads/produtos/*.webp
+static/uploads/.otimizacao_status.json
+
+# Backups
+backups/
+
+# Scripts auxiliares (contêm chaves de API)
+docs/
+
+# Testes
+test_*.py
+
+# Migrations / dados de migração
+produtos.json
+migrar_*.py
+adicionar_visibilidade.py
+atualizar_*.py
+converter_webp.py
+criar_*.py
+otimizar_imagens.py
+
+# Logs
+*.log
+app.log
+
+# OS
+Thumbs.db
+.DS_Store
