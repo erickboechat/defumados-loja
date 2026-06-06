@@ -46,7 +46,7 @@
 
     <section class="produtos-grid">
       {% for p in produtos %}
-<div class="produto-card" onclick="window.location.href='/produto/{{ p.id }}'" style="cursor:pointer" data-imagens='{{ p.imagens|tojson|safe }}'>
+<div class="produto-card" onclick="window.location.href='/produto/{{ p.id }}'" style="cursor:pointer" data-imagens='{{ p.imagens|webp_smart_list|tojson|safe }}'>
   <div class="imagem-container">
   <img src="{{ p.imagens[0] | webp_smart }}" 
        alt="{{ p.nome }}" 

@@ -64,7 +64,7 @@
     <td>{{ p.id }}</td>
     <td>
   {% if p.imagens and p.imagens[0] %}
-    <img src="{{ p.imagens[0] }}" alt="img" class="thumb" onerror="this.src='https://via.placeholder.com/40?text=?'">
+    <img src="{{ p.imagens[0] | webp_smart }}" alt="img" class="thumb" onerror="this.src='https://via.placeholder.com/40?text=?'">
   {% else %}
     <img src="https://via.placeholder.com/40?text=?" alt="sem img" class="thumb">
   {% endif %}

@@ -104,6 +104,11 @@ def webp_smart_filter(caminho_imagem):
     return caminho_imagem
 
 
+@app.template_filter('webp_smart_list')
+def webp_smart_list_filter(imagens):
+    return [webp_smart_filter(img) for img in imagens]
+
+
 # ===== ROTAS PÚBLICAS =====
 
 @app.route('/')
