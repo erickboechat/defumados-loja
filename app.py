@@ -493,6 +493,13 @@ def api_avisar_estoque():
     return jsonify({'success': True, 'id': aviso_id})
 
 
+# ===== HEALTH CHECK =====
+
+@app.route('/health')
+def health():
+    return jsonify({'status': 'ok'}), 200
+
+
 # ===== ADMIN: PEDIDOS =====
 
 @app.route('/admin/pedidos')
