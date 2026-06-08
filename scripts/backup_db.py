@@ -14,7 +14,9 @@ Agendar no Linux (cron):
 import os
 import shutil
 import gzip
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
+
+BRT = timezone(timedelta(hours=-3))
 
 PROJECT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 BACKUP_DIR = os.path.join(PROJECT_DIR, 'backups')
@@ -23,7 +25,7 @@ RETENTION_DAYS = 30
 
 os.makedirs(BACKUP_DIR, exist_ok=True)
 
-timestamp = datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
+timestamp = datetime.now(BRT).strftime('%Y-%m-%d_%H-%M-%S')
 backup_name = f'loja_{timestamp}.db'
 backup_path = os.path.join(BACKUP_DIR, backup_name)
 
@@ -34,11 +36,11 @@ with open(backup_path, 'rb') as f_in:
         shutil.copyfileobj(f_in, f_out)
 os.remove(backup_path)
 
-cutoff = datetime.now() - timedelta(days=RETENTION_DAYS)
+cutoff = datetime.now(BRT) - timedelta(days=RETENTION_DAYS)
 for f in os.listdir(BACKUP_DIR):
     if f.startswith('loja_') and f.endswith('.db.gz'):
         fpath = os.path.join(BACKUP_DIR, f)
-        mtime = datetime.fromtimestamp(os.path.getmtime(fpath))
+        mtime = datetime.fromtimestamp(os.path.getmtime(fpath), tz=BRT)
         if mtime < cutoff:
             os.remove(fpath)
             print(f"Removido backup antigo: {f}")

@@ -4,10 +4,12 @@ import logging
 import os
 import sys
 import time
-from datetime import datetime
+from datetime import datetime, timezone, timedelta
 from pathlib import Path
 from urllib.request import Request, urlopen
 from urllib.error import URLError
+
+BRT = timezone(timedelta(hours=-3))
 
 from dotenv import load_dotenv
 
@@ -64,7 +66,7 @@ def main():
         is_up = check_site(site_url)
 
     now = time.time()
-    now_str = datetime.now().strftime('%d/%m/%Y %H:%M:%S')
+    now_str = datetime.now(BRT).strftime('%d/%m/%Y %H:%M:%S')
 
     if not is_up and last_state != 'down':
         from scripts.notifier import notify_all
@@ -110,7 +112,7 @@ def main():
             body = (
                 f'O site defumadosac.com.br CONTINUA fora do ar.\n\n'
                 f'Fora do ar há aproximadamente {downtime} minutos.\n'
-                f'Último alerta: {datetime.fromtimestamp(last_alert).strftime("%H:%M")}\n'
+                f'Último alerta: {datetime.fromtimestamp(last_alert, BRT).strftime("%H:%M")}\n'
             )
             notify_all(subject, body)
             state['last_alert_at'] = now

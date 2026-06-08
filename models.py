@@ -2,12 +2,15 @@ import os
 import uuid
 import sqlite3
 import json
+from datetime import datetime, timezone, timedelta
 from functools import wraps
 from PIL import Image
 
 from flask import session, redirect, url_for
 
 from config import Config
+
+BRT = timezone(timedelta(hours=-3))
 
 
 # ===== CONFIGURAÇÕES DE UPLOAD =====
@@ -325,16 +328,19 @@ def add_pedido(nome, telefone, endereco, numero, complemento, bairro, cidade, es
                referencia, email, cep, forma_entrega, itens_json,
                total, frete_valor, frete_texto):
     """Registra um novo pedido e retorna o ID"""
+    agora = datetime.now(BRT).strftime('%Y-%m-%d %H:%M:%S')
     with get_db() as conn:
         cursor = conn.execute('''
             INSERT INTO pedidos
                 (cliente_nome, cliente_telefone, endereco, numero_casa, complemento,
                  bairro, cidade, estado, referencia, email, cep,
-                 forma_entrega, itens, total, status, frete_valor, frete_texto)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'registrado', ?, ?)
+                 forma_entrega, itens, total, status, frete_valor, frete_texto,
+                 data_criacao)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'registrado', ?, ?, ?)
         ''', (nome, telefone, endereco, numero, complemento,
               bairro, cidade, estado, referencia, email, cep,
-              forma_entrega, itens_json, total, frete_valor, frete_texto))
+              forma_entrega, itens_json, total, frete_valor, frete_texto,
+              agora))
         return cursor.lastrowid
 
 
@@ -354,11 +360,12 @@ def delete_pedido(pedido_id):
 
 def add_aviso(produto_id, nome, email, telefone):
     """Registra um aviso de quando o produto voltar ao estoque"""
+    agora = datetime.now(BRT).strftime('%Y-%m-%d %H:%M:%S')
     with get_db() as conn:
         cursor = conn.execute('''
-            INSERT INTO avisos_estoque (produto_id, nome, email, telefone)
-            VALUES (?, ?, ?, ?)
-        ''', (produto_id, nome, email, telefone))
+            INSERT INTO avisos_estoque (produto_id, nome, email, telefone, data_criacao)
+            VALUES (?, ?, ?, ?, ?)
+        ''', (produto_id, nome, email, telefone, agora))
         return cursor.lastrowid
 
 
@@ -399,8 +406,7 @@ def extensao_permitida(filename):
 def gerar_nome_unico(filename):
     """Gera um nome único para evitar conflitos: timestamp_uuid.ext"""
     ext = filename.rsplit('.', 1)[1].lower() if '.' in filename else 'jpg'
-    from datetime import datetime
-    timestamp = datetime.now().strftime('%Y%m%d%H%M%S')
+    timestamp = datetime.now(BRT).strftime('%Y%m%d%H%M%S')
     return f"{timestamp}_{uuid.uuid4().hex[:8]}.{ext}"
 
 

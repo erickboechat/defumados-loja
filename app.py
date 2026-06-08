@@ -2,7 +2,7 @@ import os
 import json
 import logging
 from urllib.parse import quote
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 from flask import (Flask, render_template, request, jsonify,
                    redirect, session, url_for, send_from_directory)
@@ -13,7 +13,7 @@ from werkzeug.security import check_password_hash
 from werkzeug.middleware.proxy_fix import ProxyFix
 
 from config import Config, WHATSAPP_NUMBER, WHATSAPP_URL
-from models import (init_db, get_produtos, get_produto,
+from models import (BRT, init_db, get_produtos, get_produto,
                     get_produtos_paginados,
                     add_produto, edit_produto, toggle_visivel, toggle_estoque,
                     deletar_produto, get_pedidos, get_pedido, add_pedido,
@@ -132,7 +132,7 @@ def produto_detalhe(produto_id):
     return render_template('produto.html',
                            produto=produto,
                            relacionados=relacionados,
-                           now=datetime.now())
+                            now=datetime.now(BRT))
 
 
 @app.route('/api/produtos')
