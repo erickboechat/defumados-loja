@@ -6,6 +6,12 @@
   <title>{{ produto.nome }} - Defumados AC</title>
   <meta name="description" content="{{ produto.descricao[:160] }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <link rel="icon" type="image/png" href="/static/uploads/logo-1.png">
+  <meta property="og:title" content="{{ produto.nome }} - Defumados AC">
+  <meta property="og:description" content="{{ produto.descricao[:160] }}">
+  <meta property="og:image" content="https://defumadosac.com.br/static/uploads/logo-1.png">
+  <meta property="og:url" content="https://defumadosac.com.br/produto/{{ produto.id }}">
+  <meta property="og:type" content="product">
   <style>
     /* Estilos específicos da página do produto */
     .produto-page { max-width: 1200px; margin: 0 auto; padding: 2rem; }
