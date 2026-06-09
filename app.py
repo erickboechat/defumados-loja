@@ -235,6 +235,7 @@ _Obrigado pela preferência! Aguarde a confirmação do pedido._ 🐷✨"""
 
 
 @app.route('/checkout/process', methods=['POST'])
+@csrf.exempt
 def process_checkout():
     consentimento = request.form.get('lgpd_consent')
     if consentimento != '1':
