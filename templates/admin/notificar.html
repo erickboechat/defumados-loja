@@ -22,7 +22,7 @@
   <div class="admin-section">
     <div class="produto-info">
       {% if produto.imagens and produto.imagens[0] %}
-      <img src="{{ produto.imagens[0] }}" alt="{{ produto.nome }}">
+      <img src="{{ produto.imagens[0] }}" alt="{{ produto.nome }}" loading="lazy">
       {% endif %}
       <div>
         <h2 style="margin:0; font-size:1.3rem;">{{ produto.nome }}</h2>

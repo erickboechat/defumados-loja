@@ -22,7 +22,8 @@ from models import (BRT, init_db, get_produtos, get_produto,
                     update_pedido_status, delete_pedido, login_required,
                     processar_imagens_request,
                     add_aviso, count_avisos_pendentes, get_avisos_pendentes,
-                    marcar_notificados, criar_indices)
+                    marcar_notificados, criar_indices,
+                    close_db)
 
 app = Flask(__name__)
 app.config.from_object(Config)
@@ -66,6 +67,8 @@ limiter = Limiter(
 
 init_db()
 criar_indices()
+
+app.teardown_appcontext(close_db)
 
 
 @app.context_processor
