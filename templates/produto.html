@@ -163,7 +163,7 @@
   <div class="galeria-thumbs" id="galeria-thumbs">
     {% for img in produto.imagens %}
       <img src="{{ img | webp_smart }}" 
-     alt="Foto {{ loop.index }}" 
+      alt="{{ produto.nome }} - Foto {{ loop.index }}" 
      class="thumb {% if loop.first %}active{% endif %}"
      onclick="trocarImagem(this.src, this)"
      loading="lazy">
