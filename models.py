@@ -24,19 +24,29 @@ MAX_IMAGE_SIZE = (1200, 1200)
 # ===== CONEXÃO =====
 
 def get_db():
-    """Conecta ao banco SQLite — reusa conexão do flask.g se disponível"""
-    if 'db' not in g:
+    """Conecta ao banco SQLite — reusa conexão do flask.g quando em contexto de request"""
+    try:
+        if 'db' not in g:
+            conn = sqlite3.connect(Config.DATABASE)
+            conn.row_factory = sqlite3.Row
+            conn.execute("PRAGMA journal_mode=WAL")
+            g.db = conn
+        return g.db
+    except RuntimeError:
+        # Fora do contexto da aplicação (ex: init_db no startup)
         conn = sqlite3.connect(Config.DATABASE)
         conn.row_factory = sqlite3.Row
         conn.execute("PRAGMA journal_mode=WAL")
-        g.db = conn
-    return g.db
+        return conn
 
 
 def close_db(e=None):
-    db = g.pop('db', None)
-    if db is not None:
-        db.close()
+    try:
+        db = g.pop('db', None)
+        if db is not None:
+            db.close()
+    except RuntimeError:
+        pass
 
 
 def init_db():
