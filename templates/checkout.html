@@ -364,15 +364,26 @@ document.getElementById('frete-texto-hidden').value = freteAtual.texto;
   }
 
   // Preparar carrinho, LIMPAR e enviar
-document.getElementById('checkout-form').addEventListener('submit', function() {
-  // 1. Pega os dados do carrinho
+document.getElementById('checkout-form').addEventListener('submit', async function(e) {
+  e.preventDefault();
+  
+  // 1. Busca token CSRF fresco (resolve problema do Instagram WebView)
+  try {
+    const resp = await fetch('/csrf-token');
+    const data = await resp.json();
+    document.querySelector('[name="csrf_token"]').value = data.token;
+  } catch (err) {
+    console.error('Erro ao renovar CSRF token');
+  }
+  
+  // 2. Pega os dados do carrinho
   const cart = JSON.parse(localStorage.getItem('defumados_carrinho') || '[]');
   document.getElementById('carrinho-hidden').value = JSON.stringify(cart);
   
-  // 2. LIMPA o carrinho IMEDIATAMENTE ao clicar em enviar
+  // 3. LIMPA o carrinho IMEDIATAMENTE ao clicar em enviar
   localStorage.removeItem('defumados_carrinho');
   
-  // 3. Atualiza os contadores visualmente na tela (UX melhor)
+  // 4. Atualiza os contadores visualmente na tela (UX melhor)
   const fabCount = document.getElementById('fab-cart-count');
   if (fabCount) fabCount.textContent = '0';
   
@@ -382,7 +393,8 @@ document.getElementById('checkout-form').addEventListener('submit', function() {
     headerCount.classList.add('hidden');
   }
   
-  // O formulário continua o envio normalmente para o backend
+  // 5. Envia o formulário
+  this.submit();
 });
 </script>
 

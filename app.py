@@ -34,7 +34,7 @@ app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1, x_port=1)
 # Segurança: cookie de sessão
 app.config.update(
     SESSION_COOKIE_HTTPONLY=True,
-    SESSION_COOKIE_SAMESITE='Lax',
+    SESSION_COOKIE_SAMESITE='None',
     SESSION_COOKIE_SECURE=os.environ.get('SESSION_COOKIE_SECURE', '1') == '1',
     SESSION_PERMANENT=False,
     PERMANENT_SESSION_LIFETIME=timedelta(hours=2),
@@ -107,6 +107,13 @@ def webp_smart_filter(caminho_imagem):
 @app.template_filter('webp_smart_list')
 def webp_smart_list_filter(imagens):
     return [webp_smart_filter(img) for img in imagens]
+
+
+# ===== CSRF TOKEN (para Instagram WebView) =====
+
+@app.route('/csrf-token')
+def csrf_token_api():
+    return jsonify({'token': generate_csrf()})
 
 
 # ===== ROTAS PÚBLICAS =====
