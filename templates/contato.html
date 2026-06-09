@@ -1,68 +1,45 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Fale Conosco - Defumados AC</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-  <link rel="icon" type="image/png" href="/static/uploads/logo-1.png">
-</head>
-<body>
-{% include 'header.html' %}
-
+{% extends 'base.html' %}
+{% block title %}Fale Conosco - Defumados AC{% endblock %}
+{% block content %}
 <main class="page-institucional page-contato">
   <section class="content-section">
     <div class="container contato-grid">
       <div class="contato-info">
-        <h2> Atendimento Direto</h2>
-        <p>Para pedidos, dúvidas ou sugestões, o caminho mais rápido é nosso WhatsApp:</p>
-        <a href="https://wa.me/5521986358184?text=Olá!%20Gostaria%20de%20falar%20sobre%20os%20produtos%20Defumados%20AC." class="btn-whatsapp-grande" target="_blank">📲 Chamar no WhatsApp</a>
-        
-        <div class="info-box">
-          <p>📍 Vargem Grande, Rio de Janeiro - RJ</p>
-          <p> Não temos loja física, apenas local de produção. Para retiradas no local, por favor, entrar em contato no WhatsApp ou ligação.</p>
-          <p> Responderemos o mais rápido possível!</p>
+        <h2>📞 Entre em Contato</h2>
+        <p>Tem dúvidas, sugestões ou quer fazer um pedido especial? Estamos aqui para ajudar!</p>
+        <div class="contato-detalhes">
+          <div class="contato-item">
+            <span class="contato-icone">📱</span>
+            <div>
+              <strong>WhatsApp</strong>
+              <a href="https://api.whatsapp.com/send?phone=5521986358184&text=Ol%C3%A1!%20Vim%20pelo%20site%20Defumados%20AC" target="_blank">(21) 98635-8184</a>
+            </div>
+          </div>
+          <div class="contato-item">
+            <span class="contato-icone">✉️</span>
+            <div>
+              <strong>E-mail</strong>
+              <a href="mailto:defumadosac@outlook.com">defumadosac@outlook.com</a>
+            </div>
+          </div>
+          <div class="contato-item">
+            <span class="contato-icone">📍</span>
+            <div>
+              <strong>Localização</strong>
+              <span>Rio de Janeiro - RJ</span>
+            </div>
+          </div>
         </div>
       </div>
-
       <div class="contato-form-wrapper">
-        <h2>️ Envie uma Mensagem</h2>
-        <form id="form-contato" class="form-contato">
-          <input type="text" id="c-nome" placeholder="Seu nome" required>
-          <input type="email" id="c-email" placeholder="Seu e-mail" required>
-          <select id="c-assunto" required>
-            <option value="">Selecione o assunto</option>
-            <option value="Dúvida sobre produto">Dúvida sobre produto</option>
-            <option value="Entrega/Frete">Entrega ou Frete</option>
-            <option value="Parceria/Atacado">Parceria ou Atacado</option>
-            <option value="Outro">Outro assunto</option>
-          </select>
-          <textarea id="c-msg" rows="4" placeholder="Sua mensagem..." required></textarea>
-          <label class="lgpd-checkbox">
-            <input type="checkbox" id="c-consent" required>
-            <span>Autorizo o tratamento dos meus dados conforme a <a href="/politicas#privacidade" target="_blank">Política de Privacidade</a>.</span>
-          </label>
-          <button type="submit" class="btn-primary">Enviar via WhatsApp</button>
-        </form>
+        <h2>💬 Envie sua mensagem</h2>
+        <p>Preferência? Mande um direct no Instagram!</p>
+        <a href="https://www.instagram.com/defumadosac" target="_blank" class="btn-primary" style="display:inline-flex;align-items:center;gap:0.5rem;">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+          Instagram @defumadosac
+        </a>
       </div>
     </div>
   </section>
 </main>
-
-{% include 'footer.html' %}
-</body>
-</html>
-
-<script>
-  document.getElementById('form-contato').addEventListener('submit', (e) => {
-    e.preventDefault();
-    const nome = document.getElementById('c-nome').value;
-    const email = document.getElementById('c-email').value;
-    const assunto = document.getElementById('c-assunto').value;
-    const msg = document.getElementById('c-msg').value;
-    
-    const texto = `📩 *NOVA MENSAGEM - SITE*\n\n Nome: ${nome}\n E-mail: ${email}\n Assunto: ${assunto}\n💬 Mensagem:\n${msg}`;
-    const url = `https://wa.me/5521986358184?text=${encodeURIComponent(texto)}`;
-    window.open(url, '_blank');
-  });
-</script>
+{% endblock %}

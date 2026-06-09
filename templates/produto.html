@@ -1,75 +1,71 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>{{ produto.nome }} - Defumados AC</title>
-  <meta name="description" content="{{ produto.descricao[:160] }}">
-  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-  <link rel="icon" type="image/png" href="/static/uploads/logo-1.png">
-  <meta property="og:title" content="{{ produto.nome }} - Defumados AC">
-  <meta property="og:description" content="{{ produto.descricao[:160] }}">
-  <meta property="og:image" content="https://defumadosac.com.br/static/uploads/logo-1.png">
-  <meta property="og:url" content="https://defumadosac.com.br/produto/{{ produto.id }}">
-  <meta property="og:type" content="product">
-  <style>
-    /* Estilos específicos da página do produto */
-    .produto-page { max-width: 1200px; margin: 0 auto; padding: 2rem; }
-    .produto-detalhe { display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; background: white; border-radius: var(--borda-radius); padding: 2rem; box-shadow: var(--sombra); }
-    .produto-imagem { position: relative; }
-    .produto-imagem img { width: 100%; border-radius: 8px; object-fit: cover; }
-    .produto-info h1 { font-size: 1.8rem; color: var(--cor-primaria); margin-bottom: 0.5rem; }
-    .produto-preco { font-size: 2rem; font-weight: 700; color: var(--cor-primaria); margin: 1rem 0; }
-    .produto-estoque { display: inline-block; padding: 0.4rem 0.8rem; border-radius: 20px; font-size: 0.9rem; font-weight: 600; margin-bottom: 1rem; }
-    .produto-estoque.disponivel { background: #dcfce7; color: #166534; }
-    .produto-estoque.esgotado { background: #fee2e2; color: #991b1b; }
-    .produto-descricao { line-height: 1.7; color: var(--cor-texto-claro); margin: 0.5rem 0; }
-    .produto-acao { display: flex; gap: 1rem; margin-top: 2rem; flex-wrap: wrap; }
-    .quantidade { display: flex; align-items: center; gap: 0.5rem; }
-    .quantidade input { width: 60px; padding: 0.8rem; border: 2px solid #ddd; border-radius: 8px; text-align: center; font-size: 1.1rem; }
-    .btn-add-grande { flex: 1; background: var(--cor-primaria); color: white; padding: 1rem 2rem; border-radius: 8px; font-weight: 600; font-size: 1.1rem; transition: var(--transicao); }
-    .btn-add-grande:hover { background: var(--cor-primaria-escura); transform: translateY(-2px); }
-    .btn-voltar { display: inline-flex; align-items: center; gap: 0.4rem; color: var(--cor-texto-claro); font-weight: 500; margin-bottom: 0.1rem; font-size: 0.9rem; padding: 0.3rem 0; transition: var(--transicao); }
-    .btn-voltar:hover { color: var(--cor-primaria); transform: translateX(-3px); }
-    .produto-peso { font-size: 0.95rem; color: var(--cor-texto); margin: 2rem 0; padding: 0.5rem; background: #f8f9fa; border-radius: 6px; width: fit-content;}
-    .produto-ingredientes { margin-top: 2rem; padding: 1rem; background: #fff9f5; border-left: 4px solid var(--cor-primaria); border-radius: 6px; font-size: 0.9rem; color: var(--cor-texto-claro); line-height: 1.6; }
-    .produto-ingredientes strong { color: var(--cor-primaria); display: block; margin-bottom: 0.5rem; }
+{% extends 'base.html' %}
+{% block title %}{{ produto.nome }} - Defumados AC{% endblock %}
+{% block meta_description %}
+<meta name="description" content="{{ produto.descricao[:160] }}">
+{% endblock %}
+{% block og_tags %}
+<meta property="og:title" content="{{ produto.nome }} - Defumados AC">
+<meta property="og:description" content="{{ produto.descricao[:160] }}">
+<meta property="og:image" content="https://defumadosac.com.br/static/uploads/logo-1.png">
+<meta property="og:url" content="https://defumadosac.com.br/produto/{{ produto.id }}">
+<meta property="og:type" content="product">
+{% endblock %}
+{% block extra_head %}
+<style>
+  .produto-page { max-width: 1200px; margin: 0 auto; padding: 2rem; }
+  .produto-detalhe { display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; background: white; border-radius: var(--borda-radius); padding: 2rem; box-shadow: var(--sombra); }
+  .produto-imagem { position: relative; }
+  .produto-imagem img { width: 100%; border-radius: 8px; object-fit: cover; }
+  .produto-info h1 { font-size: 1.8rem; color: var(--cor-primaria); margin-bottom: 0.5rem; }
+  .produto-preco { font-size: 2rem; font-weight: 700; color: var(--cor-primaria); margin: 1rem 0; }
+  .produto-estoque { display: inline-block; padding: 0.4rem 0.8rem; border-radius: 20px; font-size: 0.9rem; font-weight: 600; margin-bottom: 1rem; }
+  .produto-estoque.disponivel { background: #dcfce7; color: #166534; }
+  .produto-estoque.esgotado { background: #fee2e2; color: #991b1b; }
+  .produto-descricao { line-height: 1.7; color: var(--cor-texto-claro); margin: 0.5rem 0; }
+  .produto-acao { display: flex; gap: 1rem; margin-top: 2rem; flex-wrap: wrap; }
+  .quantidade { display: flex; align-items: center; gap: 0.5rem; }
+  .quantidade input { width: 60px; padding: 0.8rem; border: 2px solid #ddd; border-radius: 8px; text-align: center; font-size: 1.1rem; }
+  .btn-add-grande { flex: 1; background: var(--cor-primaria); color: white; padding: 1rem 2rem; border-radius: 8px; font-weight: 600; font-size: 1.1rem; transition: var(--transicao); }
+  .btn-add-grande:hover { background: var(--cor-primaria-escura); transform: translateY(-2px); }
+  .btn-voltar { display: inline-flex; align-items: center; gap: 0.4rem; color: var(--cor-texto-claro); font-weight: 500; margin-bottom: 0.1rem; font-size: 0.9rem; padding: 0.3rem 0; transition: var(--transicao); }
+  .btn-voltar:hover { color: var(--cor-primaria); transform: translateX(-3px); }
+  .produto-peso { font-size: 0.95rem; color: var(--cor-texto); margin: 2rem 0; padding: 0.5rem; background: #f8f9fa; border-radius: 6px; width: fit-content;}
+  .produto-ingredientes { margin-top: 2rem; padding: 1rem; background: #fff9f5; border-left: 4px solid var(--cor-primaria); border-radius: 6px; font-size: 0.9rem; color: var(--cor-texto-claro); line-height: 1.6; }
+  .produto-ingredientes strong { color: var(--cor-primaria); display: block; margin-bottom: 0.5rem; }
 
-    /* Modal Avisar Estoque */
-    .modal-aviso-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 10000; display: flex; align-items: center; justify-content: center; }
-    .modal-aviso-box { background: white; padding: 2rem; border-radius: 16px; max-width: 420px; width: 90%; position: relative; box-shadow: 0 20px 60px rgba(0,0,0,0.3); }
-    .modal-aviso-close { position: absolute; top: 12px; right: 12px; width: 32px; height: 32px; border-radius: 50%; border: none; background: #f0f0f0; font-size: 1rem; cursor: pointer; display: flex; align-items: center; justify-content: center; color: #666; transition: all 0.2s; }
-    .modal-aviso-close:hover { background: #e0e0e0; color: #333; }
-    .modal-aviso-box .form-group { margin-bottom: 1rem; }
-    .modal-aviso-box .form-group label { display: block; font-weight: 500; margin-bottom: 0.3rem; font-size: 0.9rem; color: var(--cor-texto); }
-    .modal-aviso-box .form-group input { width: 100%; padding: 0.7rem 0.8rem; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.95rem; box-sizing: border-box; }
-    .descrição-subtitle h3 {margin-bottom: 0.8rem; margin-top: 0%;}
+  .modal-aviso-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 10000; display: flex; align-items: center; justify-content: center; }
+  .modal-aviso-box { background: white; padding: 2rem; border-radius: 16px; max-width: 420px; width: 90%; position: relative; box-shadow: 0 20px 60px rgba(0,0,0,0.3); }
+  .modal-aviso-close { position: absolute; top: 12px; right: 12px; width: 32px; height: 32px; border-radius: 50%; border: none; background: #f0f0f0; font-size: 1rem; cursor: pointer; display: flex; align-items: center; justify-content: center; color: #666; transition: all 0.2s; }
+  .modal-aviso-close:hover { background: #e0e0e0; color: #333; }
+  .modal-aviso-box .form-group { margin-bottom: 1rem; }
+  .modal-aviso-box .form-group label { display: block; font-weight: 500; margin-bottom: 0.3rem; font-size: 0.9rem; color: var(--cor-texto); }
+  .modal-aviso-box .form-group input { width: 100%; padding: 0.7rem 0.8rem; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.95rem; box-sizing: border-box; }
+  .descrição-subtitle h3 {margin-bottom: 0.8rem; margin-top: 0%;}
 
-    /* Produtos relacionados */
-    .relacionados { margin-top: 2rem; }
-    .relacionados h3 { font-size: 1.4rem; margin-bottom: 1.5rem; color: var(--cor-primaria); }
-    @media (min-width: 769px) {
-      .relacionados .produtos-grid { grid-template-columns: repeat(4, 1fr); }
-    }
-    
-    .frete-consulta { margin: 1.5rem 0 0.5rem; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 1.5rem; }
-    .frete-consulta-header { font-weight: 600; font-size: 1.05rem; color: var(--cor-texto); margin-bottom: 0.8rem; }
-    .frete-consulta-row { display: flex; gap: 0.5rem; }
-    .frete-cep-input { flex: 1; padding: 0.7rem 0.8rem; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 1rem; box-sizing: border-box; }
-    .btn-frete-calcular { padding: 0.7rem 1.5rem; background: var(--cor-primaria); color: white; border: none; border-radius: 8px; font-weight: 600; font-size: 0.95rem; cursor: pointer; transition: all 0.2s; white-space: nowrap; }
-    .btn-frete-calcular:hover { background: var(--cor-primaria-escura); }
-    .btn-frete-calcular:disabled { background: #ccc; cursor: not-allowed; }
-    .frete-cep-status { display: block; font-size: 0.85rem; margin-top: 0.4rem; min-height: 1.2rem; color: #666; }
-    .frete-resultado { margin-top: 1rem; padding-top: 1rem; border-top: 1px solid #e2e8f0; }
-    .frete-resultado-badge { display: inline-block; padding: 0.4rem 0.8rem; border-radius: 6px; font-weight: 600; font-size: 0.95rem; }
-    .frete-resultado-badge.fixo { background: #dcfce7; color: #166534; }
-    .frete-resultado-badge.consulta { background: #fef3c7; color: #92400e; }
-    .frete-resultado-badge.erro { background: #fee2e2; color: #991b1b; }
-    .frete-resultado-obs { font-size: 0.85rem; color: #666; margin: 0.5rem 0; }
-    .frete-ir-checkout { display: inline-block; margin-top: 0.5rem; color: var(--cor-primaria); font-weight: 600; text-decoration: none; font-size: 0.9rem; transition: all 0.2s; }
-    .frete-ir-checkout:hover { text-decoration: underline; }
+  .relacionados { margin-top: 2rem; }
+  .relacionados h3 { font-size: 1.4rem; margin-bottom: 1.5rem; color: var(--cor-primaria); }
+  @media (min-width: 769px) {
+    .relacionados .produtos-grid { grid-template-columns: repeat(4, 1fr); }
+  }
+  
+  .frete-consulta { margin: 1.5rem 0 0.5rem; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 1.5rem; }
+  .frete-consulta-header { font-weight: 600; font-size: 1.05rem; color: var(--cor-texto); margin-bottom: 0.8rem; }
+  .frete-consulta-row { display: flex; gap: 0.5rem; }
+  .frete-cep-input { flex: 1; padding: 0.7rem 0.8rem; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 1rem; box-sizing: border-box; }
+  .btn-frete-calcular { padding: 0.7rem 1.5rem; background: var(--cor-primaria); color: white; border: none; border-radius: 8px; font-weight: 600; font-size: 0.95rem; cursor: pointer; transition: all 0.2s; white-space: nowrap; }
+  .btn-frete-calcular:hover { background: var(--cor-primaria-escura); }
+  .btn-frete-calcular:disabled { background: #ccc; cursor: not-allowed; }
+  .frete-cep-status { display: block; font-size: 0.85rem; margin-top: 0.4rem; min-height: 1.2rem; color: #666; }
+  .frete-resultado { margin-top: 1rem; padding-top: 1rem; border-top: 1px solid #e2e8f0; }
+  .frete-resultado-badge { display: inline-block; padding: 0.4rem 0.8rem; border-radius: 6px; font-weight: 600; font-size: 0.95rem; }
+  .frete-resultado-badge.fixo { background: #dcfce7; color: #166534; }
+  .frete-resultado-badge.consulta { background: #fef3c7; color: #92400e; }
+  .frete-resultado-badge.erro { background: #fee2e2; color: #991b1b; }
+  .frete-resultado-obs { font-size: 0.85rem; color: #666; margin: 0.5rem 0; }
+  .frete-ir-checkout { display: inline-block; margin-top: 0.5rem; color: var(--cor-primaria); font-weight: 600; text-decoration: none; font-size: 0.9rem; transition: all 0.2s; }
+  .frete-ir-checkout:hover { text-decoration: underline; }
 
-    @media (max-width: 768px) {
+  @media (max-width: 768px) {
   .frete-consulta { padding: 1rem; }
   .frete-consulta-row { flex-direction: column; }
   .btn-frete-calcular { width: 100%; padding: 0.8rem; }
@@ -77,7 +73,7 @@
   .produto-acao { flex-direction: row; align-items: stretch; gap: 0.6rem; margin-top: 1rem; }
   .produto-page { padding: 1rem; }
   .btn-voltar { margin-bottom: 0.1rem; font-size: 0.85rem; padding: 0.1rem; }
-  .quantidade { flex: 0 0 90px; /* Largura fixa para o bloco Qtd */display: flex; flex-direction: column; gap: 0.2rem; }
+  .quantidade { flex: 0 0 90px; display: flex; flex-direction: column; gap: 0.2rem; }
   .quantidade label { font-size: 0.75rem; font-weight: 600; color: var(--cor-texto); }
   .quantidade input { width: 100%; padding: 0.6rem; font-size: 1rem; text-align: center; border-radius: 6px; }
   .btn-add-grande { flex: 1; padding: 0.8rem 1rem; font-size: 0.95rem; border-radius: 8px; }
@@ -85,7 +81,7 @@
   .produto-descricao {margin-top: 0.5rem;}
 }
 
-    .btn-esgotado {
+  .btn-esgotado {
   background: #fbf39b;
   color: #856404;
   padding: 1rem 2rem;
@@ -129,24 +125,16 @@
   font-size: 1.1rem;
   color: var(--cor-texto);
 }
-
-  </style>
-</head>
-<body>
-  <!-- Header (mesmo do index) -->
-  <header>
-    {% include 'header.html' %}
-  </header>
-
-  <main class="produto-page">
-    
-    <!-- Botão Voltar (compacto) -->
-<a href="/" class="btn-voltar">⬅️Voltar para Loja</a>
-    
-    <!-- Detalhes do Produto -->
-    <div class="produto-detalhe">
-      <h1 class="produto-titulo">{{ produto.nome }}</h1>
-      <div class="galeria-produto">
+</style>
+{% endblock %}
+{% block content %}
+<main class="produto-page">
+  
+  <a href="/" class="btn-voltar">⬅️Voltar para Loja</a>
+  
+  <div class="produto-detalhe">
+    <h1 class="produto-titulo">{{ produto.nome }}</h1>
+    <div class="galeria-produto">
   <div class="galeria-main">
   <img id="img-principal" 
    src="{{ produto.imagens[0] | webp_smart }}" 
@@ -171,124 +159,119 @@
   </div>
   {% endif %}
 </div>
-      
-      <div class="produto-info">
-        
-        <p class="produto-preco">R$ {{ "%.2f"|format(produto.preco) }}</p>
-        
-        <span class="produto-estoque {% if produto.estoque %}disponivel{% else %}esgotado{% endif %}">
-        {% if produto.estoque %}✓ Disponível para entrega{% else %}✗ Temporariamente esgotado{% endif %}
-        </span>
-        
-        {% if produto.estoque %}
-        <div class="produto-acao">
-          <div class="quantidade">
-            <label>Qtd:</label>
-            <div class="qtd-stepper">
-              <button class="qtd-step" id="qtd-minus" onclick="alterarQtd(-1)">−</button>
-              <span class="qtd-step-value" id="qtd-display">1</span>
-              <button class="qtd-step" onclick="alterarQtd(1)">+</button>
-            </div>
-          </div>
-         <button class="btn-add-grande" onclick="Carrinho.add({{ produto.id }}, '{{ produto.nome }}', {{ produto.preco }}, parseInt(document.getElementById('qtd-display').textContent))">🛒 Adicionar ao Carrinho
-         </button>
-        </div>
-
-        {% else %}
-        <button class="btn-esgotado" onclick="abrirModalAviso()" style="cursor:pointer; opacity:1;">🔔 Avisar quando chegar</button>
-        {% endif %}
-
-        {% if produto.peso %}
-        <div class="produto-peso"><strong>Peso:</strong> {{ produto.peso }}</div>
-        {% endif %}
-
-        <div class="produto-descricao">
-          <element class="descrição-subtitle"> <h3>Descrição:</h3> </element>
-          {{ produto.descricao }}
-        </div>
-
-        {% if produto.ingredientes %}
-        <div class="produto-ingredientes"><strong>Ingredientes:</strong> {{ produto.ingredientes }}</div>
-        {% endif %}
-
-      </div>
-    </div>
-
-    <!-- Consultar Frete -->
-    <div class="frete-consulta" id="frete-consulta-box">
-      <div class="frete-consulta-header">📦 Calcular Frete</div>
-      <div class="frete-consulta-row">
-        <input type="text" id="frete-cep" class="frete-cep-input" placeholder="Digite seu CEP" maxlength="9">
-        <button id="frete-calcular-btn" class="btn-frete-calcular">Consultar</button>
-      </div>
-      <span id="frete-cep-status" class="frete-cep-status"></span>
-      <div id="frete-resultado" class="frete-resultado" style="display:none;">
-        <div class="frete-resultado-badge" id="frete-resultado-badge"></div>
-        <p class="frete-resultado-obs" id="frete-resultado-obs"></p>
-        <a href="/checkout" class="frete-ir-checkout">Ir para o Checkout →</a>
-      </div>
-    </div>
     
-    <!-- Produtos Relacionados -->
-    {% if relacionados %}
-    <section class="relacionados">
-      <h3>Adicione também - Mais Vendidos 🔥</h3>
-      <div class="produtos-grid">
-        {% for p in relacionados %}
-        <div class="produto-card" style="cursor:pointer" onclick="window.location.href='/produto/{{ p.id }}'">
-          <div class="imagem-container">
-            <img src="{{ p.imagens[0] | webp_smart }}" 
-     alt="{{ p.nome }}" 
-     onerror="this.src='https://via.placeholder.com/200x200?text=Sem+Foto'">
-             {% if not p.estoque %}
-      <span class="badge-estoque esgotado">Esgotado</span>
-    {% endif %}
-          </div>
-          <div class="info">
-            <h3>{{ p.nome }}</h3>
-            <p class="preco">R$ {{ "%.2f"|format(p.preco) }}</p>
+    <div class="produto-info">
+      
+      <p class="produto-preco">R$ {{ "%.2f"|format(produto.preco) }}</p>
+      
+      <span class="produto-estoque {% if produto.estoque %}disponivel{% else %}esgotado{% endif %}">
+      {% if produto.estoque %}✓ Disponível para entrega{% else %}✗ Temporariamente esgotado{% endif %}
+      </span>
+      
+      {% if produto.estoque %}
+      <div class="produto-acao">
+        <div class="quantidade">
+          <label>Qtd:</label>
+          <div class="qtd-stepper">
+            <button class="qtd-step" id="qtd-minus" onclick="alterarQtd(-1)">−</button>
+            <span class="qtd-step-value" id="qtd-display">1</span>
+            <button class="qtd-step" onclick="alterarQtd(1)">+</button>
           </div>
         </div>
-        {% endfor %}
+       <button class="btn-add-grande" onclick="Carrinho.add({{ produto.id }}, '{{ produto.nome }}', {{ produto.preco }}, parseInt(document.getElementById('qtd-display').textContent))">🛒 Adicionar ao Carrinho
+       </button>
       </div>
-    </section>
-    {% endif %}
 
-    <!-- Modal Avisar quando chegar -->
-    <div id="modal-aviso" class="modal-aviso-overlay" style="display:none;" onclick="fecharModalAviso(event)">
-      <div class="modal-aviso-box" onclick="event.stopPropagation()">
-        <button class="modal-aviso-close" onclick="fecharModalAviso()">✕</button>
-        <h3 style="margin-top:0;">🔔 Avisar quando chegar</h3>
-        <p style="color:#666; font-size:0.9rem; margin-bottom:1.2rem;">Receba uma mensagem quando <strong>{{ produto.nome }}</strong> voltar ao estoque.</p>
-        <form id="form-aviso" onsubmit="enviarAviso(event)">
-          <input type="hidden" id="aviso-produto-id" value="{{ produto.id }}">
-          <div class="form-group">
-            <label for="aviso-nome">Seu nome *</label>
-            <input type="text" id="aviso-nome" required placeholder="Nome completo">
-          </div>
-          <div class="form-group">
-            <label for="aviso-email">E-mail</label>
-            <input type="email" id="aviso-email" placeholder="seu@email.com">
-          </div>
-          <div class="form-group">
-            <label for="aviso-telefone">WhatsApp</label>
-            <input type="tel" id="aviso-telefone" placeholder="(21) 99999-9999">
-          </div>
-          <button type="submit" class="btn-add-grande" style="width:100%;">📩 Enviar Aviso</button>
-          <label class="lgpd-checkbox" style="margin-top:0.8rem;">
-            <input type="checkbox" id="aviso-consent" required>
-            <span>Autorizo o tratamento dos meus dados conforme a <a href="/politicas#privacidade" target="_blank">Política de Privacidade</a>.</span>
-          </label>
-          <p id="aviso-msg" style="text-align:center; margin-top:0.8rem; font-size:0.9rem;"></p>
-        </form>
+      {% else %}
+      <button class="btn-esgotado" onclick="abrirModalAviso()" style="cursor:pointer; opacity:1;">🔔 Avisar quando chegar</button>
+      {% endif %}
+
+      {% if produto.peso %}
+      <div class="produto-peso"><strong>Peso:</strong> {{ produto.peso }}</div>
+      {% endif %}
+
+      <div class="produto-descricao">
+        <element class="descrição-subtitle"> <h3>Descrição:</h3> </element>
+        {{ produto.descricao }}
       </div>
+
+      {% if produto.ingredientes %}
+      <div class="produto-ingredientes"><strong>Ingredientes:</strong> {{ produto.ingredientes }}</div>
+      {% endif %}
+
     </div>
-  </main>
+  </div>
 
-  <!-- Footer (mesmo do index) -->
-  <footer>
-    {% include 'footer.html' %}
-  </footer>
+  <!-- Consultar Frete -->
+  <div class="frete-consulta" id="frete-consulta-box">
+    <div class="frete-consulta-header">📦 Calcular Frete</div>
+    <div class="frete-consulta-row">
+      <input type="text" id="frete-cep" class="frete-cep-input" placeholder="Digite seu CEP" maxlength="9">
+      <button id="frete-calcular-btn" class="btn-frete-calcular">Consultar</button>
+    </div>
+    <span id="frete-cep-status" class="frete-cep-status"></span>
+    <div id="frete-resultado" class="frete-resultado" style="display:none;">
+      <div class="frete-resultado-badge" id="frete-resultado-badge"></div>
+      <p class="frete-resultado-obs" id="frete-resultado-obs"></p>
+      <a href="/checkout" class="frete-ir-checkout">Ir para o Checkout →</a>
+    </div>
+  </div>
+  
+  <!-- Produtos Relacionados -->
+  {% if relacionados %}
+  <section class="relacionados">
+    <h3>Adicione também - Mais Vendidos 🔥</h3>
+    <div class="produtos-grid">
+      {% for p in relacionados %}
+      <div class="produto-card" style="cursor:pointer" onclick="window.location.href='/produto/{{ p.id }}'">
+        <div class="imagem-container">
+          <img src="{{ p.imagens[0] | webp_smart }}" 
+   alt="{{ p.nome }}" 
+   onerror="this.src='https://via.placeholder.com/200x200?text=Sem+Foto'">
+           {% if not p.estoque %}
+    <span class="badge-estoque esgotado">Esgotado</span>
+  {% endif %}
+        </div>
+        <div class="info">
+          <h3>{{ p.nome }}</h3>
+          <p class="preco">R$ {{ "%.2f"|format(p.preco) }}</p>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </section>
+  {% endif %}
+
+  <!-- Modal Avisar quando chegar -->
+  <div id="modal-aviso" class="modal-aviso-overlay" style="display:none;" onclick="fecharModalAviso(event)">
+    <div class="modal-aviso-box" onclick="event.stopPropagation()">
+      <button class="modal-aviso-close" onclick="fecharModalAviso()">✕</button>
+      <h3 style="margin-top:0;">🔔 Avisar quando chegar</h3>
+      <p style="color:#666; font-size:0.9rem; margin-bottom:1.2rem;">Receba uma mensagem quando <strong>{{ produto.nome }}</strong> voltar ao estoque.</p>
+      <form id="form-aviso" onsubmit="enviarAviso(event)">
+        <input type="hidden" id="aviso-produto-id" value="{{ produto.id }}">
+        <div class="form-group">
+          <label for="aviso-nome">Seu nome *</label>
+          <input type="text" id="aviso-nome" required placeholder="Nome completo">
+        </div>
+        <div class="form-group">
+          <label for="aviso-email">E-mail</label>
+          <input type="email" id="aviso-email" placeholder="seu@email.com">
+        </div>
+        <div class="form-group">
+          <label for="aviso-telefone">WhatsApp</label>
+          <input type="tel" id="aviso-telefone" placeholder="(21) 99999-9999">
+        </div>
+        <button type="submit" class="btn-add-grande" style="width:100%;">📩 Enviar Aviso</button>
+        <label class="lgpd-checkbox" style="margin-top:0.8rem;">
+          <input type="checkbox" id="aviso-consent" required>
+          <span>Autorizo o tratamento dos meus dados conforme a <a href="/politicas#privacidade" target="_blank">Política de Privacidade</a>.</span>
+        </label>
+        <p id="aviso-msg" style="text-align:center; margin-top:0.8rem; font-size:0.9rem;"></p>
+      </form>
+    </div>
+  </div>
+</main>
 
 <script>
   // Zoom ao passar o mouse
@@ -313,14 +296,12 @@
     });
   }
   
-  // Função para trocar imagem (galeria)
   function trocarImagem(url, thumbEl) {
     if (zoomImg) zoomImg.src = url;
     document.querySelectorAll('.thumb').forEach(t => t.classList.remove('active'));
     if (thumbEl) thumbEl.classList.add('active');
   }
 
-  // Stepper de quantidade
   function alterarQtd(delta) {
     const display = document.getElementById('qtd-display');
     const minus = document.getElementById('qtd-minus');
@@ -331,7 +312,6 @@
     minus.classList.toggle('hidden', val <= 1);
   }
 
-  // Navegar pelas fotos (botões)
   function navImagem(direcao) {
     const thumbs = document.querySelectorAll('.thumb');
     if (!thumbs.length) return;
@@ -344,7 +324,6 @@
     thumbs[idx].click();
   }
 
-  // Swipe nas imagens (mobile)
   let startX = 0, startY = 0;
   zoomContainer?.addEventListener('touchstart', e => {
     startX = e.touches[0].clientX;
@@ -364,7 +343,6 @@
     else navImagem(-1);
   }, { passive: true });
 
-  // Consulta de Frete na página do produto
   const AREAS_FIXAS = [
     'botafogo', 'catete', 'copacabana', 'cosme velho', 'flamengo', 'gávea', 'glória', 'humaitá',
     'ipanema', 'jardim botânico', 'lagoa', 'laranjeiras', 'leblon', 'leme', 'são conrado', 'urca', 'vidigal',
@@ -382,7 +360,6 @@
   const freteBadge = document.getElementById('frete-resultado-badge');
   const freteObs = document.getElementById('frete-resultado-obs');
 
-  // Máscara CEP
   freteCep.addEventListener('input', e => {
     e.target.value = e.target.value.replace(/\D/g, '').replace(/^(\d{5})(\d)/, '$1-$2').slice(0, 9);
   });
@@ -436,7 +413,6 @@
   freteBtn.addEventListener('click', consultarFrete);
   freteCep.addEventListener('keydown', e => { if (e.key === 'Enter') consultarFrete(); });
 
-  // Avisar quando chegar
   function abrirModalAviso() {
     document.getElementById('modal-aviso').style.display = 'flex';
   }
@@ -447,7 +423,6 @@
   }
   document.getElementById('modal-aviso').addEventListener('click', fecharModalAviso);
 
-  // Máscara de telefone no modal
   document.getElementById('aviso-telefone').addEventListener('input', function(e) {
     let val = e.target.value.replace(/\D/g, '').slice(0, 11);
     if (val.length <= 10) {
@@ -493,6 +468,4 @@
     }
   }
 </script>
-
-</body>
-</html>
+{% endblock %}

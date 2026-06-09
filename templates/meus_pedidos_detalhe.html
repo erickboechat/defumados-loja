@@ -1,107 +1,98 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Pedido #{{ pedido.id }} - Defumados AC</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-  <link rel="icon" type="image/png" href="/static/uploads/logo-1.png">
-  <style>
-    .detalhe-page { max-width: 650px; margin: 2rem auto; padding: 0 1rem; display: block; overflow-x: hidden; }
-    .detalhe-card { background: white; border-radius: 12px; box-shadow: var(--sombra); padding: 2rem; }
-    .detalhe-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 0.5rem; }
-    .detalhe-header h1 { margin: 0; font-size: 1.4rem; color: var(--cor-primaria); }
-    .detalhe-status { display: inline-block; padding: 0.3rem 0.8rem; border-radius: 12px; font-size: 0.85rem; font-weight: 600; }
-    .status-registrado { background: #fef3c7; color: #92400e; }
-    .status-concluido { background: #dcfce7; color: #166534; }
-    .status-cancelado { background: #fee2e2; color: #991b1b; }
-    .detalhe-section { margin-bottom: 1.5rem; }
-    .detalhe-section h3 { font-size: 1rem; color: var(--cor-texto); margin-bottom: 0.8rem; border-bottom: 1px solid #eee; padding-bottom: 0.4rem; }
-    .detalhe-row { display: flex; justify-content: space-between; padding: 0.4rem 0; font-size: 0.95rem; }
-    .detalhe-row .label { color: #666; }
-    .detalhe-row .value { font-weight: 500; }
-    .item-linha { display: flex; justify-content: space-between; padding: 0.5rem 0; border-bottom: 1px solid #f0f0f0; font-size: 0.95rem; }
-    .item-linha:last-child { border-bottom: none; }
-    .item-nome { flex: 1; }
-    .item-qtd { color: #666; margin: 0 0.5rem; white-space: nowrap; }
-    .item-preco { font-weight: 600; white-space: nowrap; }
-    .total-destaque { display: flex; justify-content: space-between; padding: 1rem 0 0; margin-top: 0.5rem; border-top: 2px dashed #e2e8f0; font-size: 1.2rem; font-weight: 700; color: var(--cor-primaria); }
-    .btn-novo-pedido { display: block; width: 100%; background: var(--cor-sucesso); color: white; text-align: center; padding: 0.9rem; border-radius: 8px; font-weight: 600; text-decoration: none; margin-top: 1.5rem; transition: background 0.2s; }
-    .btn-novo-pedido:hover { background: #128C7E; }
-    .voltar { display: block; text-align: center; margin-top: 1.2rem; color: var(--cor-texto-claro); text-decoration: none; font-size: 0.9rem; }
+{% extends 'base.html' %}
+{% block title %}Pedido #{{ pedido.id }} - Defumados AC{% endblock %}
+{% block extra_head %}
+<style>
+  .detalhe-page { max-width: 650px; margin: 2rem auto; padding: 0 1rem; display: block; overflow-x: hidden; }
+  .detalhe-card { background: white; border-radius: 12px; box-shadow: var(--sombra); padding: 2rem; }
+  .detalhe-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 0.5rem; }
+  .detalhe-header h1 { margin: 0; font-size: 1.4rem; color: var(--cor-primaria); }
+  .detalhe-status { display: inline-block; padding: 0.3rem 0.8rem; border-radius: 12px; font-size: 0.85rem; font-weight: 600; }
+  .status-registrado { background: #fef3c7; color: #92400e; }
+  .status-concluido { background: #dcfce7; color: #166534; }
+  .status-cancelado { background: #fee2e2; color: #991b1b; }
+  .detalhe-section { margin-bottom: 1.5rem; }
+  .detalhe-section h3 { font-size: 1rem; color: var(--cor-texto); margin-bottom: 0.8rem; border-bottom: 1px solid #eee; padding-bottom: 0.4rem; }
+  .detalhe-row { display: flex; justify-content: space-between; padding: 0.4rem 0; font-size: 0.95rem; }
+  .detalhe-row .label { color: #666; }
+  .detalhe-row .value { font-weight: 500; }
+  .item-linha { display: flex; justify-content: space-between; padding: 0.5rem 0; border-bottom: 1px solid #f0f0f0; font-size: 0.95rem; }
+  .item-linha:last-child { border-bottom: none; }
+  .item-nome { flex: 1; }
+  .item-qtd { color: #666; margin: 0 0.5rem; white-space: nowrap; }
+  .item-preco { font-weight: 600; white-space: nowrap; }
+  .total-destaque { display: flex; justify-content: space-between; padding: 1rem 0 0; margin-top: 0.5rem; border-top: 2px dashed #e2e8f0; font-size: 1.2rem; font-weight: 700; color: var(--cor-primaria); }
+  .btn-novo-pedido { display: block; width: 100%; background: var(--cor-sucesso); color: white; text-align: center; padding: 0.9rem; border-radius: 8px; font-weight: 600; text-decoration: none; margin-top: 1.5rem; transition: background 0.2s; }
+  .btn-novo-pedido:hover { background: #128C7E; }
+  .voltar { display: block; text-align: center; margin-top: 1.2rem; color: var(--cor-texto-claro); text-decoration: none; font-size: 0.9rem; }
 
-    @media (max-width: 600px) {
-      .detalhe-card { padding: 1.2rem; }
-    }
-  </style>
-</head>
-<body>
-  {% include 'header.html' %}
-
-  <main class="detalhe-page">
-    <div class="detalhe-card">
-      <div class="detalhe-header">
-        <h1>📋 Pedido #{{ pedido.id }}</h1>
-        <span class="detalhe-status status-{{ pedido.status }}">{{ pedido.status|title }}</span>
-      </div>
-
-      <div class="detalhe-section">
-        <h3>📅 Data</h3>
-        <div class="detalhe-row">
-          <span class="label">Realizado em:</span>
-          <span class="value">{{ pedido.data_criacao[:19] }}</span>
-        </div>
-      </div>
-
-      <div class="detalhe-section">
-        <h3>📍 Endereço de Entrega</h3>
-        <div class="detalhe-row"><span class="label">CEP:</span><span class="value">{{ pedido.cep or '-' }}</span></div>
-        <div class="detalhe-row"><span class="label">Endereço:</span><span class="value">{{ pedido.endereco }}, {{ pedido.numero_casa or 's/n' }}{% if pedido.complemento %} - {{ pedido.complemento }}{% endif %}</span></div>
-        <div class="detalhe-row"><span class="label">Bairro:</span><span class="value">{{ pedido.bairro }}</span></div>
-        <div class="detalhe-row"><span class="label">Cidade:</span><span class="value">{{ pedido.cidade }}/{{ pedido.estado }}</span></div>
-      </div>
-
-      <div class="detalhe-section">
-        <h3>📦 Produtos</h3>
-        {% for item in pedido.itens %}
-        <div class="item-linha">
-          <span class="item-nome">{{ item.nome }}</span>
-          <span class="item-qtd">x{{ item.qtd }}</span>
-          <span class="item-preco">R$ {{ "%.2f"|format(item.preco * item.qtd) }}</span>
-        </div>
-        {% endfor %}
-      </div>
-
-      <div class="detalhe-section">
-        <h3>💰 Resumo</h3>
-        <div class="detalhe-row">
-          <span class="label">Subtotal:</span>
-          <span class="value">R$ {{ "%.2f"|format(pedido.total) }}</span>
-        </div>
-        <div class="detalhe-row">
-          <span class="label">Frete:</span>
-          <span class="value">{% if pedido.frete_valor > 0 %}R$ {{ "%.2f"|format(pedido.frete_valor) }}{% else %}A combinar{% endif %}</span>
-        </div>
-        <div class="total-destaque">
-          <span>TOTAL:</span>
-          <span>R$ {{ "%.2f"|format(pedido.total + (pedido.frete_valor or 0)) }}</span>
-        </div>
-      </div>
-
-      <a href="/meus-pedidos" class="voltar">← Voltar para Meus Pedidos</a>
-      <a href="#" class="btn-novo-pedido" onclick="refazerPedido(); return false;">🔄 Refazer Pedido</a>
-    </div>
-  </main>
-
-  {% include 'footer.html' %}
-  <script>
-  function refazerPedido() {
-    const itens = {{ pedido.itens|tojson|safe }};
-    itens.forEach(item => {
-      Carrinho.add(item.id, item.nome, item.preco, item.qtd);
-    });
-    location.href = '/checkout';
+  @media (max-width: 600px) {
+    .detalhe-card { padding: 1.2rem; }
   }
-  </script>
-</body>
-</html>
+</style>
+{% endblock %}
+{% block content %}
+<main class="detalhe-page">
+  <div class="detalhe-card">
+    <div class="detalhe-header">
+      <h1>📋 Pedido #{{ pedido.id }}</h1>
+      <span class="detalhe-status status-{{ pedido.status }}">{{ pedido.status|title }}</span>
+    </div>
+
+    <div class="detalhe-section">
+      <h3>📅 Data</h3>
+      <div class="detalhe-row">
+        <span class="label">Realizado em:</span>
+        <span class="value">{{ pedido.data_criacao[:19] }}</span>
+      </div>
+    </div>
+
+    <div class="detalhe-section">
+      <h3>📍 Endereço de Entrega</h3>
+      <div class="detalhe-row"><span class="label">CEP:</span><span class="value">{{ pedido.cep or '-' }}</span></div>
+      <div class="detalhe-row"><span class="label">Endereço:</span><span class="value">{{ pedido.endereco }}, {{ pedido.numero_casa or 's/n' }}{% if pedido.complemento %} - {{ pedido.complemento }}{% endif %}</span></div>
+      <div class="detalhe-row"><span class="label">Bairro:</span><span class="value">{{ pedido.bairro }}</span></div>
+      <div class="detalhe-row"><span class="label">Cidade:</span><span class="value">{{ pedido.cidade }}/{{ pedido.estado }}</span></div>
+    </div>
+
+    <div class="detalhe-section">
+      <h3>📦 Produtos</h3>
+      {% for item in pedido.itens %}
+      <div class="item-linha">
+        <span class="item-nome">{{ item.nome }}</span>
+        <span class="item-qtd">x{{ item.qtd }}</span>
+        <span class="item-preco">R$ {{ "%.2f"|format(item.preco * item.qtd) }}</span>
+      </div>
+      {% endfor %}
+    </div>
+
+    <div class="detalhe-section">
+      <h3>💰 Resumo</h3>
+      <div class="detalhe-row">
+        <span class="label">Subtotal:</span>
+        <span class="value">R$ {{ "%.2f"|format(pedido.total) }}</span>
+      </div>
+      <div class="detalhe-row">
+        <span class="label">Frete:</span>
+        <span class="value">{% if pedido.frete_valor > 0 %}R$ {{ "%.2f"|format(pedido.frete_valor) }}{% else %}A combinar{% endif %}</span>
+      </div>
+      <div class="total-destaque">
+        <span>TOTAL:</span>
+        <span>R$ {{ "%.2f"|format(pedido.total + (pedido.frete_valor or 0)) }}</span>
+      </div>
+    </div>
+
+    <a href="/meus-pedidos" class="voltar">← Voltar para Meus Pedidos</a>
+    <a href="#" class="btn-novo-pedido" onclick="refazerPedido(); return false;">🔄 Refazer Pedido</a>
+  </div>
+</main>
+
+<script>
+function refazerPedido() {
+  const itens = {{ pedido.itens|tojson|safe }};
+  itens.forEach(item => {
+    Carrinho.add(item.id, item.nome, item.preco, item.qtd);
+  });
+  location.href = '/checkout';
+}
+</script>
+{% endblock %}

@@ -1,77 +1,67 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Pedidos - Admin | Defumados AC</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-  <link rel="icon" type="image/png" href="/static/uploads/logo-1.png">
-</head>
-<body>
-  {% include 'header.html' %}
-  <main class="admin-container">
-    <div class="admin-tabs">
-      <a href="/admin" class="admin-tab">📦 Produtos</a>
-      <a href="/admin/pedidos" class="admin-tab active">📋 Pedidos</a>
-    </div>
+{% extends 'base.html' %}
+{% block title %}Pedidos - Admin | Defumados AC{% endblock %}
+{% block content %}
+<main class="admin-container">
+  <div class="admin-tabs">
+    <a href="/admin" class="admin-tab">📦 Produtos</a>
+    <a href="/admin/pedidos" class="admin-tab active">📋 Pedidos</a>
+  </div>
 
-    <div class="admin-header">
-      <h1> Gestão de Pedidos</h1>
-    </div>
+  <div class="admin-header">
+    <h1> Gestão de Pedidos</h1>
+  </div>
 
-    {% if pedidos %}
-    <div class="admin-table-wrapper">
-      <table class="admin-table">
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Cliente</th>
-            <th>Total</th>
-            <th>Status</th>
-            <th>Data</th>
-            <th>Ações</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for p in pedidos %}
-          <tr>
-            <td>#{{ p.id }}</td>
-            <td>{{ p.cliente_nome }}</td>
-            <td>R$ {{ "%.2f"|format(p.total) }}</td>
-            <td>
-              <span class="status-badge status-{{ p.status }}">
-                {{ p.status|title }}
-              </span>
-            </td>
-            <td>{{ p.data_criacao.split(' ')[0] }}</td>
-            <td>
-              <a href="/admin/pedidos/{{ p.id }}" class="btn-view">👁️ Detalhes</a>
-            </td>
-          </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-    </div>
+  {% if pedidos %}
+  <div class="admin-table-wrapper">
+    <table class="admin-table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Cliente</th>
+          <th>Total</th>
+          <th>Status</th>
+          <th>Data</th>
+          <th>Ações</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for p in pedidos %}
+        <tr>
+          <td>#{{ p.id }}</td>
+          <td>{{ p.cliente_nome }}</td>
+          <td>R$ {{ "%.2f"|format(p.total) }}</td>
+          <td>
+            <span class="status-badge status-{{ p.status }}">
+              {{ p.status|title }}
+            </span>
+          </td>
+          <td>{{ p.data_criacao.split(' ')[0] }}</td>
+          <td>
+            <a href="/admin/pedidos/{{ p.id }}" class="btn-view">👁️ Detalhes</a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
 
-    {% if total_paginas > 1 %}
-    <div class="pagination-bar">
-      <span class="pagination-info">Página {{ page }} de {{ total_paginas }}</span>
-      <div class="pagination-links">
-        {% if page > 1 %}
-        <a href="/admin/pedidos?page={{ page - 1 }}" class="pagination-link">⬅ Anterior</a>
-        {% endif %}
-        {% if page < total_paginas %}
-        <a href="/admin/pedidos?page={{ page + 1 }}" class="pagination-link next">Próximo ➡</a>
-        {% endif %}
-      </div>
+  {% if total_paginas > 1 %}
+  <div class="pagination-bar">
+    <span class="pagination-info">Página {{ page }} de {{ total_paginas }}</span>
+    <div class="pagination-links">
+      {% if page > 1 %}
+      <a href="/admin/pedidos?page={{ page - 1 }}" class="pagination-link">⬅ Anterior</a>
+      {% endif %}
+      {% if page < total_paginas %}
+      <a href="/admin/pedidos?page={{ page + 1 }}" class="pagination-link next">Próximo ➡</a>
+      {% endif %}
     </div>
-    {% endif %}
-    {% else %}
-    <div class="empty-state">
-      <p class="empty-msg">Nenhum pedido registrado ainda.</p>
-    </div>
-    {% endif %}
-  </main>
-  {% include 'footer.html' %}
-</body>
-</html>
+  </div>
+  {% endif %}
+  {% else %}
+  <div class="empty-state">
+    <p class="empty-msg">Nenhum pedido registrado ainda.</p>
+  </div>
+  {% endif %}
+</main>
+{% endblock %}

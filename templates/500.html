@@ -1,15 +1,6 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Erro interno - Defumados AC</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-  <link rel="icon" type="image/png" href="/static/uploads/logo-1.png">
-</head>
-<body>
-{% include 'header.html' %}
-
+{% extends 'base.html' %}
+{% block title %}Erro interno - Defumados AC{% endblock %}
+{% block content %}
 <main class="page-institucional" style="display:flex;align-items:center;justify-content:center;text-align:center;padding:4rem 2rem;">
   <div>
     <h1 style="font-size:5rem;color:var(--cor-primaria);margin:0;">500</h1>
@@ -18,7 +9,4 @@
     <a href="/" class="btn-primary" style="display:inline-block;padding:0.8rem 2rem;">← Voltar para Loja</a>
   </div>
 </main>
-
-{% include 'footer.html' %}
-</body>
-</html>
+{% endblock %}

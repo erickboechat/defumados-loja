@@ -1,95 +1,65 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Políticas & Entregas - Defumados AC</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-  <link rel="icon" type="image/png" href="/static/uploads/logo-1.png">
-</head>
-<body>
-{% include 'header.html' %}
-
+{% extends 'base.html' %}
+{% block title %}Políticas & Entregas - Defumados AC{% endblock %}
+{% block content %}
 <main class="page-institucional">
   <section class="hero-page" style="background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('https://defumadosac.com.br/wp-content/uploads/2023/01/banner-home.jpg'); background-size: cover; background-position: center;">
     <div class="hero-content">
-      <h1>Políticas & Entregas</h1>
-      <p>Transparência e segurança em cada etapa</p>
+      <h1>Políticas de Entrega e Devoluções</h1>
+      <p>Saiba como funcionam nossas entregas e trocas</p>
     </div>
   </section>
 
-  <section class="content-section">
-    <div class="container-wide">
-      <h2> Política de Entregas</h2>
-      <p><strong>Zona Sul, Barra, Recreio, Tijuca e Centro (RJ):</strong> Taxa fixa de R$ 15,00. Entregas todas quartas e sábados.</p>
-      <p><strong>Niterói:</strong> Também entregamos - Consulte via WhatsApp, temos condições especiais de entrega.</p>
-      <p><strong>Demais regiões:</strong> Frete sob consulta via WhatsApp. Utilizamos Correios ou transportadoras privadas (Jadlog/Loggi) com rastreamento completo.</p>
-      <p><strong>Entregamos em todo Brasil, faça sua consulta.</strong></p>
-      <p>📅 <strong>Janela de entrega:</strong> Combinada diretamente pelo WhatsApp após confirmação do pagamento.</p>
+  <section class="content-section politicas-content">
+    <div class="container politicas-grid">
+      <article class="politica-card">
+        <h2>🚚 Política de Entrega</h2>
+        <h3>🕐 Prazos de Preparo</h3>
+        <p>Todos os pedidos são preparados artesanalmente. O prazo de preparo é de <strong>até 7 dias úteis</strong> após a confirmação do pedido.</p>
+        <h3>📍 Regiões de Entrega</h3>
+        <p>Atendemos toda a região metropolitana do Rio de Janeiro. Para outras localidades, entre em contato pelo WhatsApp para verificar disponibilidade.</p>
+        <h3>💰 Taxa de Entrega</h3>
+        <ul>
+          <li><strong>Grátis</strong> para pedidos acima de <strong>R$ 100,00</strong> na região metropolitana do Rio de Janeiro.</li>
+          <li>Para pedidos abaixo desse valor, será consultado o valor do frete (a combinar).</li>
+          <li>Após a confirmação do pedido, entraremos em contato para combinar a melhor forma de entrega.</li>
+        </ul>
+        <h3>📦 Formas de Entrega</h3>
+        <ul>
+          <li><strong>Entrega presencial</strong> (combinada pelo WhatsApp)</li>
+          <li><strong>Retirada no local</strong> a combinar</li>
+        </ul>
+        <p class="politica-obs">* Não trabalhamos com Correios ou transportadoras no momento.</p>
+      </article>
 
-      <h2>💰 Pagamento</h2>
-      <p>Os pedidos são finalizados via WhatsApp. Aceitamos:</p>
-      <ul>
-        <li>✅ PIX (chave enviada na notinha do pedido)</li>
-        <li>✅ Transferência Bancária</li>
-        <li>✅ Cartão de Crédito (via link de pagamento seguro, solicite no whatsapp)</li>
-      </ul>
+      <article class="politica-card">
+        <h2>🔄 Política de Devolução e Troca</h2>
+        <h3>✅ Satisfação Garantida</h3>
+        <p>Nosso compromisso é com a qualidade. Se por algum motivo você não ficar satisfeito com seu pedido, entre em contato conosco em até <strong>7 dias</strong> após o recebimento.</p>
+        <h3>📋 Condições para Troca/Devolução</h3>
+        <ul>
+          <li>Produto com defeito ou avaria no transporte</li>
+          <li>Produto diferente do solicitado</li>
+          <li>Arrependimento da compra (dentro do prazo legal de 7 dias)</li>
+        </ul>
+        <h3>💸 Reembolso</h3>
+        <p>O reembolso será feito através do mesmo método de pagamento, em até <strong>30 dias</strong> após a devolução do produto.</p>
+      </article>
 
-      <h2>🔄 Trocas e Devoluções</h2>
-      <p>Por se tratar de produto alimentício perecível, não aceitamos devoluções por arrependimento. Em caso de <strong>avaria no transporte</strong> ou <strong>produto divergente</strong>, solicitamos fotos no ato do recebimento para análise e reposição imediata. Entre em contato pelo nosso WhatsApp.</p>
-
-      <h2 id="privacidade">🔒 Política de Privacidade (LGPD)</h2>
-
-      <h3>1. Quais dados coletamos</h3>
-      <p>Coletamos os seguintes dados pessoais fornecidos voluntariamente por você:</p>
-      <ul>
-        <li>Nome completo</li>
-        <li>Telefone / WhatsApp</li>
-        <li>Endereço completo (CEP, rua, número, bairro, cidade, estado)</li>
-        <li>E-mail (quando informado)</li>
-      </ul>
-
-      <h3>2. Finalidade do tratamento</h3>
-      <p>Seus dados são utilizados exclusivamente para:</p>
-      <ul>
-        <li>Processamento e envio do seu pedido</li>
-        <li>Comunicação sobre seu pedido (confirmação, status, entrega)</li>
-        <li>Notificação de disponibilidade de produtos (quando solicitado)</li>
-        <li>Responder dúvidas e mensagens enviadas via formulário de contato</li>
-      </ul>
-      <p>Não utilizamos seus dados para envio de marketing sem sua autorização expressa.</p>
-
-      <h3>3. Compartilhamento com terceiros</h3>
-      <p>Não vendemos, alugamos ou compartilhamos seus dados com terceiros para fins de marketing. Seus dados podem ser compartilhados apenas quando necessário para a entrega do seu pedido (transportadoras, Correios) ou por obrigação legal.</p>
-
-      <h3>4. Armazenamento e segurança</h3>
-      <p>Seus dados são armazenados de forma segura pelo tempo necessário para cumprir as finalidades descritas acima, incluindo obrigações fiscais e legais (até 5 anos após a última compra, conforme legislação brasileira). Após esse período, os dados são eliminados.</p>
-      <p>Adotamos medidas técnicas e organizacionais para proteger seus dados contra acesso não autorizado, perda ou vazamento.</p>
-
-      <h3>5. Seus direitos (Titular dos Dados)</h3>
-      <p>Você tem direito a:</p>
-      <ul>
-        <li><strong>Acessar</strong> os dados que temos sobre você</li>
-        <li><strong>Corrigir</strong> dados incompletos, inexatos ou desatualizados</li>
-        <li><strong>Solicitar a exclusão</strong> dos seus dados, exceto quando a lei exigir a manutenção</li>
-        <li><strong>Revogar</strong> o consentimento a qualquer momento</li>
-        <li><strong>Saber</strong> com quais terceiros compartilhamos seus dados</li>
-      </ul>
-
-      <h3>6. Encarregado (DPO) e canal de exercício de direitos</h3>
-      <p>Para exercer seus direitos, esclarecer dúvidas ou solicitar a exclusão dos seus dados, entre em contato pelo nosso <a href="https://wa.me/5521986358184" target="_blank" style="color:var(--cor-primaria);font-weight:600;">WhatsApp (21) 98635-8184</a> ou envie um e-mail para <strong>defumadosac@outlook.com</strong>. Responderemos em até 48 horas úteis.</p>
-
-      <h3>7. Cookies</h3>
-      <p>Este site utiliza cookies essenciais para o funcionamento adequado, como manter os itens no carrinho e lembrar suas preferências de navegação. Não utilizamos cookies de rastreamento ou publicidade sem seu consentimento. Ao continuar navegando, você aceita o uso desses cookies essenciais.</p>
-
-      <h3>8. Consentimento</h3>
-      <p>Ao preencher formulários em nosso site, você declara que leu e concordou com esta Política de Privacidade, autorizando o tratamento dos seus dados pessoais para as finalidades descritas.</p>
-
-      <p style="margin-top:1.5rem;font-size:0.85rem;color:#888;"><em>Última atualização: Junho de 2026. Esta política pode ser atualizada periodicamente. Recomendamos a consulta regular desta página.</em></p>
+      <article class="politica-card" id="privacidade">
+        <h2>🔒 Política de Privacidade</h2>
+        <p>A Defumados Arcos Carballiño respeita sua privacidade. As informações coletadas são usadas apenas para processar seu pedido e melhorar sua experiência de compra.</p>
+        <h3>📊 Dados Coletados</h3>
+        <ul>
+          <li>Nome, telefone e e-mail (para contato sobre o pedido)</li>
+          <li>Endereço de entrega</li>
+          <li>Dados de navegação (cookies essenciais)</li>
+        </ul>
+        <h3>🔐 Segurança</h3>
+        <p>Seus dados são armazenados com segurança e nunca compartilhados com terceiros sem seu consentimento.</p>
+        <h3>🍪 Cookies</h3>
+        <p>Utilizamos apenas cookies essenciais para o funcionamento do site. Ao continuar navegando, você concorda com seu uso.</p>
+      </article>
     </div>
   </section>
 </main>
-
-{% include 'footer.html' %}
-</body>
-</html>
+{% endblock %}

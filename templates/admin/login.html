@@ -1,14 +1,6 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Login - Admin | Defumados AC</title>
-<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-<link rel="icon" type="image/png" href="/static/uploads/logo-1.png">
-</head>
-<body>
-{% include 'header.html' %}
+{% extends 'base.html' %}
+{% block title %}Login - Admin | Defumados AC{% endblock %}
+{% block content %}
 <main class="admin-login-container">
   <div class="login-box">
     <h2>🔐 Acesso Administrativo</h2>
@@ -24,6 +16,4 @@
     <a href="/" class="back-link">← Voltar para a loja</a>
   </div>
 </main>
-{% include 'footer.html' %}
-</body>
-</html>
+{% endblock %}

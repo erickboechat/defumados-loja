@@ -1,90 +1,83 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Notificar - {{ produto.nome }} - Admin</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-  <link rel="icon" type="image/png" href="/static/uploads/logo-1.png">
-  <style>
-    .aviso-item { padding: 1rem; border-bottom: 1px solid #eee; display: flex; align-items: center; gap: 1rem; }
-    .aviso-item:last-child { border-bottom: none; }
-    .aviso-nome { font-weight: 600; flex: 1; }
-    .aviso-contato { color: #666; font-size: 0.9rem; }
-    .btn-wa { display: inline-flex; align-items: center; gap: 0.4rem; background: #25D366; color: white; padding: 0.5rem 1rem; border-radius: 6px; text-decoration: none; font-weight: 600; font-size: 0.9rem; transition: background 0.2s; }
-    .btn-wa:hover { background: #128C7E; }
-    .produto-info { display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem; padding: 1rem; background: #f8fafc; border-radius: 8px; }
-    .produto-info img { width: 60px; height: 60px; object-fit: cover; border-radius: 6px; }
-  </style>
-</head>
-<body>
-  {% include 'header.html' %}
-  <main class="admin-container">
-    <div class="admin-tabs">
-      <a href="/admin" class="admin-tab">📦 Produtos</a>
-      <a href="/admin/pedidos" class="admin-tab">📋 Pedidos</a>
-    </div>
+{% extends 'base.html' %}
+{% block title %}Notificar - {{ produto.nome }} - Admin{% endblock %}
+{% block extra_head %}
+<style>
+  .aviso-item { padding: 1rem; border-bottom: 1px solid #eee; display: flex; align-items: center; gap: 1rem; }
+  .aviso-item:last-child { border-bottom: none; }
+  .aviso-nome { font-weight: 600; flex: 1; }
+  .aviso-contato { color: #666; font-size: 0.9rem; }
+  .btn-wa { display: inline-flex; align-items: center; gap: 0.4rem; background: #25D366; color: white; padding: 0.5rem 1rem; border-radius: 6px; text-decoration: none; font-weight: 600; font-size: 0.9rem; transition: background 0.2s; }
+  .btn-wa:hover { background: #128C7E; }
+  .produto-info { display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem; padding: 1rem; background: #f8fafc; border-radius: 8px; }
+  .produto-info img { width: 60px; height: 60px; object-fit: cover; border-radius: 6px; }
+</style>
+{% endblock %}
+{% block content %}
+<main class="admin-container">
+  <div class="admin-tabs">
+    <a href="/admin" class="admin-tab">📦 Produtos</a>
+    <a href="/admin/pedidos" class="admin-tab">📋 Pedidos</a>
+  </div>
 
-    <div class="admin-section">
-      <div class="produto-info">
-        {% if produto.imagens and produto.imagens[0] %}
-        <img src="{{ produto.imagens[0] }}" alt="{{ produto.nome }}">
-        {% endif %}
-        <div>
-          <h2 style="margin:0; font-size:1.3rem;">{{ produto.nome }}</h2>
-          <p style="margin:0.3rem 0 0; color:#666;">Estoque ativado com sucesso!</p>
-        </div>
-      </div>
-
-      {% if avisos %}
-      <p style="margin-bottom:1rem; color:#666;">
-        <strong>{{ avisos|length }}</strong> cliente(s) serão notificados. Clique no WhatsApp de cada um para enviar a mensagem:
-      </p>
-      <div id="aviso-list">
-        {% for a in avisos %}
-        {% set msg_notif = "🎉 *" + produto.nome + "* voltou ao estoque!%0A%0A✅ Já disponível para compra no site: https://defumadosac.com.br/produto/" + produto.id|string %}
-        <div class="aviso-item">
-          <div>
-            <div class="aviso-nome">{{ a.nome }}</div>
-            <div class="aviso-contato">
-              {% if a.telefone %}📱 {{ a.telefone }}{% endif %}
-              {% if a.email and a.telefone %} | {% endif %}
-              {% if a.email %}✉️ {{ a.email }}{% endif %}
-            </div>
-          </div>
-          {% if a.telefone %}
-          {% set tel_clean = a.telefone|replace('(', '')|replace(')', '')|replace(' ', '')|replace('-', '') %}
-          <a href="{{ whatsapp_url }}?text={{ msg_notif }}" target="_blank" class="btn-wa">📲 Enviar WhatsApp</a>
-          {% else %}
-          <span style="color:#999; font-size:0.85rem;">Sem telefone</span>
-          {% endif %}
-        </div>
-        {% endfor %}
-      </div>
-
-      <div style="margin-top:1.5rem; text-align:center;">
-        <button onclick="copiarLinks()" class="btn-frete-calcular" style="margin-bottom:0.5rem;">📋 Copiar Links</button>
-        <p style="font-size:0.85rem; color:#999;">Ou abra cada link individualmente acima</p>
-      </div>
-      {% else %}
-      <p style="text-align:center; padding:2rem; color:#666;">✅ Nenhum aviso pendente para este produto.</p>
+  <div class="admin-section">
+    <div class="produto-info">
+      {% if produto.imagens and produto.imagens[0] %}
+      <img src="{{ produto.imagens[0] }}" alt="{{ produto.nome }}">
       {% endif %}
-
-      <div style="text-align:center; margin-top:1rem;">
-        <a href="/admin" class="voltar-dash" style="color:var(--cor-texto-claro);">← Voltar ao Painel</a>
+      <div>
+        <h2 style="margin:0; font-size:1.3rem;">{{ produto.nome }}</h2>
+        <p style="margin:0.3rem 0 0; color:#666;">Estoque ativado com sucesso!</p>
       </div>
     </div>
-  </main>
 
-  <script>
-  function copiarLinks() {
-    const links = document.querySelectorAll('.btn-wa');
-    const urls = Array.from(links).map(l => l.href);
-    if (!urls.length) return;
-    navigator.clipboard.writeText(urls.join('\n')).then(() => {
-      alert('Links copiados para a área de transferência!');
-    });
-  }
-  </script>
-</body>
-</html>
+    {% if avisos %}
+    <p style="margin-bottom:1rem; color:#666;">
+      <strong>{{ avisos|length }}</strong> cliente(s) serão notificados. Clique no WhatsApp de cada um para enviar a mensagem:
+    </p>
+    <div id="aviso-list">
+      {% for a in avisos %}
+      {% set msg_notif = "🎉 *" + produto.nome + "* voltou ao estoque!%0A%0A✅ Já disponível para compra no site: https://defumadosac.com.br/produto/" + produto.id|string %}
+      <div class="aviso-item">
+        <div>
+          <div class="aviso-nome">{{ a.nome }}</div>
+          <div class="aviso-contato">
+            {% if a.telefone %}📱 {{ a.telefone }}{% endif %}
+            {% if a.email and a.telefone %} | {% endif %}
+            {% if a.email %}✉️ {{ a.email }}{% endif %}
+          </div>
+        </div>
+        {% if a.telefone %}
+        {% set tel_clean = a.telefone|replace('(', '')|replace(')', '')|replace(' ', '')|replace('-', '') %}
+        <a href="{{ whatsapp_url }}?text={{ msg_notif }}" target="_blank" class="btn-wa">📲 Enviar WhatsApp</a>
+        {% else %}
+        <span style="color:#999; font-size:0.85rem;">Sem telefone</span>
+        {% endif %}
+      </div>
+      {% endfor %}
+    </div>
+
+    <div style="margin-top:1.5rem; text-align:center;">
+      <button onclick="copiarLinks()" class="btn-frete-calcular" style="margin-bottom:0.5rem;">📋 Copiar Links</button>
+      <p style="font-size:0.85rem; color:#999;">Ou abra cada link individualmente acima</p>
+    </div>
+    {% else %}
+    <p style="text-align:center; padding:2rem; color:#666;">✅ Nenhum aviso pendente para este produto.</p>
+    {% endif %}
+
+    <div style="text-align:center; margin-top:1rem;">
+      <a href="/admin" class="voltar-dash" style="color:var(--cor-texto-claro);">← Voltar ao Painel</a>
+    </div>
+  </div>
+</main>
+
+<script>
+function copiarLinks() {
+  const links = document.querySelectorAll('.btn-wa');
+  const urls = Array.from(links).map(l => l.href);
+  if (!urls.length) return;
+  navigator.clipboard.writeText(urls.join('\n')).then(() => {
+    alert('Links copiados para a área de transferência!');
+  });
+}
+</script>
+{% endblock %}

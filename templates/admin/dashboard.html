@@ -1,14 +1,6 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Admin - Defumados AC</title>
-<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-<link rel="icon" type="image/png" href="/static/uploads/logo-1.png">
-</head>
-<body>
-{% include 'header.html' %}
+{% extends 'base.html' %}
+{% block title %}Admin - Defumados AC{% endblock %}
+{% block content %}
 <main class="admin-container">
   <div class="admin-tabs">
   <a href="/admin" class="admin-tab active">📦 Produtos</a>
@@ -150,11 +142,9 @@
     {% endif %}
   </section>
 </main>
-{% include 'footer.html' %}
 <script>
   function toggleEdit(id) {
     document.getElementById('edit-' + id).classList.toggle('hidden');
   }
 </script>
-</body>
-</html>
+{% endblock %}

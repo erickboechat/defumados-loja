@@ -1,22 +1,13 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Defumados AC - Loja Online</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-  <link rel="icon" type="image/png" href="/static/uploads/logo-1.png">
-  <meta property="og:title" content="Defumados AC - Defumados Artesanais">
-  <meta property="og:description" content="Defumados artesanais de alta qualidade. Linguiças, bacon, copa, costelinha e muito mais.">
-  <meta property="og:image" content="https://defumadosac.com.br/static/uploads/logo-1.png">
-  <meta property="og:url" content="https://defumadosac.com.br">
-  <meta property="og:type" content="website">
-</head>
-<body>
-  <header>
-  {% include 'header.html' %}
-</header>
-  
+{% extends 'base.html' %}
+{% block title %}Defumados AC - Loja Online{% endblock %}
+{% block og_tags %}
+<meta property="og:title" content="Defumados AC - Defumados Artesanais">
+<meta property="og:description" content="Defumados artesanais de alta qualidade. Linguiças, bacon, copa, costelinha e muito mais.">
+<meta property="og:image" content="https://defumadosac.com.br/static/uploads/logo-1.png">
+<meta property="og:url" content="https://defumadosac.com.br">
+<meta property="og:type" content="website">
+{% endblock %}
+{% block content %}
 <!-- Busca -->
 <div class="search-wrapper">
   <form action="/" method="GET" class="search-form">
@@ -64,7 +55,6 @@
   <button class="img-nav img-prev" onclick="event.stopPropagation(); navegarImagem(this, -1)" aria-label="Anterior"></button>
   <button class="img-nav img-next" onclick="event.stopPropagation(); navegarImagem(this, 1)" aria-label="Próximo"></button>
 
-  <!-- Só aparece se ESTIVER FORA de estoque -->
   {% if not p.estoque %}
     <span class="badge-estoque esgotado">Esgotado</span>
   {% endif %}
@@ -74,7 +64,6 @@
     <p class="descricao">{{ p.descricao|striptags|truncate(100) }}</p>
     <p class="preco">R$ {{ "%.2f"|format(p.preco) }}</p>
     {% if p.estoque %}
-      <!-- Botão agora é secundário, o clique no card é a ação principal -->
       <button class="btn-add" onclick="event.stopPropagation(); Carrinho.add({{ p.id }}, '{{ p.nome }}', {{ p.preco }})">Adicionar</button>
     {% else %}
       <button class="btn-esgotado" onclick="event.stopPropagation(); abrirModalAviso({{ p.id }}, '{{ p.nome }}')">🔔 Avisar</button>
@@ -123,8 +112,6 @@
       </form>
     </div>
   </div>
-
-  {% include 'footer.html' %}
 
 <script>
   function navegarImagem(btn, direcao) {
@@ -195,5 +182,4 @@
     }
   }
 </script>
-</body>
-</html>
+{% endblock %}

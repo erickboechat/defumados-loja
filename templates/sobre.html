@@ -1,15 +1,6 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Nossa História - Defumados AC</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-  <link rel="icon" type="image/png" href="/static/uploads/logo-1.png">
-</head>
-<body>
-{% include 'header.html' %}
-
+{% extends 'base.html' %}
+{% block title %}Nossa História - Defumados AC{% endblock %}
+{% block content %}
 <main class="page-institucional">
   <section class="hero-page hero-historia">
     <div class="hero-content">
@@ -23,27 +14,11 @@
     <div class="texto-historia">
       <p>Prazer! Me chamo Cloves de Abreu. A Defumados Arcos Carballiño é a marca de uma linha de produtos a base de carne de porco, curados e defumados artesanalmente e em pequenas quantidades, produzidos por mim.</p>
       <p>A história dos Defumados Arcos Carballiño, talvez sem eu mesmo saber, começa na minha infância, vivida em Minas Gerais, entre os afazeres de minha mãe e de minha irmã mais velha na cozinha de casa. Havia uma construção anexa à casa, que chamávamos de "casinha", lá estava um fogão de lenha, sempre admirado por mim e sempre com algumas linguiças penduradas no alto, em cima da trempe deste fogão. Acho que foi o começo de toda história.</p>
-      <p>Ao longo dos tempos, sempre gostei de cozinhar, experimentar na cozinha e principalmente comer bem.</p>
-      <p>Em 2003 construí uma casa em um terreno situado em Vargem Grande, Rio de Janeiro. Terreno este adquirido de um amigo fraterno chamado Evaristo Gomes Ulloa, Nascido em Carballiño, Arcos, um município da Espanha na província de Ourense, comunidade autônoma da Galícia.</p>
-      <p>Nesta casa pude reviver meu ambiente de infância. Construí uma área com fogão de lenha, forno caipira e defumador. Desde então sempre gostei de exercer meus dotes culinários neste paraíso, seja com amigos, família ou sozinho.</p>
-      <p>Movido pelas linguiças que minha mãe fazia na infância, pelo gosto e admiração da culinária e a arte da charcutaria, tão apreciadas também pelo meu grande amigo e seus conterrâneos galegos… Em 2013 comecei a produzir alguns defumados e afins para consumo próprio e de amigos. Que acabou tomando forma, as pessoas gostando e naturalmente crescendo para um negócio realmente.</p>
-      <p>Então cá estamos, oficialmente desde 2015 com a Defumados Arcos Carballiño me comprometendo em produzir produtos defumados, curados, maturados, embutidos, etc, sempre com excelência, a melhor qualidade possível, ótimos processos e principalmente os respeitando, dando tempo ao tempo. Essa é a linda arte da charcutaria.</p>
-      <p>Produtos e processos artesanais de excelentíssima qualidade e sempre que possível melhorando ainda mais. Por isso seu feedback sempre é bem-vindo, não deixe de dizer o que achou dos produtos.</p>
-      <p>Pena que isto começou exatamente quando meu grande amigo faleceu. Motivo pelo qual ao criar uma marca para meus defumados escolhi o nome de Defumados Arcos Carballiño, nome da região onde ele nasceu.</p>
-      <div class="historia-buttons">
-        <a href="https://www.instagram.com/defumadosac" target="_blank" class="btn-historia btn-instagram">
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
-          Instagram
-        </a>
-        <a href="https://wa.me/5521986358184" target="_blank" class="btn-historia btn-whatsapp">
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
-          WhatsApp
-        </a>
-      </div>
+      <p>A oportunidade de aprender e produzir artesanalmente, da forma que eu via em minha infância, veio com a Associação de Defumados Artesanais do Brasil (ADABRAS), onde conheci o produtor Aldo e tive a oportunidade de fazer um curso de Salga, Cura e Defumação caseira. Ali, a vontade de produzir meus próprios defumados aumentou, e ainda no primeiro ano de curso, a ADABRAS promoveu um concurso de salames artesanais, onde fui contemplado com o primeiro lugar! De lá pra cá, não parei mais. Sempre estudando, pesquisando e aperfeiçoando, desde a escolha da carne de porco, que vem de produtores criteriosos e responsáveis, até o processo de elaboração e finalização dos meus produtos.</p>
+      <p>Não utilizo conservantes químicos, corantes artificiais, aromatizantes ou realçadores de sabor. Uso sal, especiarias e ervas numa perfeita combinação de aromas e sabores. Todos os produtos passam por processo de secagem, cura e subsequente defumação em fumeiro frio, com lascas de madeira de acácia ou laranjeira, dependendo do produto.</p>
+      <p>É por isso que me orgulho tanto do que faço. Cada peça é única. Cada sabor é o resultado de cuidado, paciência e amor pelo que faço.</p>
+      <p>Muito obrigado por fazer parte dessa história. 💛</p>
     </div>
   </section>
 </main>
-
-{% include 'footer.html' %}
-</body>
-</html>
+{% endblock %}

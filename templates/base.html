@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}Defumados AC{% endblock %}</title>
+  {% block meta_description %}{% endblock %}
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <link rel="icon" type="image/png" href="/static/uploads/logo-1.png">
+  {% block og_tags %}{% endblock %}
+  {% block extra_head %}{% endblock %}
+</head>
+<body>
+  {% include 'header.html' %}
+  {% block content %}{% endblock %}
+  {% include 'footer.html' %}
+</body>
+</html>
