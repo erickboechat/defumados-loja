@@ -6,6 +6,7 @@ from datetime import datetime, timezone, timedelta
 from functools import wraps
 from PIL import Image
 
+import flask
 from flask import g, session, redirect, url_for
 
 from config import Config
@@ -23,30 +24,27 @@ MAX_IMAGE_SIZE = (1200, 1200)
 
 # ===== CONEXÃO =====
 
+def _nova_conexao():
+    conn = sqlite3.connect(Config.DATABASE)
+    conn.row_factory = sqlite3.Row
+    conn.execute("PRAGMA journal_mode=WAL")
+    return conn
+
+
 def get_db():
-    """Conecta ao banco SQLite — reusa conexão do flask.g quando em contexto de request"""
-    try:
+    """Conecta ao banco — reusa conexão do flask.g quando em contexto de request"""
+    if flask.has_app_context():
         if 'db' not in g:
-            conn = sqlite3.connect(Config.DATABASE)
-            conn.row_factory = sqlite3.Row
-            conn.execute("PRAGMA journal_mode=WAL")
-            g.db = conn
+            g.db = _nova_conexao()
         return g.db
-    except RuntimeError:
-        # Fora do contexto da aplicação (ex: init_db no startup)
-        conn = sqlite3.connect(Config.DATABASE)
-        conn.row_factory = sqlite3.Row
-        conn.execute("PRAGMA journal_mode=WAL")
-        return conn
+    return _nova_conexao()
 
 
 def close_db(e=None):
-    try:
+    if flask.has_app_context():
         db = g.pop('db', None)
         if db is not None:
             db.close()
-    except RuntimeError:
-        pass
 
 
 def init_db():
