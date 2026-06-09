@@ -7,7 +7,7 @@
       <div class="contato-info">
         <h2> Atendimento Direto</h2>
         <p>Para pedidos, dúvidas ou sugestões, o caminho mais rápido é nosso WhatsApp:</p>
-        <a href="https://wa.me/5521986358184?text=Olá!%20Gostaria%20de%20falar%20sobre%20os%20produtos%20Defumados%20AC." class="btn-whatsapp-grande" target="_blank">📲 Chamar no WhatsApp</a>
+        <a href="https://api.whatsapp.com/send?phone=5521986358184&text=Ol%C3%A1!%20Gostaria%20de%20falar%20sobre%20os%20produtos%20Defumados%20AC." class="btn-whatsapp-grande" target="_blank">📲 Chamar no WhatsApp</a>
         
         <div class="info-box">
           <p>📍 Vargem Grande, Rio de Janeiro - RJ</p>
@@ -49,7 +49,7 @@
     const msg = document.getElementById('c-msg').value;
     
     const texto = `📩 *NOVA MENSAGEM - SITE*\n\n Nome: ${nome}\n E-mail: ${email}\n Assunto: ${assunto}\n💬 Mensagem:\n${msg}`;
-    const url = `https://wa.me/5521986358184?text=${encodeURIComponent(texto)}`;
+    const url = `https://api.whatsapp.com/send?phone=5521986358184&text=${encodeURIComponent(texto)}`;
     window.open(url, '_blank');
   });
 </script>
