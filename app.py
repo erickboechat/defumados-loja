@@ -230,7 +230,7 @@ def finalizar():
 
 _Obrigado pela preferência! Aguarde a confirmação do pedido._ 🐷✨"""
 
-    url = f"{WHATSAPP_URL}?text={quote(msg)}"
+    url = f"{WHATSAPP_URL}&text={quote(msg, safe='', encoding='utf-8')}"
     return jsonify({'redirect': url})
 
 
@@ -311,7 +311,7 @@ def process_checkout():
     msg += f"Aguarde a confirmação do pedido.\n"
     msg += f"💬 *Pedido #{pedido_id} gerado automaticamente pelo site*"
 
-    wa_link = f"{WHATSAPP_URL}?text={quote(msg)}"
+    wa_link = f"{WHATSAPP_URL}&text={quote(msg, safe='', encoding='utf-8')}"
     return redirect(wa_link)
 
 

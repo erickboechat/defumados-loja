@@ -15,4 +15,4 @@ class Config:
 
 
 WHATSAPP_NUMBER = os.environ.get('WHATSAPP_NUMBER', '5521986358184')
-WHATSAPP_URL = f'https://wa.me/{WHATSAPP_NUMBER}'
+WHATSAPP_URL = f'https://api.whatsapp.com/send?phone={WHATSAPP_NUMBER}'
