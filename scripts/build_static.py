@@ -23,10 +23,25 @@ def minify_css(content):
 def minify_js(content):
     """Minifica JS básico (remove comentários, espaços extras)"""
     import re
+
+    # Protege template literals (backtick) contra regex destrutivo
+    templates = []
+    def save_template(m):
+        idx = len(templates)
+        templates.append(m.group(0))
+        return f'\x00T{idx}\x00'
+
+    content = re.sub(r'`[^`]*`', save_template, content)
+
     content = re.sub(r'//.*', '', content)
     content = re.sub(r'/\*.*?\*/', '', content, flags=re.DOTALL)
     content = re.sub(r'\s+', ' ', content)
     content = re.sub(r'\s*([{}();,:=+\-*/!<>])\s*', r'\1', content)
+
+    # Restaura template literals
+    for i, t in enumerate(templates):
+        content = content.replace(f'\x00T{i}\x00', t)
+
     return content.strip()
 
 
