@@ -5,7 +5,8 @@ from urllib.parse import quote
 from datetime import datetime, timedelta, timezone
 
 from flask import (Flask, render_template, request, jsonify,
-                   redirect, session, url_for, send_from_directory)
+                   redirect, session, url_for, send_from_directory,
+                   make_response, Response)
 from flask_wtf.csrf import CSRFProtect, generate_csrf
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
@@ -70,6 +71,38 @@ criar_indices()
 @app.context_processor
 def inject_csrf():
     return dict(csrf_token=generate_csrf)
+
+
+# ===== SEO =====
+
+@app.route('/sitemap.xml')
+def sitemap():
+    produtos = get_produtos(todos=False)
+    pages = [
+        {'loc': url_for('index', _external=True), 'priority': '1.0'},
+        {'loc': url_for('nossa_historia', _external=True), 'priority': '0.8'},
+        {'loc': url_for('contato', _external=True), 'priority': '0.7'},
+        {'loc': url_for('politicas', _external=True), 'priority': '0.6'},
+    ]
+    xml = '<?xml version="1.0" encoding="UTF-8"?>\n'
+    xml += '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
+    for p in pages:
+        xml += f'  <url><loc>{p["loc"]}</loc><priority>{p["priority"]}</priority></url>\n'
+    for prod in produtos:
+        url = url_for('produto_detalhe', produto_id=prod['id'], _external=True)
+        xml += f'  <url><loc>{url}</loc><priority>0.9</priority></url>\n'
+    xml += '</urlset>'
+    resp = make_response(xml)
+    resp.content_type = 'application/xml'
+    return resp
+
+
+@app.route('/robots.txt')
+def robots():
+    return Response(
+        "User-agent: *\nAllow: /\nSitemap: https://defumadosac.com.br/sitemap.xml\n",
+        mimetype='text/plain'
+    )
 
 
 # ===== ERROR HANDLERS =====
