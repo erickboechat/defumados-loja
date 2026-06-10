@@ -66,6 +66,14 @@ limiter = Limiter(
     storage_uri=os.environ.get('RATE_LIMIT_STORAGE', 'memory://'),
 )
 
+# Decorators de rate limit específicos (aplicados nas rotas abaixo)
+limite_login = limiter.limit("5 per minute")
+limite_checkout = limiter.limit("10 per minute")
+limite_csrf = limiter.limit("30 per minute")
+limite_busca = limiter.limit("60 per minute")
+limite_aviso = limiter.limit("5 per minute")
+limite_pedidos = limiter.limit("10 per minute")
+
 init_db()
 criar_indices()
 
@@ -160,6 +168,7 @@ def webp_smart_list_filter(imagens):
 # ===== CSRF TOKEN (para Instagram WebView) =====
 
 @app.route('/csrf-token')
+@limite_csrf
 def csrf_token_api():
     return jsonify({'token': generate_csrf()})
 
@@ -196,6 +205,7 @@ def api_produtos():
 
 
 @app.route('/api/busca')
+@limite_busca
 def api_busca():
     q = request.args.get('q', '').strip()
     if len(q) < 2:
@@ -247,6 +257,7 @@ def checkout():
 
 @app.route('/finalizar', methods=['POST'])
 @csrf.exempt
+@limite_checkout
 def finalizar():
     dados = request.json
     itens = dados.get('itens', [])
@@ -299,6 +310,7 @@ _Obrigado pela preferência! Aguarde a confirmação do pedido._ 🐷✨"""
 
 @app.route('/checkout/process', methods=['POST'])
 @csrf.exempt
+@limite_checkout
 def process_checkout():
     consentimento = request.form.get('lgpd_consent')
     if consentimento != '1':
@@ -381,6 +393,7 @@ def process_checkout():
 # ===== MEUS PEDIDOS (PÚBLICO) =====
 
 @app.route('/meus-pedidos', methods=['GET', 'POST'])
+@limite_pedidos
 def meus_pedidos():
     pedidos = []
     telefone = ''
@@ -409,6 +422,7 @@ def meus_pedidos_detalhe(pedido_id):
 # ===== ROTAS ADMIN =====
 
 @app.route('/admin/login', methods=['GET', 'POST'])
+@limite_login
 def admin_login():
     if session.get('admin_logged_in'):
         return redirect(url_for('admin_dashboard'))
@@ -547,6 +561,7 @@ def admin_notificar(produto_id):
 
 @app.route('/api/avisar-estoque', methods=['POST'])
 @csrf.exempt
+@limite_aviso
 def api_avisar_estoque():
     data = request.json
     if not data:
