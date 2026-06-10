@@ -152,6 +152,14 @@
 </main>
 
 <script>
+// Redireciona se carrinho vazio
+(function() {
+  const cart = JSON.parse(localStorage.getItem('defumados_carrinho') || '[]');
+  if (cart.length === 0) {
+    window.location.href = '/';
+  }
+})();
+
 // Configurações de frete
 const AREAS_FIXAS = [
   'botafogo', 'catete', 'copacabana', 'cosme velho', 'flamengo', 'gávea', 'glória', 'humaitá',

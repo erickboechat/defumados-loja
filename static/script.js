@@ -189,6 +189,71 @@ document.querySelectorAll('.mobile-nav a').forEach(link => {
 });
 
 // =========================================================
+// BOTÃO VOLTAR AO TOPO
+// =========================================================
+document.addEventListener('DOMContentLoaded', () => {
+  const btn = document.getElementById('back-to-top');
+  if (!btn) return;
+  let ticking = false;
+  window.addEventListener('scroll', () => {
+    if (!ticking) {
+      requestAnimationFrame(() => {
+        btn.classList.toggle('visible', window.scrollY > 400);
+        ticking = false;
+      });
+      ticking = true;
+    }
+  });
+});
+
+// =========================================================
+// SKELETON LOADING — ativa loaded quando imagem carrega
+// =========================================================
+document.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('.card-img').forEach(img => {
+    if (img.complete) { img.classList.add('loaded'); return; }
+    img.addEventListener('load', () => img.classList.add('loaded'));
+    img.addEventListener('error', () => img.classList.add('loaded'));
+  });
+});
+
+// =========================================================
+// LIGHTBOX — zoom ao clicar na imagem do produto
+// =========================================================
+document.addEventListener('DOMContentLoaded', () => {
+  const principal = document.getElementById('img-principal');
+  if (!principal) return;
+
+  const overlay = document.createElement('div');
+  overlay.className = 'lightbox-overlay';
+  overlay.innerHTML = '<button class="lightbox-close">&times;</button><img class="lightbox-img" alt="">';
+  document.body.appendChild(overlay);
+
+  const lbImg = overlay.querySelector('.lightbox-img');
+  const lbClose = overlay.querySelector('.lightbox-close');
+
+  function abrirLightbox() {
+    lbImg.src = principal.src;
+    overlay.classList.add('active');
+    document.body.style.overflow = 'hidden';
+  }
+
+  principal.addEventListener('click', abrirLightbox);
+
+  lbClose.addEventListener('click', () => {
+    overlay.classList.remove('active');
+    document.body.style.overflow = '';
+  });
+
+  overlay.addEventListener('click', (e) => {
+    if (e.target === overlay) {
+      overlay.classList.remove('active');
+      document.body.style.overflow = '';
+    }
+  });
+});
+
+// =========================================================
 // LÓGICA DO CARRINHO MOBILE (FAB + MODAL)
 // =========================================================
 document.addEventListener('DOMContentLoaded', () => {
