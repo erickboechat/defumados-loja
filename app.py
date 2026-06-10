@@ -1,5 +1,6 @@
 import os
 import json
+import time
 import logging
 from urllib.parse import quote
 from datetime import datetime, timedelta, timezone
@@ -69,6 +70,9 @@ init_db()
 criar_indices()
 
 app.teardown_appcontext(close_db)
+
+# Timestamp de inicialização (para health check)
+START_TIME = time.time()
 
 
 @app.context_processor
@@ -549,7 +553,26 @@ def api_avisar_estoque():
 
 @app.route('/health')
 def health():
-    return jsonify({'status': 'ok'}), 200
+    from models import get_db, close_db
+    db_ok = False
+    try:
+        conn = get_db()
+        conn.execute('SELECT 1')
+        db_ok = True
+    except Exception:
+        db_ok = False
+    finally:
+        close_db()
+
+    uptime_sec = int(time.time() - START_TIME)
+    uptime_str = f'{uptime_sec // 86400}d {(uptime_sec % 86400) // 3600}h {(uptime_sec % 3600) // 60}m'
+
+    return jsonify({
+        'status': 'ok' if db_ok else 'degraded',
+        'db': 'ok' if db_ok else 'error',
+        'uptime': uptime_str,
+        'uptime_seconds': uptime_sec,
+    }), 200 if db_ok else 503
 
 
 # ===== ADMIN: PEDIDOS =====

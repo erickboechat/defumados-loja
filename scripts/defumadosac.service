@@ -16,8 +16,10 @@ User=deploy
 WorkingDirectory=/home/deploy/defumados-loja
 EnvironmentFile=/home/deploy/defumados-loja/.env
 ExecStart=/home/deploy/defumados-loja/venv/bin/python /home/deploy/defumados-loja/run_production.py
-Restart=always
-RestartSec=5
+Restart=on-failure
+RestartSec=10
+StartLimitIntervalSec=120
+StartLimitBurst=5
 
 # Segurança
 PrivateTmp=true
