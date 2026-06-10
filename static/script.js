@@ -189,6 +189,77 @@ document.querySelectorAll('.mobile-nav a').forEach(link => {
 });
 
 // =========================================================
+// AUTOCOMPLETE DA BUSCA
+// =========================================================
+document.addEventListener('DOMContentLoaded', () => {
+  const input = document.getElementById('search-input');
+  const wrap = document.querySelector('.search-wrapper');
+  if (!input || !wrap) return;
+
+  const box = document.getElementById('search-autocomplete');
+  let timer = null;
+  let selectedIdx = -1;
+
+  input.addEventListener('input', () => {
+    clearTimeout(timer);
+    const q = input.value.trim();
+    if (q.length < 2) { box.classList.remove('active'); box.innerHTML = ''; return; }
+
+    timer = setTimeout(async () => {
+      try {
+        const r = await fetch(`/api/busca?q=${encodeURIComponent(q)}`);
+        const data = await r.json();
+        if (data.length === 0) {
+          box.innerHTML = '<div class="search-autocomplete-empty">Nenhum produto encontrado</div>';
+          box.classList.add('active');
+          return;
+        }
+        box.innerHTML = data.map((p, i) =>
+          `<a href="/produto/${p.id}" class="search-autocomplete-item" data-idx="${i}">
+            <img src="${p.imagem || 'https://via.placeholder.com/40'}" alt="${p.nome}" loading="lazy">
+            <div class="search-autocomplete-info">
+              <div class="search-autocomplete-nome">${p.nome}</div>
+              <div class="search-autocomplete-preco">R$ ${p.preco.toFixed(2).replace('.', ',')}</div>
+            </div>
+          </a>`
+        ).join('');
+        box.classList.add('active');
+        selectedIdx = -1;
+      } catch (e) {
+        box.classList.remove('active');
+      }
+    }, 250);
+  });
+
+  input.addEventListener('keydown', (e) => {
+    const items = box.querySelectorAll('.search-autocomplete-item');
+    if (!items.length) return;
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      selectedIdx = Math.min(selectedIdx + 1, items.length - 1);
+      items.forEach((el, i) => el.style.background = i === selectedIdx ? '#f1f5f9' : '');
+      items[selectedIdx].scrollIntoView({ block: 'nearest' });
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      selectedIdx = Math.max(selectedIdx - 1, 0);
+      items.forEach((el, i) => el.style.background = i === selectedIdx ? '#f1f5f9' : '');
+      items[selectedIdx].scrollIntoView({ block: 'nearest' });
+    } else if (e.key === 'Enter' && selectedIdx >= 0) {
+      e.preventDefault();
+      items[selectedIdx].click();
+    }
+  });
+
+  input.addEventListener('blur', () => {
+    setTimeout(() => box.classList.remove('active'), 200);
+  });
+
+  input.addEventListener('focus', () => {
+    if (input.value.trim().length >= 2) input.dispatchEvent(new Event('input'));
+  });
+});
+
+// =========================================================
 // BOTÃO VOLTAR AO TOPO
 // =========================================================
 document.addEventListener('DOMContentLoaded', () => {

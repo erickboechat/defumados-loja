@@ -195,6 +195,21 @@ def api_produtos():
     return jsonify(get_produtos(todos=False))
 
 
+@app.route('/api/busca')
+def api_busca():
+    q = request.args.get('q', '').strip()
+    if len(q) < 2:
+        return jsonify([])
+    resultados = get_produtos(todos=False, search=q)
+    return jsonify([{
+        'id': p['id'],
+        'nome': p['nome'],
+        'preco': p['preco'],
+        'imagem': p['imagens'][0] if p['imagens'] else None,
+        'estoque': p['estoque'],
+    } for p in resultados[:8]])
+
+
 @app.route('/api/produtos/<int:produto_id>')
 def api_produto_detalhe(produto_id):
     produto = get_produto(produto_id)
