@@ -16,6 +16,15 @@
   .produto-detalhe { display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; background: white; border-radius: var(--borda-radius); padding: 2rem; box-shadow: var(--sombra); }
   .produto-imagem { position: relative; }
   .produto-imagem img { width: 100%; border-radius: 8px; object-fit: cover; }
+  .galeria-main { position: relative; overflow: hidden; border-radius: 8px; }
+  .galeria-track { display: flex; transition: transform 0.35s cubic-bezier(.25,.46,.45,.94); will-change: transform; }
+  .galeria-track .gallery-img { width: 100%; flex-shrink: 0; display: block; border-radius: 0; }
+  .galeria-nav { position: absolute; top: 50%; transform: translateY(-50%); width: 36px; height: 60px; background: rgba(0,0,0,0.35); color: white; border: none; font-size: 1.2rem; cursor: pointer; z-index: 10; display: flex; align-items: center; justify-content: center; transition: background 0.2s; opacity: 0; }
+  .galeria-main:hover .galeria-nav { opacity: 1; }
+  .galeria-nav:hover { background: rgba(0,0,0,0.6); }
+  .galeria-prev { left: 0; border-radius: 0 8px 8px 0; }
+  .galeria-next { right: 0; border-radius: 8px 0 0 8px; }
+  @media (max-width: 768px) { .galeria-nav { opacity: 1; height: 50px; width: 32px; } }
   .produto-info h1 { font-size: 1.8rem; color: var(--cor-primaria); margin-bottom: 0.5rem; }
   .produto-preco { font-size: 2rem; font-weight: 700; color: var(--cor-primaria); margin: 1rem 0; }
   .produto-estoque { display: inline-block; padding: 0.4rem 0.8rem; border-radius: 20px; font-size: 0.9rem; font-weight: 600; margin-bottom: 1rem; }
@@ -136,15 +145,17 @@
     <h1 class="produto-titulo">{{ produto.nome }}</h1>
     <div class="galeria-produto">
   <div class="galeria-main">
-  <img id="img-principal" 
-   src="{{ produto.imagens[0] | webp_smart }}" 
-   alt="{{ produto.nome }}" 
-   loading="eager" 
-   decoding="async">
+  <div class="galeria-track" id="galeria-track">
+    {% for img in produto.imagens %}
+    <img src="{{ img | webp_smart }}"
+         alt="{{ produto.nome }} - Foto {{ loop.index }}"
+         class="gallery-img{% if loop.first %} active{% endif %}"
+         data-index="{{ loop.index0 }}">
+    {% endfor %}
+  </div>
   {% if not produto.estoque %}
   <div class="galeria-badge-estoque esgotado">❌ Esgotado</div>
   {% endif %}
-
 </div>
   
   {% if produto.imagens|length > 1 %}
@@ -153,7 +164,7 @@
       <img src="{{ img | webp_smart }}" 
       alt="{{ produto.nome }} - Foto {{ loop.index }}" 
      class="thumb {% if loop.first %}active{% endif %}"
-     onclick="trocarImagem(this.src, this)"
+     onclick="trocarImagem({{ loop.index0 }}, this)"
      loading="lazy">
     {% endfor %}
   </div>
@@ -274,32 +285,28 @@
 </main>
 
 <script>
-  // Zoom ao passar o mouse
-  const zoomContainer = document.querySelector('.galeria-main');
-  const zoomImg = document.getElementById('img-principal');
-  
-  if (zoomContainer && zoomImg) {
-    zoomContainer.addEventListener('mousemove', (e) => {
-      const { left, top, width, height } = zoomContainer.getBoundingClientRect();
-      const x = ((e.clientX - left) / width) * 100;
-      const y = ((e.clientY - top) / height) * 100;
-      
-      zoomImg.style.transformOrigin = `${x}% ${y}%`;
-      zoomImg.style.transform = 'scale(2)';
-      zoomImg.style.cursor = 'zoom-in';
-    });
-    
-    zoomContainer.addEventListener('mouseleave', () => {
-      zoomImg.style.transform = 'scale(1)';
-      zoomImg.style.transformOrigin = 'center center';
-      zoomImg.style.cursor = 'default';
-    });
+  // Galeria com slide suave
+  const track = document.getElementById('galeria-track');
+  const galleryImgs = track ? Array.from(track.querySelectorAll('.gallery-img')) : [];
+  const totalImgs = galleryImgs.length;
+  let currentIdx = 0;
+
+  function goToIndex(idx) {
+    if (!track || totalImgs < 2) return;
+    if (idx < 0) idx = 0;
+    if (idx >= totalImgs) idx = totalImgs - 1;
+    if (idx === currentIdx) return;
+    currentIdx = idx;
+    track.style.transform = `translateX(-${currentIdx * 100}%)`;
+    document.querySelectorAll('.thumb').forEach((t, i) => t.classList.toggle('active', i === currentIdx));
   }
-  
-  function trocarImagem(url, thumbEl) {
-    if (zoomImg) zoomImg.src = url;
-    document.querySelectorAll('.thumb').forEach(t => t.classList.remove('active'));
-    if (thumbEl) thumbEl.classList.add('active');
+
+  function trocarImagem(idx, thumbEl) {
+    goToIndex(idx);
+  }
+
+  function navImagem(direcao) {
+    goToIndex(currentIdx + direcao);
   }
 
   function alterarQtd(delta) {
@@ -312,36 +319,50 @@
     minus.classList.toggle('hidden', val <= 1);
   }
 
-  function navImagem(direcao) {
-    const thumbs = document.querySelectorAll('.thumb');
-    if (!thumbs.length) return;
-    const active = document.querySelector('.thumb.active');
-    let idx = Array.from(thumbs).indexOf(active);
-    if (idx < 0) idx = 0;
-    idx += direcao;
-    if (idx < 0) idx = 0;
-    if (idx >= thumbs.length) idx = thumbs.length - 1;
-    thumbs[idx].click();
+  // Swipe touch
+  let startX = 0;
+  const galeriaMain = document.querySelector('.galeria-main');
+  if (galeriaMain && totalImgs > 1) {
+    galeriaMain.addEventListener('touchstart', e => {
+      startX = e.touches[0].clientX;
+    }, { passive: true });
+
+    galeriaMain.addEventListener('touchend', e => {
+      const diffX = startX - e.changedTouches[0].clientX;
+      if (Math.abs(diffX) < 50) return;
+      navImagem(diffX > 0 ? 1 : -1);
+    }, { passive: true });
   }
 
-  let startX = 0, startY = 0;
-  zoomContainer?.addEventListener('touchstart', e => {
-    startX = e.touches[0].clientX;
-    startY = e.touches[0].clientY;
-  }, { passive: true });
+  // Seta lateral (desktop)
+  if (galeriaMain && totalImgs > 1) {
+    ['prev', 'next'].forEach(dir => {
+      const btn = document.createElement('button');
+      btn.className = `galeria-nav galeria-${dir}`;
+      btn.innerHTML = dir === 'prev' ? '&#10094;' : '&#10095;';
+      btn.setAttribute('aria-label', dir === 'prev' ? 'Anterior' : 'Próximo');
+      btn.addEventListener('click', e => { e.stopPropagation(); navImagem(dir === 'prev' ? -1 : 1); });
+      galeriaMain.appendChild(btn);
+    });
+  }
 
-  zoomContainer?.addEventListener('touchend', e => {
-    const endX = e.changedTouches[0].clientX;
-    const endY = e.changedTouches[0].clientY;
-    const diffX = startX - endX;
-    const diffY = startY - endY;
-
-    if (Math.abs(diffX) < Math.abs(diffY) * 1.5) return;
-    if (Math.abs(diffX) < 50) return;
-
-    if (diffX > 0) navImagem(1);
-    else navImagem(-1);
-  }, { passive: true });
+  // Zoom ao passar o mouse
+  if (galeriaMain && galleryImgs.length) {
+    const imgAtual = () => galleryImgs[currentIdx];
+    galeriaMain.addEventListener('mousemove', (e) => {
+      const img = imgAtual();
+      if (!img) return;
+      const { left, top, width, height } = galeriaMain.getBoundingClientRect();
+      const x = ((e.clientX - left) / width) * 100;
+      const y = ((e.clientY - top) / height) * 100;
+      img.style.transformOrigin = `${x}% ${y}%`;
+      img.style.transform = 'scale(2)';
+      img.style.cursor = 'zoom-in';
+    });
+    galeriaMain.addEventListener('mouseleave', () => {
+      galleryImgs.forEach(img => { img.style.transform = 'scale(1)'; img.style.transformOrigin = 'center center'; img.style.cursor = 'default'; });
+    });
+  }
 
   const AREAS_FIXAS = [
     'botafogo', 'catete', 'copacabana', 'cosme velho', 'flamengo', 'gávea', 'glória', 'humaitá',

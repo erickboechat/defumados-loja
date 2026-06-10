@@ -221,8 +221,8 @@ document.addEventListener('DOMContentLoaded', () => {
 // LIGHTBOX — zoom ao clicar na imagem do produto
 // =========================================================
 document.addEventListener('DOMContentLoaded', () => {
-  const principal = document.getElementById('img-principal');
-  if (!principal) return;
+  const galeriaMain = document.querySelector('.galeria-main');
+  if (!galeriaMain) return;
 
   const overlay = document.createElement('div');
   overlay.className = 'lightbox-overlay';
@@ -232,13 +232,15 @@ document.addEventListener('DOMContentLoaded', () => {
   const lbImg = overlay.querySelector('.lightbox-img');
   const lbClose = overlay.querySelector('.lightbox-close');
 
-  function abrirLightbox() {
-    lbImg.src = principal.src;
+  function abrirLightbox(e) {
+    const img = e.target.closest('.gallery-img, #img-principal');
+    if (!img) return;
+    lbImg.src = img.src || img.querySelector('img').src;
     overlay.classList.add('active');
     document.body.style.overflow = 'hidden';
   }
 
-  principal.addEventListener('click', abrirLightbox);
+  galeriaMain.addEventListener('click', abrirLightbox);
 
   lbClose.addEventListener('click', () => {
     overlay.classList.remove('active');
