@@ -30,9 +30,12 @@
    .resumo-item-qtd { color: #666; min-width: 2.5rem; }
    .resumo-item-nome { flex: 1; }
    .resumo-item-subtotal { font-weight: 500; white-space: nowrap; }
-  .btn-enviar { width: 100%; background: var(--cor-sucesso); color: white; padding: 1rem; border-radius: 8px; font-weight: 600; font-size: 1.1rem; border: none; cursor: pointer; transition: all 0.2s; }
-  .btn-enviar:hover { background: #128C7E; transform: translateY(-2px); }
-  .btn-enviar:disabled { background: #ccc; cursor: not-allowed; transform: none; }
+   .btn-enviar { width: 100%; background: var(--cor-sucesso); color: white; padding: 1rem; border-radius: 8px; font-weight: 600; font-size: 1.1rem; border: none; cursor: pointer; transition: all 0.2s; }
+   .btn-enviar:hover { background: #128C7E; transform: translateY(-2px); }
+   .btn-enviar:disabled { background: #ccc; cursor: not-allowed; transform: none; }
+   .btn-enviar.loading { background: #128C7E; pointer-events: none; display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; }
+   .spinner { width: 18px; height: 18px; border: 3px solid rgba(255,255,255,0.3); border-top-color: #fff; border-radius: 50%; animation: spin 0.7s linear infinite; display: inline-block; }
+   @keyframes spin { to { transform: rotate(360deg); } }
   .voltar { display: block; text-align: center; margin-top: 1rem; color: var(--cor-texto-claro); text-decoration: none; }
 </style>
 {% endblock %}
@@ -358,13 +361,35 @@ function renderResumoItens() {
 document.getElementById('checkout-form').addEventListener('submit', async function(e) {
 e.preventDefault();
 
+const btn = document.getElementById('btn-enviar');
+const textoOriginal = btn.textContent;
+
+// Loading state
+btn.disabled = true;
+btn.innerHTML = '<span class="spinner"></span> Enviando pedido...';
+btn.classList.add('loading');
+
 // 1. Busca token CSRF fresco (resolve problema do Instagram WebView)
 try {
   const resp = await fetch('/csrf-token');
+  if (!resp.ok) throw new Error('Resposta inválida');
   const data = await resp.json();
   document.querySelector('[name="csrf_token"]').value = data.token;
 } catch (err) {
   console.error('Erro ao renovar CSRF token');
+  // Restaura botão
+  btn.disabled = false;
+  btn.textContent = textoOriginal;
+  btn.classList.remove('loading');
+  // Mostra erro visual
+  const msg = document.getElementById('btn-erro-msg');
+  if (msg) {
+    msg.textContent = '⏳ Erro de conexão ao renovar sessão. Tente novamente.';
+    msg.style.display = 'block';
+    msg.style.color = '#dc2626';
+  }
+  window.scrollTo({ top: document.querySelector('.checkout-container').offsetTop - 20, behavior: 'smooth' });
+  return;
 }
 
 // 2. Pega os dados do carrinho
