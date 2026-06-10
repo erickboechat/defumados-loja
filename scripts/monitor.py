@@ -53,7 +53,7 @@ def save_state(state):
 
 
 def main():
-    site_url = os.environ.get('MONITOR_URL', 'https://defumadosac.com.br/health')
+    site_url = os.environ.get('MONITOR_URL', 'http://127.0.0.1/health')
     state = load_state()
     last_state = state.get('last_state', 'unknown')
     last_alert = state.get('last_alert_at', 0)
