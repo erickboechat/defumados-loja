@@ -13,6 +13,54 @@ from config import Config
 
 BRT = timezone(timedelta(hours=-3))
 
+# Sinônimos e variações ortográficas para busca inteligente
+SINONIMOS = {
+    'coppa': 'copa',
+    'copa': 'copa',
+    'costela': 'costelinha',
+    'costelinha': 'costelinha',
+    'costela defumada': 'costelinha',
+    'bacon': 'bacon',
+    'panceta': 'bacon',
+    'pancceta': 'bacon',
+    'pancetta': 'bacon',
+    'barriga': 'bacon',
+    'touchino': 'bacon',
+    'toucinho': 'bacon',
+    'linguica': 'linguiça',
+    'linguiça': 'linguiça',
+    'calabresa': 'linguiça calabresa',
+    'calabreza': 'linguiça calabresa',
+    'paio': 'linguiça paio',
+    'lombo': 'copa',
+    'presunto': 'copa',
+    'carne seca': 'copa',
+    'porco': '',
+    'defumado': '',
+    'artesanal': '',
+    'caseiro': '',
+    'fatiado': '',
+    'picado': '',
+    'peça': '',
+    'peca': '',
+    'noz': 'noz manteiga',
+    'noz manteiga': 'noz manteiga',
+    'manteiga': 'noz manteiga',
+    'salame': 'salame',
+    'salaminho': 'salame',
+    'salame italiano': 'salame italiano',
+    'salamin': 'salame',
+    'cheddar': 'linguiça cheddar',
+    'chedar': 'linguiça cheddar',
+    'cheda': 'linguiça cheddar',
+}
+
+
+def normalizar(texto):
+    """Remove acentos e converte para minúsculas"""
+    import unicodedata
+    return unicodedata.normalize('NFKD', texto).encode('ascii', 'ignore').decode().lower().strip()
+
 
 # ===== CONFIGURAÇÕES DE UPLOAD =====
 
@@ -151,6 +199,10 @@ def get_produtos(todos=False, order_by='nome', search=''):
         rows = conn.execute(query, params).fetchall()
         produtos = [parse_produto(row) for row in rows]
 
+        # Se não achou nada com LIKE, tenta busca inteligente
+        if not produtos and search:
+            produtos = _busca_inteligente(conn, search, todos, order_by)
+
         if order_by == 'vendas':
             for p in produtos:
                 p['vendas'] = get_vendas_reais(conn, p['id'])
@@ -160,6 +212,51 @@ def get_produtos(todos=False, order_by='nome', search=''):
                 p['vendas'] = 0
 
     return produtos
+
+
+def _busca_inteligente(conn, search, todos, order_by):
+    """Tenta encontrar produtos com busca expandida (sinônimos + normalização)"""
+    search_norm = normalizar(search)
+    termos = search_norm.split()
+
+    # Busca todos os produtos visíveis
+    query = 'SELECT * FROM produtos'
+    clausulas = []
+    if not todos:
+        clausulas.append('visivel = 1')
+    if clausulas:
+        query += ' WHERE ' + ' AND '.join(clausulas)
+    rows = conn.execute(query).fetchall()
+    todos_produtos = [parse_produto(row) for row in rows]
+
+    resultados = []
+
+    for p in todos_produtos:
+        nome_norm = normalizar(p['nome'])
+        score = 0
+
+        # 1. Verifica se cada termo da busca aparece no nome normalizado
+        for termo in termos:
+            if termo and termo in nome_norm:
+                score += 2
+
+        # 2. Verifica sinônimos
+        for termo in termos:
+            if termo == '':
+                continue
+            sinonimo = SINONIMOS.get(termo)
+            if sinonimo:
+                if sinonimo == '':
+                    score += 1  # termo genérico (ex: "defumado", "porco")
+                elif sinonimo in nome_norm:
+                    score += 3 if termo != sinonimo else 2
+
+        if score > 0:
+            p['_score'] = score
+            resultados.append(p)
+
+    resultados.sort(key=lambda x: x['_score'], reverse=True)
+    return resultados[:20]
 
 
 def count_produtos(todos=False):

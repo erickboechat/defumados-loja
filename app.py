@@ -205,7 +205,7 @@ def api_busca():
         'id': p['id'],
         'nome': p['nome'],
         'preco': p['preco'],
-        'imagem': p['imagens'][0] if p['imagens'] else None,
+        'imagem': webp_smart_filter(p['imagens'][0]) if p['imagens'] else None,
         'estoque': p['estoque'],
     } for p in resultados[:8]])
 
