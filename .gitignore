@@ -38,8 +38,8 @@ backups/
 # Scripts auxiliares (contêm chaves de API)
 docs/
 
-# Testes
-test_*.py
+# Geração de relatórios do pytest
+.pytest_cache/
 
 # Migrations / dados de migração
 produtos.json
