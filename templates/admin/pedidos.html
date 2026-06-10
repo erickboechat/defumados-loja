@@ -1,5 +1,26 @@
 {% extends 'base.html' %}
 {% block title %}Pedidos - Admin | Defumados AC{% endblock %}
+{% block extra_head %}
+<style>
+.bulk-bar {
+  display: flex; align-items: center; gap: 10px;
+  margin-bottom: 15px; padding: 10px 15px;
+  background: #f8f9fa; border-radius: 6px;
+  flex-wrap: wrap;
+}
+.select-all-label { display: flex; align-items: center; gap: 6px; cursor: pointer; font-size: 14px; }
+.bulk-select {
+  padding: 6px 10px; border: 1px solid #ccc; border-radius: 4px; font-size: 14px;
+}
+.btn-bulk {
+  padding: 6px 16px; background: #28a745; color: #fff; border: none; border-radius: 4px;
+  cursor: pointer; font-size: 14px;
+}
+.btn-bulk:hover { background: #218838; }
+.admin-table th:first-child, .admin-table td:first-child { width: 40px; text-align: center; }
+.row-checkbox { width: 16px; height: 16px; cursor: pointer; }
+</style>
+{% endblock %}
 {% block content %}
 <main class="admin-container">
   <div class="admin-tabs">
@@ -12,38 +33,58 @@
   </div>
 
   {% if pedidos %}
-  <div class="admin-table-wrapper">
-    <table class="admin-table">
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>Cliente</th>
-          <th>Total</th>
-          <th>Status</th>
-          <th>Data</th>
-          <th>Ações</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for p in pedidos %}
-        <tr>
-          <td>#{{ p.id }}</td>
-          <td>{{ p.cliente_nome }}</td>
-          <td>R$ {{ "%.2f"|format(p.total) }}</td>
-          <td>
-            <span class="status-badge status-{{ p.status }}">
-              {{ p.status|title }}
-            </span>
-          </td>
-          <td>{{ p.data_criacao.split(' ')[0] }}</td>
-          <td>
-            <a href="/admin/pedidos/{{ p.id }}" class="btn-view">👁️ Detalhes</a>
-          </td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-  </div>
+  <form method="POST" action="/admin/pedidos/bulk" id="bulk-form">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+    <div class="bulk-bar">
+      <label class="select-all-label">
+        <input type="checkbox" id="select-all"> Selecionar todos
+      </label>
+      <select name="action" class="bulk-select" required>
+        <option value="">Ações em massa</option>
+        <option value="concluido">Marcar como concluído</option>
+        <option value="cancelado">Marcar como cancelado</option>
+        <option value="registrado">Marcar como registrado</option>
+        <option value="delete">Excluir selecionados</option>
+      </select>
+      <button type="submit" class="btn-bulk">Aplicar</button>
+    </div>
+
+    <div class="admin-table-wrapper">
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th></th>
+            <th>ID</th>
+            <th>Cliente</th>
+            <th>Total</th>
+            <th>Status</th>
+            <th>Data</th>
+            <th>Ações</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for p in pedidos %}
+          <tr>
+            <td><input type="checkbox" name="pedido_ids" value="{{ p.id }}" class="row-checkbox"></td>
+            <td>#{{ p.id }}</td>
+            <td>{{ p.cliente_nome }}</td>
+            <td>R$ {{ "%.2f"|format(p.total) }}</td>
+            <td>
+              <span class="status-badge status-{{ p.status }}">
+                {{ p.status|title }}
+              </span>
+            </td>
+            <td>{{ p.data_criacao.split(' ')[0] }}</td>
+            <td>
+              <a href="/admin/pedidos/{{ p.id }}" class="btn-view">👁️ Detalhes</a>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </form>
 
   {% if total_paginas > 1 %}
   <div class="pagination-bar">
@@ -64,4 +105,28 @@
   </div>
   {% endif %}
 </main>
+
+<script>
+document.getElementById('select-all').addEventListener('change', function() {
+  document.querySelectorAll('.row-checkbox').forEach(cb => cb.checked = this.checked);
+});
+
+document.getElementById('bulk-form').addEventListener('submit', function(e) {
+  var checked = document.querySelectorAll('.row-checkbox:checked').length;
+  if (checked === 0) {
+    e.preventDefault();
+    alert('Selecione pelo menos um pedido.');
+    return;
+  }
+  var action = document.querySelector('.bulk-select').value;
+  if (!action) {
+    e.preventDefault();
+    alert('Selecione uma ação.');
+    return;
+  }
+  if (action === 'delete' && !confirm('Excluir ' + checked + ' pedido(s)? Esta ação não pode ser desfeita.')) {
+    e.preventDefault();
+  }
+});
+</script>
 {% endblock %}

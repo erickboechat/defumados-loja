@@ -643,6 +643,29 @@ def admin_delete_pedido(pedido_id):
     return redirect(url_for('admin_pedidos'))
 
 
+@app.route('/admin/pedidos/bulk', methods=['POST'])
+@login_required
+def admin_pedidos_bulk():
+    pedido_ids = request.form.getlist('pedido_ids')
+    action = request.form.get('action')
+
+    if not pedido_ids or not action:
+        return redirect(url_for('admin_pedidos'))
+
+    count = len(pedido_ids)
+
+    if action == 'delete':
+        for pid in pedido_ids:
+            delete_pedido(int(pid))
+        log.info(f"{count} pedido(s) deletado(s) em massa")
+    else:
+        for pid in pedido_ids:
+            update_pedido_status(int(pid), action)
+        log.info(f"{count} pedido(s) atualizado(s) para '{action}' em massa")
+
+    return redirect(url_for('admin_pedidos'))
+
+
 # ===== INICIALIZAÇÃO =====
 
 if __name__ == '__main__':
