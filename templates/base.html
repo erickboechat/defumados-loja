@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>{% block title %}Defumados AC{% endblock %}</title>
   {% block meta_description %}{% endblock %}
-  <link rel="stylesheet" href="{{ url_for('static', filename='style.min.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.min.css') }}?v={{ static_version }}">
   <link rel="icon" type="image/png" href="/static/uploads/logo-1.png">
   {% block og_tags %}{% endblock %}
   {% block extra_head %}{% endblock %}

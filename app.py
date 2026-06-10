@@ -72,8 +72,16 @@ app.teardown_appcontext(close_db)
 
 
 @app.context_processor
-def inject_csrf():
-    return dict(csrf_token=generate_csrf)
+def inject_globals():
+    version = '1'
+    build_path = os.path.join(app.root_path, 'static', 'build.json')
+    try:
+        with open(build_path, 'r') as f:
+            data = json.load(f)
+            version = data.get('version', '1')
+    except (FileNotFoundError, json.JSONDecodeError):
+        pass
+    return dict(csrf_token=generate_csrf, static_version=version)
 
 
 # ===== SEO =====

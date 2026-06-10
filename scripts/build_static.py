@@ -46,6 +46,9 @@ def minify_js(content):
 
 
 def main():
+    import json
+    from datetime import datetime
+
     files = [
         ('style.css', 'style.min.css', minify_css),
         ('script.js', 'script.min.js', minify_js),
@@ -69,6 +72,12 @@ def main():
         print(f'[OK] {src_name} -> {dst_name}')
         print(f'     {original_kb:.1f}KB -> {minified_kb:.1f}KB ({saved:.0f}% economia)')
 
+    # Gera build.json com timestamp para cache busting
+    version = datetime.now().strftime('%Y%m%d%H%M%S')
+    (static_dir / 'build.json').write_text(
+        json.dumps({'version': version}), encoding='utf-8'
+    )
+    print(f'[OK] build.json -> v{version}')
     print('Build concluído.')
 
 
