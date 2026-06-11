@@ -143,7 +143,7 @@
   max-width: calc(100% - var(--admin-sidebar-width));
   display: block !important;
 }
-.admin-content > * {
+.admin-content > :not(script) {
   display: block !important;
   width: 100% !important;
 }

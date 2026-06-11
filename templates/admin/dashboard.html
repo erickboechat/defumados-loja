@@ -71,20 +71,6 @@
   </div>
 </div>
 
-<script>
-document.getElementById('add-produto-header').addEventListener('click', function() {
-  var form = document.getElementById('add-produto-form');
-  var icon = document.getElementById('add-produto-icon');
-  if (form.style.display === 'none') {
-    form.style.display = 'block';
-    icon.style.transform = 'rotate(180deg)';
-  } else {
-    form.style.display = 'none';
-    icon.style.transform = 'rotate(0deg)';
-  }
-});
-</script>
-
 <div class="admin-table-card" style="width:100%;box-sizing:border-box;">
   <table>
     <thead>
@@ -185,11 +171,22 @@ document.getElementById('add-produto-header').addEventListener('click', function
 </div>
 {% endif %}
 
-</div>
-
 <script>
 function toggleEdit(id) {
   document.getElementById('edit-' + id).classList.toggle('hidden');
 }
+document.getElementById('add-produto-header').addEventListener('click', function() {
+  var form = document.getElementById('add-produto-form');
+  var icon = document.getElementById('add-produto-icon');
+  if (form.style.display === 'none') {
+    form.style.display = 'block';
+    icon.style.transform = 'rotate(180deg)';
+  } else {
+    form.style.display = 'none';
+    icon.style.transform = 'rotate(0deg)';
+  }
+});
 </script>
+
+</div>
 {% endblock %}
