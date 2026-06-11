@@ -145,12 +145,9 @@
   padding: 24px;
   max-width: calc(100% - var(--admin-sidebar-width));
   display: block !important;
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
 }
 .admin-content > :not(script) {
   display: block !important;
-  width: 100% !important;
 }
 
 /* === STATS CARDS === */
@@ -573,7 +570,7 @@
   .admin-sidebar .admin-sidebar-item .side-icon { font-size: 20px; }
   .admin-sidebar .admin-sidebar-item .side-label { display: none; }
   .admin-sidebar .admin-sidebar-item .side-badge { display: none; }
-  .admin-content { margin-left: 56px; max-width: calc(100% - 56px); }
+  .admin-content { margin-left: 56px; max-width: none; }
   .admin-toast-container { left: 68px; }
   .admin-pedido-grid { grid-template-columns: 1fr; }
   .pedido-detail { grid-template-columns: 1fr; }
@@ -584,7 +581,6 @@
 
 @media (max-width: 480px) {
   .admin-content { padding: 12px; }
-  .admin-table-card { border-radius: 0; margin: 0 -12px; }
   .admin-stats { grid-template-columns: 1fr 1fr; gap: 10px; }
   .admin-stat { padding: 14px; }
   .admin-stat-value { font-size: 20px; }
