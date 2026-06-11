@@ -24,7 +24,7 @@
   <form method="POST" action="/admin/pedidos/bulk" id="bulk-form">
     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
     <div class="admin-bulk">
-      <input type="checkbox" id="select-all" onchange="selectAll(this)">
+      <input type="checkbox" id="select-all">
       <label for="select-all">Selecionar todos</label>
       <select name="action" class="admin-select">
         <option value="">--- Ação em massa ---</option>
@@ -33,7 +33,7 @@
         <option value="registrado">Marcar como registrado</option>
         <option value="delete">Excluir</option>
       </select>
-      <button type="submit" class="admin-btn admin-btn-primary admin-btn-sm" onclick="return confirmBulk()">Aplicar</button>
+      <button type="submit" class="admin-btn admin-btn-primary admin-btn-sm">Aplicar</button>
       <a href="/admin/pedidos/export{% if q %}?q={{ q }}{% endif %}{% if status_filter %}{% if q %}&{% else %}?{% endif %}status={{ status_filter }}{% endif %}" class="admin-btn admin-btn-ghost admin-btn-sm">📥 Exportar CSV</a>
     </div>
     <table>
@@ -106,18 +106,5 @@
   {% endif %}
 </div>
 {% endif %}
-
-<script>
-function selectAll(source) {
-  document.querySelectorAll('.bulk-check').forEach(function(cb) { cb.checked = source.checked; });
-}
-function confirmBulk() {
-  var action = document.querySelector('select[name="action"]').value;
-  var checked = document.querySelectorAll('.bulk-check:checked').length;
-  if (!action || checked === 0) { alert('Selecione uma ação e pelo menos um pedido.'); return false; }
-  if (action === 'delete') { return confirm('Excluir permanentemente ' + checked + ' pedido(s)?'); }
-  return true;
-}
-</script>
 
 {% endblock %}

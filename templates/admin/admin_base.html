@@ -6,11 +6,13 @@
   <title>{% block title %}Admin | Defumados AC{% endblock %}</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='admin.css') }}?v={{ static_version }}">
   <link rel="icon" type="image/png" href="/static/uploads/logo-1.png">
+  <link rel="manifest" href="{{ url_for('static', filename='manifest.json') }}?v={{ static_version }}">
+  <meta name="theme-color" content="#6366f1">
   {% block extra_head %}{% endblock %}
 </head>
 <body>
   <div class="admin-topbar">
-    <button class="admin-mobile-menu-btn" onclick="toggleMobileMenu()" aria-label="Menu">☰</button>
+    <button class="admin-mobile-menu-btn" aria-label="Menu">☰</button>
     <a href="/admin" class="admin-topbar-logo">Defumados <span>AC</span></a>
     <div class="admin-topbar-spacer"></div>
     <div class="admin-topbar-user">
@@ -19,7 +21,7 @@
     </div>
   </div>
 
-  <div class="admin-sidebar-overlay" id="sidebar-overlay" onclick="toggleMobileMenu()"></div>
+  <div class="admin-sidebar-overlay" id="sidebar-overlay"></div>
   <div class="admin-layout">
     <nav class="admin-sidebar" id="sidebar">
       <div class="admin-sidebar-section">Menu</div>
@@ -48,24 +50,19 @@
         {% for category, message in messages %}
           <div class="admin-toast admin-toast-{{ category }}">
             <span>{{ message }}</span>
-            <button class="admin-toast-close" onclick="this.parentElement.remove()">&times;</button>
+            <button class="admin-toast-close">&times;</button>
           </div>
         {% endfor %}
       </div>
     {% endif %}
   {% endwith %}
+
+  <script src="{{ url_for('static', filename='admin.js') }}?v={{ static_version }}"></script>
   <script>
-  function toggleMobileMenu() {
-    document.getElementById('sidebar').classList.toggle('mobile-open');
-    document.getElementById('sidebar-overlay').classList.toggle('mobile-open');
-  }
-  (function(){
-    var toasts = document.querySelectorAll('.admin-toast');
-    toasts.forEach(function(t){
-      setTimeout(function(){ t.classList.add('fade-out'); }, 3000);
-      setTimeout(function(){ t.remove(); }, 3500);
-    });
-  })();
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('{{ url_for('static', filename='sw.js') }}?v={{ static_version }}')
+        .catch(() => {}); // silencioso se falhar
+    }
   </script>
 </body>
 </html>
