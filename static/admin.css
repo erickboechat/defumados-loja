@@ -57,6 +57,22 @@ html { overflow-x: hidden; }
 }
 .admin-topbar-logo span { color: var(--admin-accent); }
 .admin-topbar-spacer { flex: 1; }
+.admin-topbar-actions { display: flex; gap: 8px; }
+.admin-topbar-search-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  background: none;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  cursor: pointer;
+  color: var(--admin-text-secondary);
+  transition: background 0.15s, color 0.15s;
+}
+.admin-topbar-search-btn:hover { background: var(--admin-accent-light); color: var(--admin-accent); }
 .admin-topbar-user {
   display: flex;
   align-items: center;
@@ -483,8 +499,8 @@ html { overflow-x: hidden; }
 .pedido-detail-col { display: flex; flex-direction: column; gap: 20px; }
 
 /* === EDIT ROW === */
-.edit-row.hidden { display: none; }
-.edit-row { background: #fafbff; }
+.edit-row.hidden { display: none !important; }
+.edit-row { display: table-row; background: #fafbff; }
 
 /* === LOGIN PAGE === */
 .admin-login-page {
@@ -749,6 +765,7 @@ html { overflow-x: hidden; }
     color: var(--admin-text);
     margin-right: 8px;
   }
+  .admin-topbar-search-btn { font-size: 18px; }
 
   /* Stats: grid 2x2 limpo */
   .admin-stats {
