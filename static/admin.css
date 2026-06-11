@@ -659,6 +659,7 @@
   .admin-table-card th,
   .admin-table-card td,
   .admin-table-card tr { display: block; }
+  .admin-table-card table { min-width: 0; width: 100%; }
 
   .admin-table-card thead { display: none; }
 
@@ -726,6 +727,15 @@
 
   .admin-table-card td[data-label="Status"] .badge { font-size: 11px; }
 
+  /* Esconder foto no mobile para economizar espaço */
+  .admin-table-card td[data-label="Foto"] { display: none; }
+
+  /* Edit row responsivo */
+  .admin-table-card tr .edit-row,
+  .admin-table-card tr[class*="edit"] { padding: 10px !important; }
+  .admin-table-card td[colspan] { padding: 10px !important; }
+  .admin-table-card td[colspan] .admin-form-grid { grid-template-columns: 1fr; }
+
   .admin-bulk { flex-wrap: wrap; gap: 6px; padding: 10px 12px; }
   .admin-bulk label { font-size: 12px; }
 
@@ -735,10 +745,13 @@
 }
 
 @media (max-width: 480px) {
-  .admin-content { padding: 12px; }
+  .admin-content { padding: 10px; }
   .admin-stats { gap: 6px; }
-  .admin-stat { padding: 10px; }
-  .admin-stat-value { font-size: 18px; }
-  .admin-stat-icon { font-size: 16px; }
+  .admin-stat { padding: 8px; }
+  .admin-stat-value { font-size: 16px; }
+  .admin-stat-icon { font-size: 14px; }
   .admin-stat-label { font-size: 10px; }
+  .admin-table-card tr { padding: 10px; margin-bottom: 8px; }
+  .admin-table-card td { font-size: 12px; padding: 4px 0; }
+  .admin-table-card td::before { font-size: 10px; min-width: 50px; }
 }
