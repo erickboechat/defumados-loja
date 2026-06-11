@@ -11,6 +11,7 @@
 </head>
 <body style="background:#f3f4f6 !important;">
   <div class="admin-topbar">
+    <button class="admin-mobile-menu-btn" onclick="toggleMobileMenu()" aria-label="Menu">☰</button>
     <a href="/admin" class="admin-topbar-logo">Defumados <span>AC</span></a>
     <div class="admin-topbar-spacer"></div>
     <div class="admin-topbar-user">
@@ -19,8 +20,9 @@
     </div>
   </div>
 
+  <div class="admin-sidebar-overlay" id="sidebar-overlay" onclick="toggleMobileMenu()"></div>
   <div class="admin-layout">
-    <nav class="admin-sidebar">
+    <nav class="admin-sidebar" id="sidebar">
       <div class="admin-sidebar-section">Menu</div>
       <a href="/admin" class="admin-sidebar-item {% if request.path == '/admin' %}active{% endif %}">
         <span class="side-icon">📦</span>
@@ -54,6 +56,10 @@
     {% endif %}
   {% endwith %}
   <script>
+  function toggleMobileMenu() {
+    document.getElementById('sidebar').classList.toggle('mobile-open');
+    document.getElementById('sidebar-overlay').classList.toggle('mobile-open');
+  }
   (function(){
     var toasts = document.querySelectorAll('.admin-toast');
     toasts.forEach(function(t){
