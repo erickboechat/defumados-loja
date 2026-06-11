@@ -2,8 +2,10 @@
 {% block title %}Pedidos - Admin | Defumados AC{% endblock %}
 {% block content %}
 
-<div class="admin-page-header">
-  <h1>📋 Pedidos</h1>
+<div style="display:block;width:100%;">
+
+<div style="margin-bottom:20px;">
+  <h1 style="font-size:20px;font-weight:700;">📋 Pedidos</h1>
 </div>
 
 <div class="admin-table-card">
@@ -25,14 +27,14 @@
       <thead>
         <tr>
           <th style="width:32px;"></th>
-          <th style="width:40px;">ID</th>
+          <th style="width:44px;">ID</th>
           <th>Cliente</th>
           <th>Telefone</th>
           <th>Itens</th>
           <th>Total</th>
           <th>Status</th>
           <th>Data</th>
-          <th style="min-width:100px;">Ações</th>
+          <th style="min-width:90px;">Ações</th>
         </tr>
       </thead>
       <tbody>
@@ -41,9 +43,27 @@
           <td><input type="checkbox" name="pedido_ids" value="{{ ped.id }}" class="bulk-check"></td>
           <td style="color:var(--admin-text-secondary);font-size:13px;">{{ ped.id }}</td>
           <td><strong>{{ ped.cliente_nome }}</strong></td>
-          <td>{{ ped.cliente_telefone or '-' }}</td>
-          <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="{{ ped.itens or '' }}">{{ (ped.itens or '')[:60] }}{% if (ped.itens or '')|length > 60 %}...{% endif %}</td>
-          <td>R$ {{ "%.2f"|format(ped.total or 0) }}</td>
+          <td style="white-space:nowrap;">{{ ped.cliente_telefone or '-' }}</td>
+          <td style="max-width:240px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="{{ ped.itens or '' }}">
+            {% set itens_raw = ped.itens or '[]' %}
+            {% set ns = namespace(resumo='') %}
+            {% set itens_list = itens_raw.split('},{') %}
+            {% for item_str in itens_list %}
+              {% if 'nome' in item_str %}
+                {% set nome_start = item_str.find('"nome":"') + 8 %}
+                {% set nome_end = item_str.find('"', nome_start) %}
+                {% set qtd_start = item_str.find('"qtd":') + 6 %}
+                {% set qtd_end = item_str.find(',', qtd_start) %}
+                {% if qtd_end == -1 %}{% set qtd_end = item_str.find('}', qtd_start) %}{% endif %}
+                {% set nome = item_str[nome_start:nome_end] %}
+                {% set qtd = item_str[qtd_start:qtd_end] %}
+                {% if ns.resumo %}{% set ns.resumo = ns.resumo ~ ', ' %}{% endif %}
+                {% set ns.resumo = ns.resumo ~ qtd ~ 'x ' ~ nome %}
+              {% endif %}
+            {% endfor %}
+            {{ ns.resumo or '—' }}
+          </td>
+          <td style="white-space:nowrap;">R$ {{ "%.2f"|format(ped.total or 0) }}</td>
           <td>
             {% set st = ped.status or 'registrado' %}
             <span class="badge {% if st == 'concluido' %}badge-ok{% elif st == 'cancelado' %}badge-err{% else %}badge-warn{% endif %}">{{ st }}</span>
@@ -73,6 +93,8 @@
   {% endif %}
 </div>
 {% endif %}
+
+</div>
 
 <script>
 function selectAll(source) {
