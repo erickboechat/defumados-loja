@@ -5,7 +5,7 @@
 
 /* === VARIÁVEIS === */
 :root {
-  --admin-bg: #f0f4f8;
+  --admin-bg: #f3f4f6;
   --admin-white: #ffffff;
   --admin-border: #e5e7eb;
   --admin-text: #111827;
@@ -30,7 +30,7 @@
   min-height: 100vh;
 }
 .admin-body body {
-  background: var(--admin-bg);
+  background: var(--admin-bg) !important;
 }
 
 /* === TOP BAR === */
