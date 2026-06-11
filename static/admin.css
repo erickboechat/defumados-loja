@@ -571,12 +571,105 @@
   .admin-sidebar .admin-sidebar-item .side-label { display: none; }
   .admin-sidebar .admin-sidebar-item .side-badge { display: none; }
   .admin-content { margin-left: 56px; max-width: none; }
-  .admin-toast-container { left: 68px; }
+  .admin-toast-container { left: 68px; top: 58px; font-size: 13px; }
+  .admin-toast { min-width: auto; max-width: calc(100vw - 90px); padding: 10px 12px; font-size: 13px; }
   .admin-pedido-grid { grid-template-columns: 1fr; }
   .pedido-detail { grid-template-columns: 1fr; }
   .admin-form-grid { grid-template-columns: 1fr; }
   .admin-stats { grid-template-columns: repeat(2, 1fr); }
   .admin-page-header h1 { font-size: 17px; }
+
+  /* Tabelas → Cards */
+  .admin-table-card table,
+  .admin-table-card thead,
+  .admin-table-card tbody,
+  .admin-table-card th,
+  .admin-table-card td,
+  .admin-table-card tr { display: block; }
+
+  .admin-table-card thead { display: none; }
+
+  .admin-table-card tr {
+    background: var(--admin-white);
+    border-radius: 10px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    margin-bottom: 12px;
+    padding: 14px;
+    border: 1px solid var(--admin-border);
+  }
+
+  .admin-table-card td {
+    padding: 6px 0;
+    border: none;
+    font-size: 14px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+    text-align: right;
+    min-height: 32px;
+  }
+
+  .admin-table-card td::before {
+    content: attr(data-label);
+    font-weight: 600;
+    font-size: 12px;
+    color: var(--admin-text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    flex-shrink: 0;
+    text-align: left;
+  }
+
+  .admin-table-card td[data-label=""]::before { display: none; }
+
+  .admin-table-card td.bulk-td {
+    display: none;
+  }
+
+  .admin-table-card td[data-label="#"] {
+    font-size: 11px;
+    color: var(--admin-text-secondary);
+    border-bottom: 1px solid var(--admin-border);
+    padding-bottom: 8px;
+    margin-bottom: 4px;
+  }
+
+  .admin-table-card td[data-label="#"]::before {
+    content: 'ID';
+  }
+
+  .admin-table-card td[data-label="Produto"] strong {
+    font-size: 15px;
+  }
+
+  .admin-table-card td[data-label="Ações"] {
+    border-top: 1px solid var(--admin-border);
+    padding-top: 10px;
+    margin-top: 4px;
+    justify-content: flex-end;
+  }
+
+  .admin-table-card td[data-label="Estoque"] {
+    flex-wrap: wrap;
+  }
+
+  .admin-table-card td[data-label="Itens"] {
+    white-space: normal;
+    max-width: none;
+    text-align: left;
+  }
+
+  .admin-table-card td[data-label="Status"] .badge {
+    font-size: 11px;
+  }
+
+  .admin-bulk { flex-wrap: wrap; gap: 8px; }
+
+  .admin-search-bar { flex-direction: column; align-items: stretch; }
+  .admin-search-bar .admin-select { min-width: auto; }
+
+  .admin-pagination { font-size: 13px; }
 }
 
 @media (max-width: 480px) {
@@ -584,4 +677,6 @@
   .admin-stats { grid-template-columns: 1fr 1fr; gap: 10px; }
   .admin-stat { padding: 14px; }
   .admin-stat-value { font-size: 20px; }
+  .admin-toast-container { left: 12px; right: 12px; }
+  .admin-toast { max-width: 100%; }
 }

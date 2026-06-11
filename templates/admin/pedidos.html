@@ -54,11 +54,11 @@
       <tbody>
         {% for ped in pedidos %}
         <tr>
-          <td><input type="checkbox" name="pedido_ids" value="{{ ped.id }}" class="bulk-check"></td>
-          <td style="color:var(--admin-text-secondary);font-size:13px;">{{ ped.id }}</td>
-          <td><strong>{{ ped.cliente_nome }}</strong></td>
-          <td style="white-space:nowrap;">{{ ped.cliente_telefone or '-' }}</td>
-          <td style="max-width:240px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="{{ ped.itens or '' }}">
+          <td data-label="" class="bulk-td"><input type="checkbox" name="pedido_ids" value="{{ ped.id }}" class="bulk-check"></td>
+          <td data-label="#">{{ ped.id }}</td>
+          <td data-label="Cliente"><strong>{{ ped.cliente_nome }}</strong></td>
+          <td data-label="Telefone">{{ ped.cliente_telefone or '-' }}</td>
+          <td data-label="Itens" style="max-width:240px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="{{ ped.itens or '' }}">
             {% set itens_raw = ped.itens or '[]' %}
             {% set ns = namespace(resumo='') %}
             {% set itens_list = itens_raw.split('},{') %}
@@ -77,13 +77,13 @@
             {% endfor %}
             {{ ns.resumo or '—' }}
           </td>
-          <td style="white-space:nowrap;">R$ {{ "%.2f"|format(ped.total or 0) }}</td>
-          <td>
+          <td data-label="Total">R$ {{ "%.2f"|format(ped.total or 0) }}</td>
+          <td data-label="Status">
             {% set st = ped.status or 'registrado' %}
             <span class="badge {% if st == 'concluido' %}badge-ok{% elif st == 'cancelado' %}badge-err{% else %}badge-warn{% endif %}">{{ st }}</span>
           </td>
-          <td style="white-space:nowrap;">{{ (ped.data_criacao or '')[:10] }}</td>
-          <td>
+          <td data-label="Data">{{ (ped.data_criacao or '')[:10] }}</td>
+          <td data-label="Ações">
             <a href="/admin/pedidos/{{ ped.id }}" class="admin-btn admin-btn-ghost admin-btn-sm">Detalhes</a>
           </td>
         </tr>

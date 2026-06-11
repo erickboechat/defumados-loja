@@ -94,23 +94,23 @@
     <tbody>
       {% for p in produtos %}
       <tr>
-        <td style="color:var(--admin-text-secondary);font-size:13px;">{{ p.id }}</td>
-        <td>
+        <td data-label="#">{{ p.id }}</td>
+        <td data-label="Foto">
           {% if p.imagens and p.imagens[0] %}
           <img src="{{ p.imagens[0] | webp_smart }}" alt="" class="prod-thumb" onerror="this.style.display='none'">
           {% else %}
           <div class="prod-thumb" style="background:#f3f4f6;display:flex;align-items:center;justify-content:center;font-size:16px;">📷</div>
           {% endif %}
         </td>
-        <td>
+        <td data-label="Produto">
           <strong>{{ p.nome }}</strong>
           {% set qtd_avisos = avisos_count.get(p.id, 0) %}
           {% if qtd_avisos > 0 %}
           <span class="badge badge-warn" style="margin-left:6px;">🔔 {{ qtd_avisos }}</span>
           {% endif %}
         </td>
-        <td>R$ {{ "%.2f"|format(p.preco) }}</td>
-        <td>
+        <td data-label="Preço">R$ {{ "%.2f"|format(p.preco) }}</td>
+        <td data-label="Estoque">
           <div style="display:flex;align-items:center;gap:6px;">
             {% if p.estoque %}
             <span class="badge badge-ok">✅ Em estoque</span>
@@ -123,7 +123,7 @@
             </form>
           </div>
         </td>
-        <td>
+        <td data-label="Ações">
           <div style="display:flex;gap:4px;flex-wrap:wrap;">
             {% if not p.estoque or avisos_count.get(p.id, 0) > 0 %}
             <a href="/admin/notificar/{{ p.id }}" class="admin-btn admin-btn-ghost admin-btn-sm">🔔</a>
