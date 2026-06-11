@@ -21,6 +21,7 @@
 }
 
 /* === RESET ADMIN === */
+html { overflow-x: hidden; }
 .admin-body {
   margin: 0;
   padding: 0;
@@ -28,6 +29,7 @@
   background: var(--admin-bg);
   color: var(--admin-text);
   min-height: 100vh;
+  overflow-x: hidden;
 }
 .admin-body body {
   background: var(--admin-bg) !important;
