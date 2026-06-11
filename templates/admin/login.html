@@ -1,14 +1,13 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-BR" class="admin-body">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Login - Admin | Defumados AC</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='style.min.css') }}?v={{ static_version }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='admin.css') }}?v={{ static_version }}">
   <link rel="icon" type="image/png" href="/static/uploads/logo-1.png">
 </head>
-<body class="admin-login-page" style="background:#f3f4f6 !important;">
+<body class="admin-login-page">
   <div class="login-box">
     <h2>🔐 Acesso Administrativo</h2>
     {% if erro %}

@@ -2,8 +2,6 @@
 {% block title %}Pedido #{{ pedido.id }} - Admin{% endblock %}
 {% block content %}
 
-<div style="display:block;width:100%;">
-
 <div style="margin-bottom:20px;">
   <a href="/admin/pedidos" style="color:var(--admin-text-secondary);text-decoration:none;font-size:13px;">← Voltar aos pedidos</a>
   <h1 style="font-size:20px;font-weight:700;margin-top:4px;">📋 Pedido #{{ pedido.id }}</h1>
@@ -84,8 +82,8 @@
         <button type="submit" class="admin-btn admin-btn-danger" style="width:100%;">🗑️ Excluir Pedido</button>
       </form>
     </div>
+    </div>
   </div>
 </div>
 
-</div>
 {% endblock %}

@@ -4,12 +4,11 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>{% block title %}Admin | Defumados AC{% endblock %}</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='style.min.css') }}?v={{ static_version }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='admin.css') }}?v={{ static_version }}">
   <link rel="icon" type="image/png" href="/static/uploads/logo-1.png">
   {% block extra_head %}{% endblock %}
 </head>
-<body style="background:#f3f4f6 !important;">
+<body>
   <div class="admin-topbar">
     <button class="admin-mobile-menu-btn" onclick="toggleMobileMenu()" aria-label="Menu">☰</button>
     <a href="/admin" class="admin-topbar-logo">Defumados <span>AC</span></a>
