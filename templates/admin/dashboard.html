@@ -111,11 +111,17 @@
         </td>
         <td>R$ {{ "%.2f"|format(p.preco) }}</td>
         <td>
-          {% if p.estoque %}
-          <span class="badge badge-ok">✅ Em estoque</span>
-          {% else %}
-          <span class="badge badge-err">❌ Esgotado</span>
-          {% endif %}
+          <div style="display:flex;align-items:center;gap:6px;">
+            {% if p.estoque %}
+            <span class="badge badge-ok">✅ Em estoque</span>
+            {% else %}
+            <span class="badge badge-err">❌ Esgotado</span>
+            {% endif %}
+            <form method="POST" action="/admin/toggle/{{ p.id }}" style="display:inline;">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+              <button type="submit" class="admin-btn admin-btn-ghost admin-btn-sm" title="Alterar estoque">🔄</button>
+            </form>
+          </div>
         </td>
         <td>
           <div style="display:flex;gap:4px;flex-wrap:wrap;">
