@@ -607,7 +607,8 @@
   }
   .admin-sidebar-overlay.mobile-open { display: block; }
 
-  .admin-content { margin-left: 0; max-width: 100%; padding: 16px; }
+  .admin-content { margin-left: 0; max-width: 100%; padding: 16px; overflow-x: hidden; }
+  .admin-content > :not(script) { width: 100% !important; max-width: 100%; }
   .admin-topbar { padding: 0 12px; }
   .admin-topbar-logo { font-size: 16px; }
 
@@ -628,10 +629,10 @@
 
   /* Stats compactos */
   .admin-stats { grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 16px; }
-  .admin-stat { padding: 12px; border-radius: 8px; }
-  .admin-stat-icon { font-size: 18px; margin-bottom: 4px; }
-  .admin-stat-value { font-size: 20px; }
-  .admin-stat-label { font-size: 11px; margin-top: 1px; }
+  .admin-stat { padding: 10px; border-radius: 8px; min-width: 0 !important; flex: none !important; }
+  .admin-stat-icon { font-size: 16px; margin-bottom: 2px; }
+  .admin-stat-value { font-size: 18px; }
+  .admin-stat-label { font-size: 10px; margin-top: 1px; }
 
   /* Toast compacto */
   .admin-toast-container { left: 16px; right: 16px; top: 58px; }
@@ -644,22 +645,24 @@
   .admin-page-header h1 { font-size: 17px; }
 
   /* Busca compacta */
-  .admin-search-bar { padding: 10px 12px; gap: 6px; }
-  .admin-search-bar .admin-input { font-size: 14px; padding: 8px 10px; min-width: 0; }
+  .admin-search-bar { padding: 10px 12px; gap: 6px; flex-wrap: wrap; }
+  .admin-search-bar .admin-input { font-size: 14px; padding: 8px 10px; min-width: 0 !important; flex: 1 1 100% !important; }
   .admin-search-bar .admin-btn { padding: 8px 14px; font-size: 13px; white-space: nowrap; }
+  .admin-search-bar .admin-select { min-width: 0 !important; flex: 1 1 100% !important; }
 
   /* Adicionar produto compacto */
   .admin-card { border-radius: 8px; }
 
   /* Tabelas → Cards compactos */
-  .admin-table-card { border-radius: 8px; overflow: visible; }
+  .admin-table-card { border-radius: 8px; overflow: visible; width: auto !important; }
   .admin-table-card table,
   .admin-table-card thead,
   .admin-table-card tbody,
   .admin-table-card th,
   .admin-table-card td,
   .admin-table-card tr { display: block; }
-  .admin-table-card table { min-width: 0; width: 100%; }
+  .admin-table-card table { min-width: 0 !important; width: 100% !important; }
+  .admin-table-card th { min-width: 0 !important; }
 
   .admin-table-card thead { display: none; }
 
