@@ -28,43 +28,62 @@
 </div>
 
 <div class="admin-card" style="margin-bottom:24px;width:100%;box-sizing:border-box;">
-  <div style="font-size:15px;font-weight:600;margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid var(--admin-border);">➕ Adicionar Produto</div>
-  <form method="POST" action="/admin/add" enctype="multipart/form-data">
-    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-    <div class="admin-form-grid">
-      <div>
-        <label>Nome do Produto</label>
-        <input type="text" name="nome" class="admin-input" required style="width:100%;">
+  <div id="add-produto-header" style="font-size:15px;font-weight:600;padding:12px 0;cursor:pointer;display:flex;align-items:center;justify-content:space-between;user-select:none;">
+    <span>➕ Adicionar Produto</span>
+    <span id="add-produto-icon" style="font-size:12px;color:var(--admin-text-secondary);transition:transform 0.2s;">▼</span>
+  </div>
+  <div id="add-produto-form" style="display:none;padding-top:12px;border-top:1px solid var(--admin-border);">
+    <form method="POST" action="/admin/add" enctype="multipart/form-data">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <div class="admin-form-grid">
+        <div>
+          <label>Nome do Produto</label>
+          <input type="text" name="nome" class="admin-input" required style="width:100%;">
+        </div>
+        <div>
+          <label>Preço</label>
+          <input type="text" name="preco" class="admin-input" placeholder="29,90" required style="width:100%;">
+        </div>
+        <div>
+          <label>Peso</label>
+          <input type="text" name="peso" class="admin-input" placeholder="500g, 1kg" style="width:100%;">
+        </div>
+        <div>
+          <label>Ingredientes</label>
+          <textarea name="ingredientes" class="admin-textarea" rows="2" placeholder="Carne, sal, alho..." style="width:100%;"></textarea>
+        </div>
+        <div class="full">
+          <label>Imagens</label>
+          <textarea name="imagens" class="admin-textarea" rows="2" placeholder="URLs das imagens, uma por linha" style="width:100%;"></textarea>
+          <input type="file" name="imagens_upload" multiple accept="image/*" class="admin-input" style="margin-top:6px;">
+        </div>
+        <div class="full">
+          <label>Descrição</label>
+          <textarea name="descricao" class="admin-textarea" rows="3" required style="width:100%;"></textarea>
+        </div>
+        <div class="toggle-wrap">
+          <input type="checkbox" name="estoque" id="novo-estoque" checked>
+          <label for="novo-estoque">Em estoque</label>
+        </div>
       </div>
-      <div>
-        <label>Preço</label>
-        <input type="text" name="preco" class="admin-input" placeholder="29,90" required style="width:100%;">
-      </div>
-      <div>
-        <label>Peso</label>
-        <input type="text" name="peso" class="admin-input" placeholder="500g, 1kg" style="width:100%;">
-      </div>
-      <div>
-        <label>Ingredientes</label>
-        <textarea name="ingredientes" class="admin-textarea" rows="2" placeholder="Carne, sal, alho..." style="width:100%;"></textarea>
-      </div>
-      <div class="full">
-        <label>Imagens</label>
-        <textarea name="imagens" class="admin-textarea" rows="2" placeholder="URLs das imagens, uma por linha" style="width:100%;"></textarea>
-        <input type="file" name="imagens_upload" multiple accept="image/*" class="admin-input" style="margin-top:6px;">
-      </div>
-      <div class="full">
-        <label>Descrição</label>
-        <textarea name="descricao" class="admin-textarea" rows="3" required style="width:100%;"></textarea>
-      </div>
-      <div class="toggle-wrap">
-        <input type="checkbox" name="estoque" id="novo-estoque" checked>
-        <label for="novo-estoque">Em estoque</label>
-      </div>
-    </div>
-    <button type="submit" class="admin-btn admin-btn-primary" style="margin-top:16px;">Salvar Produto</button>
-  </form>
+      <button type="submit" class="admin-btn admin-btn-primary" style="margin-top:16px;">Salvar Produto</button>
+    </form>
+  </div>
 </div>
+
+<script>
+document.getElementById('add-produto-header').addEventListener('click', function() {
+  var form = document.getElementById('add-produto-form');
+  var icon = document.getElementById('add-produto-icon');
+  if (form.style.display === 'none') {
+    form.style.display = 'block';
+    icon.style.transform = 'rotate(180deg)';
+  } else {
+    form.style.display = 'none';
+    icon.style.transform = 'rotate(0deg)';
+  }
+});
+</script>
 
 <div class="admin-table-card" style="width:100%;box-sizing:border-box;">
   <table>
