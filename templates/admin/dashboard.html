@@ -2,30 +2,32 @@
 {% block title %}Produtos - Admin | Defumados AC{% endblock %}
 {% block content %}
 
-<div class="admin-stats">
-  <div class="admin-stat">
+<div style="display:block;width:100%;">
+
+<div style="display:flex;gap:16px;flex-wrap:wrap;margin-bottom:24px;">
+  <div class="admin-stat" style="flex:1;min-width:160px;">
     <div class="admin-stat-icon">📦</div>
     <div class="admin-stat-value">{{ stats.total_produtos }}</div>
     <div class="admin-stat-label">Total de produtos</div>
   </div>
-  <div class="admin-stat">
+  <div class="admin-stat" style="flex:1;min-width:160px;">
     <div class="admin-stat-icon">👁️</div>
     <div class="admin-stat-value">{{ stats.visiveis }}</div>
     <div class="admin-stat-label">Visíveis no site</div>
   </div>
-  <div class="admin-stat">
+  <div class="admin-stat" style="flex:1;min-width:160px;">
     <div class="admin-stat-icon">📋</div>
     <div class="admin-stat-value">{{ stats.pedidos_hoje }}</div>
     <div class="admin-stat-label">Pedidos hoje</div>
   </div>
-  <div class="admin-stat">
+  <div class="admin-stat" style="flex:1;min-width:160px;">
     <div class="admin-stat-icon">💰</div>
     <div class="admin-stat-value">R$ {{ "%.0f"|format(stats.faturamento_hoje) }}</div>
     <div class="admin-stat-label">Faturamento hoje</div>
   </div>
 </div>
 
-<div class="admin-card" style="margin-bottom:24px;">
+<div class="admin-card" style="margin-bottom:24px;width:100%;box-sizing:border-box;">
   <div style="font-size:15px;font-weight:600;margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid var(--admin-border);">➕ Adicionar Produto</div>
   <form method="POST" action="/admin/add" enctype="multipart/form-data">
     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
@@ -64,98 +66,92 @@
   </form>
 </div>
 
-<div class="admin-card">
-  <div style="font-size:15px;font-weight:600;margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid var(--admin-border);display:flex;align-items:center;justify-content:space-between;">
-    <span>📦 Catálogo</span>
-    <span style="font-weight:400;color:var(--admin-text-secondary);font-size:13px;">{{ produtos|length }} produto(s)</span>
-  </div>
-  <div class="admin-table-wrapper">
-    <table>
-      <thead>
-        <tr>
-          <th style="width:40px;">ID</th>
-          <th style="width:52px;">Foto</th>
-          <th>Produto</th>
-          <th>Preço</th>
-          <th>Estoque</th>
-          <th style="min-width:180px;">Ações</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for p in produtos %}
-        <tr>
-          <td style="color:var(--admin-text-secondary);font-size:13px;">{{ p.id }}</td>
-          <td>
-            {% if p.imagens and p.imagens[0] %}
-            <img src="{{ p.imagens[0] | webp_smart }}" alt="" class="prod-thumb" onerror="this.style.display='none'">
-            {% else %}
-            <div class="prod-thumb" style="background:#f3f4f6;display:flex;align-items:center;justify-content:center;font-size:16px;">📷</div>
+<div class="admin-table-card" style="width:100%;box-sizing:border-box;">
+  <table>
+    <thead>
+      <tr>
+        <th style="width:40px;">ID</th>
+        <th style="width:56px;">Foto</th>
+        <th>Produto</th>
+        <th>Preço</th>
+        <th>Estoque</th>
+        <th style="min-width:160px;">Ações</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for p in produtos %}
+      <tr>
+        <td style="color:var(--admin-text-secondary);font-size:13px;">{{ p.id }}</td>
+        <td>
+          {% if p.imagens and p.imagens[0] %}
+          <img src="{{ p.imagens[0] | webp_smart }}" alt="" class="prod-thumb" onerror="this.style.display='none'">
+          {% else %}
+          <div class="prod-thumb" style="background:#f3f4f6;display:flex;align-items:center;justify-content:center;font-size:16px;">📷</div>
+          {% endif %}
+        </td>
+        <td>
+          <strong>{{ p.nome }}</strong>
+          {% set qtd_avisos = avisos_count.get(p.id, 0) %}
+          {% if qtd_avisos > 0 %}
+          <span class="badge badge-warn" style="margin-left:6px;">🔔 {{ qtd_avisos }}</span>
+          {% endif %}
+        </td>
+        <td>R$ {{ "%.2f"|format(p.preco) }}</td>
+        <td>
+          {% if p.estoque %}
+          <span class="badge badge-ok">✅ Em estoque</span>
+          {% else %}
+          <span class="badge badge-err">❌ Esgotado</span>
+          {% endif %}
+        </td>
+        <td>
+          <div style="display:flex;gap:4px;flex-wrap:wrap;">
+            {% if not p.estoque or avisos_count.get(p.id, 0) > 0 %}
+            <a href="/admin/notificar/{{ p.id }}" class="admin-btn admin-btn-ghost admin-btn-sm">🔔</a>
             {% endif %}
-          </td>
-          <td>
-            <strong>{{ p.nome }}</strong>
-            {% set qtd_avisos = avisos_count.get(p.id, 0) %}
-            {% if qtd_avisos > 0 %}
-            <span class="badge badge-warn" style="margin-left:6px;">🔔 {{ qtd_avisos }}</span>
-            {% endif %}
-          </td>
-          <td>R$ {{ "%.2f"|format(p.preco) }}</td>
-          <td>
-            {% if p.estoque %}
-            <span class="badge badge-ok">✅ Em estoque</span>
-            {% else %}
-            <span class="badge badge-err">❌ Esgotado</span>
-            {% endif %}
-          </td>
-          <td>
-            <div style="display:flex;gap:4px;flex-wrap:wrap;">
-              {% if not p.estoque or avisos_count.get(p.id, 0) > 0 %}
-              <a href="/admin/notificar/{{ p.id }}" class="admin-btn admin-btn-ghost admin-btn-sm">🔔</a>
-              {% endif %}
-              <form method="POST" action="/admin/visivel/{{ p.id }}" style="display:inline;">
-                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                <button type="submit" class="admin-btn admin-btn-ghost admin-btn-sm">{{ '👁️' if p.visivel else '🚫' }}</button>
-              </form>
-              <button onclick="toggleEdit({{ p.id }})" class="admin-btn admin-btn-ghost admin-btn-sm">✏️</button>
-              <form method="POST" action="/admin/deletar/{{ p.id }}" style="display:inline;" onsubmit="return confirm('Excluir este produto permanentemente?');">
-                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                <button type="submit" class="admin-btn admin-btn-danger admin-btn-sm">🗑️</button>
-              </form>
-            </div>
-          </td>
-        </tr>
-        <tr class="edit-row hidden" id="edit-{{ p.id }}">
-          <td colspan="6" style="background:#fafbff;padding:16px;">
-            <form method="POST" action="/admin/edit/{{ p.id }}" enctype="multipart/form-data">
+            <form method="POST" action="/admin/visivel/{{ p.id }}" style="display:inline;">
               <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-              <div class="admin-form-grid">
-                <div><label>Nome</label><input type="text" name="nome" value="{{ p.nome }}" class="admin-input" required style="width:100%;"></div>
-                <div><label>Preço</label><input type="text" name="preco" value="{{ p.preco }}" class="admin-input" required style="width:100%;"></div>
-                <div><label>Peso</label><input type="text" name="peso" value="{{ p.peso if p.peso else '' }}" class="admin-input" style="width:100%;"></div>
-                <div><label>Ingredientes</label><textarea name="ingredientes" class="admin-textarea" rows="2" style="width:100%;">{{ p.ingredientes if p.ingredientes else '' }}</textarea></div>
-                <div class="full"><label>Descrição</label><textarea name="descricao" class="admin-textarea" rows="2" required style="width:100%;">{{ p.descricao }}</textarea></div>
-                <div class="full">
-                  <label>Imagens</label>
-                  <textarea name="imagens" class="admin-textarea" rows="2" style="width:100%;">{% for img in p.imagens %}{{ img }}
-{% endfor %}</textarea>
-                  <input type="file" name="imagens_upload" multiple accept="image/*" class="admin-input" style="margin-top:6px;">
-                </div>
-                <div class="toggle-wrap">
-                  <input type="checkbox" name="estoque" id="edit-est-{{ p.id }}" {{ 'checked' if p.estoque else '' }}>
-                  <label for="edit-est-{{ p.id }}">Em estoque</label>
-                </div>
-              </div>
-              <div style="margin-top:12px;display:flex;gap:8px;">
-                <button type="submit" class="admin-btn admin-btn-primary admin-btn-sm">💾 Salvar</button>
-                <button type="button" onclick="toggleEdit({{ p.id }})" class="admin-btn admin-btn-ghost admin-btn-sm">Cancelar</button>
-              </div>
+              <button type="submit" class="admin-btn admin-btn-ghost admin-btn-sm">{{ '👁️' if p.visivel else '🚫' }}</button>
             </form>
-          </td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-  </div>
+            <button onclick="toggleEdit({{ p.id }})" class="admin-btn admin-btn-ghost admin-btn-sm">✏️</button>
+            <form method="POST" action="/admin/deletar/{{ p.id }}" style="display:inline;" onsubmit="return confirm('Excluir este produto permanentemente?');">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+              <button type="submit" class="admin-btn admin-btn-danger admin-btn-sm">🗑️</button>
+            </form>
+          </div>
+        </td>
+      </tr>
+      <tr class="edit-row hidden" id="edit-{{ p.id }}">
+        <td colspan="6" style="background:#fafbff;padding:16px;">
+          <form method="POST" action="/admin/edit/{{ p.id }}" enctype="multipart/form-data">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <div class="admin-form-grid">
+              <div><label>Nome</label><input type="text" name="nome" value="{{ p.nome }}" class="admin-input" required style="width:100%;"></div>
+              <div><label>Preço</label><input type="text" name="preco" value="{{ p.preco }}" class="admin-input" required style="width:100%;"></div>
+              <div><label>Peso</label><input type="text" name="peso" value="{{ p.peso if p.peso else '' }}" class="admin-input" style="width:100%;"></div>
+              <div><label>Ingredientes</label><textarea name="ingredientes" class="admin-textarea" rows="2" style="width:100%;">{{ p.ingredientes if p.ingredientes else '' }}</textarea></div>
+              <div class="full"><label>Descrição</label><textarea name="descricao" class="admin-textarea" rows="2" required style="width:100%;">{{ p.descricao }}</textarea></div>
+              <div class="full">
+                <label>Imagens</label>
+                <textarea name="imagens" class="admin-textarea" rows="2" style="width:100%;">{% for img in p.imagens %}{{ img }}
+{% endfor %}</textarea>
+                <input type="file" name="imagens_upload" multiple accept="image/*" class="admin-input" style="margin-top:6px;">
+              </div>
+              <div class="toggle-wrap">
+                <input type="checkbox" name="estoque" id="edit-est-{{ p.id }}" {{ 'checked' if p.estoque else '' }}>
+                <label for="edit-est-{{ p.id }}">Em estoque</label>
+              </div>
+            </div>
+            <div style="margin-top:12px;display:flex;gap:8px;">
+              <button type="submit" class="admin-btn admin-btn-primary admin-btn-sm">💾 Salvar</button>
+              <button type="button" onclick="toggleEdit({{ p.id }})" class="admin-btn admin-btn-ghost admin-btn-sm">Cancelar</button>
+            </div>
+          </form>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
 </div>
 
 {% if total_paginas > 1 %}
@@ -170,10 +166,11 @@
 </div>
 {% endif %}
 
+</div>
+
 <script>
 function toggleEdit(id) {
-  var row = document.getElementById('edit-' + id);
-  row.classList.toggle('hidden');
+  document.getElementById('edit-' + id).classList.toggle('hidden');
 }
 </script>
 {% endblock %}

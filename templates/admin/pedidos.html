@@ -12,7 +12,7 @@
     <div class="admin-bulk">
       <input type="checkbox" id="select-all" onchange="selectAll(this)">
       <label for="select-all">Selecionar todos</label>
-      <select name="bulk_action" class="admin-select">
+      <select name="action" class="admin-select">
         <option value="">--- Ação em massa ---</option>
         <option value="concluido">Marcar como concluído</option>
         <option value="cancelado">Marcar como cancelado</option>
@@ -42,19 +42,11 @@
           <td style="color:var(--admin-text-secondary);font-size:13px;">{{ ped.id }}</td>
           <td><strong>{{ ped.cliente_nome }}</strong></td>
           <td>{{ ped.cliente_telefone or '-' }}</td>
-          <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="{{ ped.itens }}">
-            {% set itens_list = ped.itens | tojson if ped.itens else '[]' %}
-            {% try %}{% set itens = ped.itens | tojson %}{% except %}{% endtry %}
-            {{ ped.itens[:50] }}{% if ped.itens|length > 50 %}...{% endif %}
-          </td>
+          <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="{{ ped.itens or '' }}">{{ (ped.itens or '')[:60] }}{% if (ped.itens or '')|length > 60 %}...{% endif %}</td>
           <td>R$ {{ "%.2f"|format(ped.total or 0) }}</td>
           <td>
             {% set st = ped.status or 'registrado' %}
-            <span class="badge
-              {% if st == 'concluido' %}badge-ok
-              {% elif st == 'cancelado' %}badge-err
-              {% else %}badge-warn
-              {% endif %}">{{ st }}</span>
+            <span class="badge {% if st == 'concluido' %}badge-ok{% elif st == 'cancelado' %}badge-err{% else %}badge-warn{% endif %}">{{ st }}</span>
           </td>
           <td style="white-space:nowrap;">{{ (ped.data_criacao or '')[:10] }}</td>
           <td>
@@ -87,7 +79,7 @@ function selectAll(source) {
   document.querySelectorAll('.bulk-check').forEach(function(cb) { cb.checked = source.checked; });
 }
 function confirmBulk() {
-  var action = document.querySelector('select[name="bulk_action"]').value;
+  var action = document.querySelector('select[name="action"]').value;
   var checked = document.querySelectorAll('.bulk-check:checked').length;
   if (!action || checked === 0) { alert('Selecione uma ação e pelo menos um pedido.'); return false; }
   if (action === 'delete') { return confirm('Excluir permanentemente ' + checked + ' pedido(s)?'); }

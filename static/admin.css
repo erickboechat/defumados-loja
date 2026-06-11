@@ -141,6 +141,11 @@
   margin-left: var(--admin-sidebar-width);
   padding: 24px;
   max-width: calc(100% - var(--admin-sidebar-width));
+  display: block !important;
+}
+.admin-content > * {
+  display: block !important;
+  width: 100% !important;
 }
 
 /* === STATS CARDS === */
