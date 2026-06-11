@@ -37,8 +37,29 @@
     </nav>
 
     <main class="admin-content">
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          <div class="admin-toast-container">
+            {% for category, message in messages %}
+              <div class="admin-toast admin-toast-{{ category }}">
+                <span>{{ message }}</span>
+                <button class="admin-toast-close" onclick="this.parentElement.remove()">&times;</button>
+              </div>
+            {% endfor %}
+          </div>
+        {% endif %}
+      {% endwith %}
       {% block content %}{% endblock %}
     </main>
   </div>
+  <script>
+  (function(){
+    var toasts = document.querySelectorAll('.admin-toast');
+    toasts.forEach(function(t){
+      setTimeout(function(){ t.classList.add('fade-out'); }, 3000);
+      setTimeout(function(){ t.remove(); }, 3500);
+    });
+  })();
+  </script>
 </body>
 </html>

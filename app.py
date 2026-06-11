@@ -7,7 +7,7 @@ from datetime import datetime, timedelta, timezone
 
 from flask import (Flask, render_template, request, jsonify,
                    redirect, session, url_for, send_from_directory,
-                   make_response, Response)
+                   make_response, Response, flash)
 from flask_wtf.csrf import CSRFProtect, generate_csrf
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
@@ -494,6 +494,7 @@ def admin_add_produto():
         ingredientes=request.form.get('ingredientes', '')
     )
     log.info(f"Produto adicionado: {request.form.get('nome')}")
+    flash('Produto adicionado com sucesso!', 'success')
     return redirect(url_for('admin_dashboard'))
 
 
@@ -526,6 +527,7 @@ def admin_edit_produto(produto_id):
         imagens=imagens
     )
     log.info(f"Produto #{produto_id} editado")
+    flash('Produto atualizado com sucesso!', 'success')
     return redirect(url_for('admin_dashboard'))
 
 
@@ -533,6 +535,7 @@ def admin_edit_produto(produto_id):
 @login_required
 def admin_toggle_visivel(produto_id):
     toggle_visivel(produto_id)
+    flash('Visibilidade do produto alterada!', 'success')
     return redirect(url_for('admin_dashboard'))
 
 
@@ -540,6 +543,7 @@ def admin_toggle_visivel(produto_id):
 @login_required
 def admin_toggle_estoque(produto_id):
     toggle_estoque(produto_id)
+    flash('Estoque do produto alterado!', 'success')
     return redirect(url_for('admin_dashboard'))
 
 
@@ -548,6 +552,7 @@ def admin_toggle_estoque(produto_id):
 def admin_deletar_produto(produto_id):
     deletar_produto(produto_id)
     log.info(f"Produto #{produto_id} deletado")
+    flash('Produto excluído com sucesso!', 'success')
     return redirect(url_for('admin_dashboard'))
 
 
@@ -643,6 +648,7 @@ def admin_pedido_detalhe(pedido_id):
 def admin_update_pedido_status(pedido_id):
     novo_status = request.form.get('status')
     update_pedido_status(pedido_id, novo_status)
+    flash('Status do pedido atualizado!', 'success')
     return redirect(url_for('admin_pedido_detalhe', pedido_id=pedido_id))
 
 
@@ -651,6 +657,7 @@ def admin_update_pedido_status(pedido_id):
 def admin_delete_pedido(pedido_id):
     delete_pedido(pedido_id)
     log.info(f"Pedido #{pedido_id} deletado")
+    flash('Pedido excluído com sucesso!', 'success')
     return redirect(url_for('admin_pedidos'))
 
 
@@ -661,6 +668,7 @@ def admin_pedidos_bulk():
     action = request.form.get('action')
 
     if not pedido_ids or not action:
+        flash('Nenhum pedido selecionado.', 'error')
         return redirect(url_for('admin_pedidos'))
 
     count = len(pedido_ids)
@@ -669,10 +677,12 @@ def admin_pedidos_bulk():
         for pid in pedido_ids:
             delete_pedido(int(pid))
         log.info(f"{count} pedido(s) deletado(s) em massa")
+        flash(f'{count} pedido(s) excluído(s) com sucesso!', 'success')
     else:
         for pid in pedido_ids:
             update_pedido_status(int(pid), action)
         log.info(f"{count} pedido(s) atualizado(s) para '{action}' em massa")
+        flash(f'{count} pedido(s) atualizado(s) para "{action}"!', 'success')
 
     return redirect(url_for('admin_pedidos'))
 
