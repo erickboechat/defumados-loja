@@ -205,7 +205,7 @@
   white-space: nowrap;
 }
 .admin-table-card td {
-  padding: 12px 16px;
+  padding: 14px 16px;
   font-size: 14px;
   border-top: 1px solid var(--admin-border);
   vertical-align: middle;
@@ -214,8 +214,8 @@
   background: #fafbff;
 }
 .admin-table-card .prod-thumb {
-  width: 40px;
-  height: 40px;
+  width: 44px;
+  height: 44px;
   border-radius: 6px;
   object-fit: cover;
   background: #f3f4f6;
