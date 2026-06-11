@@ -282,6 +282,8 @@ html { overflow-x: hidden; }
   background: var(--admin-white);
   color: var(--admin-text);
   transition: border-color 0.15s;
+  box-sizing: border-box;
+  max-width: 100%;
 }
 .admin-input:focus, .admin-select:focus, .admin-textarea:focus {
   outline: none;
@@ -453,7 +455,11 @@ html { overflow-x: hidden; }
 }
 .admin-form-grid .full { grid-column: 1 / -1; }
 .admin-form-grid label { display: block; font-size: 13px; font-weight: 500; margin-bottom: 4px; color: var(--admin-text); }
-.admin-form-grid input, .admin-form-grid textarea, .admin-form-grid select { width: 100%; }
+.admin-form-grid input, .admin-form-grid textarea, .admin-form-grid select { 
+  width: 100%; 
+  box-sizing: border-box; 
+  max-width: 100%; 
+}
 
 /* === TOGGLE === */
 .toggle-wrap { display: flex; align-items: center; gap: 8px; padding: 8px 0; }
