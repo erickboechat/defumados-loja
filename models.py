@@ -259,25 +259,39 @@ def _busca_inteligente(conn, search, todos, order_by):
     return resultados[:20]
 
 
-def count_produtos(todos=False):
+def count_produtos(todos=False, search=''):
     """Retorna o total de produtos (para paginação)"""
     with get_db() as conn:
         query = 'SELECT COUNT(*) FROM produtos'
+        params = []
+        conditions = []
         if not todos:
-            query += ' WHERE visivel = 1'
-        return conn.execute(query).fetchone()[0]
+            conditions.append('visivel = 1')
+        if search:
+            conditions.append('nome LIKE ?')
+            params.append(f'%{search}%')
+        if conditions:
+            query += ' WHERE ' + ' AND '.join(conditions)
+        return conn.execute(query, params).fetchone()[0]
 
 
-def get_produtos_paginados(page=1, per_page=15, todos=False, order_by='nome'):
+def get_produtos_paginados(page=1, per_page=15, todos=False, order_by='nome', search=''):
     """Retorna (produtos, total_paginas) com paginação"""
-    total = count_produtos(todos=todos)
+    total = count_produtos(todos=todos, search=search)
     total_paginas = max(1, (total + per_page - 1) // per_page)
     offset = (page - 1) * per_page
 
     with get_db() as conn:
         query = 'SELECT * FROM produtos'
+        params = []
+        conditions = []
         if not todos:
-            query += ' WHERE visivel = 1'
+            conditions.append('visivel = 1')
+        if search:
+            conditions.append('nome LIKE ?')
+            params.append(f'%{search}%')
+        if conditions:
+            query += ' WHERE ' + ' AND '.join(conditions)
 
         if order_by == 'preco_asc':
             query += ' ORDER BY preco ASC'
@@ -289,7 +303,8 @@ def get_produtos_paginados(page=1, per_page=15, todos=False, order_by='nome'):
             query += ' ORDER BY nome COLLATE NOCASE ASC'
 
         query += ' LIMIT ? OFFSET ?'
-        rows = conn.execute(query, (per_page, offset)).fetchall()
+        params.extend([per_page, offset])
+        rows = conn.execute(query, params).fetchall()
         produtos = [parse_produto(row) for row in rows]
 
         if order_by == 'vendas':
@@ -380,23 +395,44 @@ def get_pedidos():
         return conn.execute('SELECT * FROM pedidos ORDER BY data_criacao DESC').fetchall()
 
 
-def count_pedidos():
+def count_pedidos(search='', status=''):
     """Retorna o total de pedidos (para paginação)"""
     with get_db() as conn:
-        return conn.execute('SELECT COUNT(*) FROM pedidos').fetchone()[0]
+        query = 'SELECT COUNT(*) FROM pedidos'
+        params = []
+        conditions = []
+        if search:
+            conditions.append('(cliente_nome LIKE ? OR cliente_telefone LIKE ?)')
+            params.extend([f'%{search}%', f'%{search}%'])
+        if status:
+            conditions.append('status = ?')
+            params.append(status)
+        if conditions:
+            query += ' WHERE ' + ' AND '.join(conditions)
+        return conn.execute(query, params).fetchone()[0]
 
 
-def get_pedidos_paginados(page=1, per_page=20):
+def get_pedidos_paginados(page=1, per_page=20, search='', status=''):
     """Retorna (pedidos, total_paginas) com paginação"""
-    total = count_pedidos()
+    total = count_pedidos(search=search, status=status)
     total_paginas = max(1, (total + per_page - 1) // per_page)
     offset = (page - 1) * per_page
 
     with get_db() as conn:
-        rows = conn.execute(
-            'SELECT * FROM pedidos ORDER BY data_criacao DESC LIMIT ? OFFSET ?',
-            (per_page, offset)
-        ).fetchall()
+        query = 'SELECT * FROM pedidos'
+        params = []
+        conditions = []
+        if search:
+            conditions.append('(cliente_nome LIKE ? OR cliente_telefone LIKE ?)')
+            params.extend([f'%{search}%', f'%{search}%'])
+        if status:
+            conditions.append('status = ?')
+            params.append(status)
+        if conditions:
+            query += ' WHERE ' + ' AND '.join(conditions)
+        query += ' ORDER BY data_criacao DESC LIMIT ? OFFSET ?'
+        params.extend([per_page, offset])
+        rows = conn.execute(query, params).fetchall()
 
     return rows, total_paginas
 

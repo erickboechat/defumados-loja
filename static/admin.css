@@ -297,6 +297,18 @@
 .admin-bulk label { display: flex; align-items: center; gap: 6px; font-size: 13px; cursor: pointer; color: var(--admin-text-secondary); }
 .admin-bulk input[type="checkbox"] { width: 15px; height: 15px; cursor: pointer; }
 
+/* === BUSCA / FILTRO === */
+.admin-search-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  background: var(--admin-white);
+  border-radius: 10px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+  flex-wrap: wrap;
+}
+
 /* === PAGINAÇÃO === */
 .admin-pagination {
   display: flex;

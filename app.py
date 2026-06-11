@@ -453,10 +453,11 @@ def admin_logout():
 @login_required
 def admin_dashboard():
     page = request.args.get('page', 1, type=int)
-    produtos, total_paginas = get_produtos_paginados(page=page, per_page=15, todos=True)
+    q = request.args.get('q', '').strip()
+    produtos, total_paginas = get_produtos_paginados(page=page, per_page=15, todos=True, search=q)
     avisos_count = {p['id']: count_avisos_pendentes(p['id']) for p in produtos}
-    total_produtos = count_produtos(todos=True)
-    visiveis = count_produtos(todos=False)
+    total_produtos = count_produtos(todos=True, search=q)
+    visiveis = count_produtos(todos=False, search=q)
     hoje = datetime.now(BRT).strftime('%Y-%m-%d')
     with get_db() as conn:
         pedidos_hoje = conn.execute("SELECT COUNT(*), COALESCE(SUM(total), 0) FROM pedidos WHERE date(data_criacao) = ? AND status != 'cancelado'", (hoje,)).fetchone()
@@ -465,6 +466,7 @@ def admin_dashboard():
                            page=page,
                            total_paginas=total_paginas,
                            avisos_count=avisos_count,
+                           q=q,
                            stats={
                                'total_produtos': total_produtos,
                                'visiveis': visiveis,
@@ -627,11 +629,15 @@ def health():
 @login_required
 def admin_pedidos():
     page = request.args.get('page', 1, type=int)
-    pedidos, total_paginas = get_pedidos_paginados(page=page, per_page=20)
+    q = request.args.get('q', '').strip()
+    status = request.args.get('status', '').strip()
+    pedidos, total_paginas = get_pedidos_paginados(page=page, per_page=20, search=q, status=status)
     return render_template('admin/pedidos.html',
                            pedidos=pedidos,
                            page=page,
-                           total_paginas=total_paginas)
+                           total_paginas=total_paginas,
+                           q=q,
+                           status_filter=status)
 
 
 @app.route('/admin/pedidos/<int:pedido_id>')

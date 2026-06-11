@@ -8,6 +8,20 @@
   <h1 style="font-size:20px;font-weight:700;">📋 Pedidos</h1>
 </div>
 
+<form class="admin-search-bar" method="GET" action="/admin/pedidos" style="margin-bottom:20px;">
+  <input type="text" name="q" placeholder="Buscar por nome ou telefone..." value="{{ q or '' }}" class="admin-input" style="flex:1;min-width:200px;">
+  <select name="status" class="admin-select" style="min-width:150px;">
+    <option value="">Todos os status</option>
+    <option value="registrado" {{ 'selected' if status_filter == 'registrado' }}>📋 Registrado</option>
+    <option value="concluido" {{ 'selected' if status_filter == 'concluido' }}>✅ Concluído</option>
+    <option value="cancelado" {{ 'selected' if status_filter == 'cancelado' }}>❌ Cancelado</option>
+  </select>
+  <button type="submit" class="admin-btn admin-btn-primary">🔍 Filtrar</button>
+  {% if q or status_filter %}
+    <a href="/admin/pedidos" class="admin-btn admin-btn-ghost">✕ Limpar</a>
+  {% endif %}
+</form>
+
 <div class="admin-table-card">
   <form method="POST" action="/admin/pedidos/bulk" id="bulk-form">
     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
@@ -86,10 +100,10 @@
 <div class="admin-pagination">
   <span>Página {{ page }} de {{ total_paginas }}</span>
   {% if page > 1 %}
-  <a href="/admin/pedidos?page={{ page - 1 }}">⬅ Anterior</a>
+  <a href="/admin/pedidos?page={{ page - 1 }}{% if q %}&q={{ q }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}">⬅ Anterior</a>
   {% endif %}
   {% if page < total_paginas %}
-  <a href="/admin/pedidos?page={{ page + 1 }}">Próximo ➡</a>
+  <a href="/admin/pedidos?page={{ page + 1 }}{% if q %}&q={{ q }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}">Próximo ➡</a>
   {% endif %}
 </div>
 {% endif %}

@@ -27,6 +27,14 @@
   </div>
 </div>
 
+<form class="admin-search-bar" method="GET" action="/admin" style="margin-bottom:20px;">
+  <input type="text" name="q" placeholder="Buscar produto por nome..." value="{{ q or '' }}" class="admin-input" style="flex:1;min-width:200px;">
+  <button type="submit" class="admin-btn admin-btn-primary">🔍 Buscar</button>
+  {% if q %}
+    <a href="/admin" class="admin-btn admin-btn-ghost">✕ Limpar</a>
+  {% endif %}
+</form>
+
 <div class="admin-card" style="margin-bottom:24px;width:100%;box-sizing:border-box;">
   <div id="add-produto-header" style="font-size:15px;font-weight:600;padding:12px 0;cursor:pointer;display:flex;align-items:center;justify-content:space-between;user-select:none;">
     <span>➕ Adicionar Produto</span>
@@ -163,10 +171,10 @@
 <div class="admin-pagination">
   <span>Página {{ page }} de {{ total_paginas }}</span>
   {% if page > 1 %}
-  <a href="/admin?page={{ page - 1 }}">⬅ Anterior</a>
+  <a href="/admin?page={{ page - 1 }}{% if q %}&q={{ q }}{% endif %}">⬅ Anterior</a>
   {% endif %}
   {% if page < total_paginas %}
-  <a href="/admin?page={{ page + 1 }}">Próximo ➡</a>
+  <a href="/admin?page={{ page + 1 }}{% if q %}&q={{ q }}{% endif %}">Próximo ➡</a>
   {% endif %}
 </div>
 {% endif %}
