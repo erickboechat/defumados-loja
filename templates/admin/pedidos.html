@@ -9,15 +9,15 @@
 <div class="admin-table-card">
   <form method="POST" action="/admin/pedidos/bulk" id="bulk-form">
     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-    <div style="margin-bottom:12px;display:flex;gap:8px;align-items:center;">
+    <div class="admin-bulk">
       <input type="checkbox" id="select-all" onchange="selectAll(this)">
-      <label for="select-all" style="cursor:pointer;">Selecionar todos</label>
-      <select name="bulk_action" class="admin-input" style="width:auto;">
+      <label for="select-all">Selecionar todos</label>
+      <select name="bulk_action" class="admin-select">
         <option value="">--- Ação em massa ---</option>
         <option value="concluido">Marcar como concluído</option>
         <option value="cancelado">Marcar como cancelado</option>
         <option value="registrado">Marcar como registrado</option>
-        <option value="excluir">Excluir</option>
+        <option value="delete">Excluir</option>
       </select>
       <button type="submit" class="admin-btn admin-btn-primary admin-btn-sm" onclick="return confirmBulk()">Aplicar</button>
     </div>
@@ -40,19 +40,23 @@
         <tr>
           <td><input type="checkbox" name="pedido_ids" value="{{ ped.id }}" class="bulk-check"></td>
           <td style="color:var(--admin-text-secondary);font-size:13px;">{{ ped.id }}</td>
-          <td><strong>{{ ped.nome }}</strong></td>
-          <td>{{ ped.telefone }}</td>
-          <td>{{ ped.itens }}</td>
-          <td>R$ {{ "%.2f"|format(ped.total) }}</td>
+          <td><strong>{{ ped.cliente_nome }}</strong></td>
+          <td>{{ ped.cliente_telefone or '-' }}</td>
+          <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="{{ ped.itens }}">
+            {% set itens_list = ped.itens | tojson if ped.itens else '[]' %}
+            {% try %}{% set itens = ped.itens | tojson %}{% except %}{% endtry %}
+            {{ ped.itens[:50] }}{% if ped.itens|length > 50 %}...{% endif %}
+          </td>
+          <td>R$ {{ "%.2f"|format(ped.total or 0) }}</td>
           <td>
-            {% set st = ped.status %}
+            {% set st = ped.status or 'registrado' %}
             <span class="badge
               {% if st == 'concluido' %}badge-ok
               {% elif st == 'cancelado' %}badge-err
               {% else %}badge-warn
               {% endif %}">{{ st }}</span>
           </td>
-          <td style="white-space:nowrap;">{{ ped.data.split(' ')[0] }}</td>
+          <td style="white-space:nowrap;">{{ (ped.data_criacao or '')[:10] }}</td>
           <td>
             <a href="/admin/pedido/{{ ped.id }}" class="admin-btn admin-btn-ghost admin-btn-sm">Detalhes</a>
           </td>
@@ -86,7 +90,7 @@ function confirmBulk() {
   var action = document.querySelector('select[name="bulk_action"]').value;
   var checked = document.querySelectorAll('.bulk-check:checked').length;
   if (!action || checked === 0) { alert('Selecione uma ação e pelo menos um pedido.'); return false; }
-  if (action === 'excluir') { return confirm('Excluir permanentemente ' + checked + ' pedido(s)?'); }
+  if (action === 'delete') { return confirm('Excluir permanentemente ' + checked + ' pedido(s)?'); }
   return true;
 }
 </script>
