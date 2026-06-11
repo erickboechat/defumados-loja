@@ -4,30 +4,30 @@
 
 <div style="display:block;width:100%;">
 
-<div style="display:flex;gap:16px;flex-wrap:wrap;margin-bottom:24px;">
-  <div class="admin-stat" style="flex:1;min-width:160px;">
+<div class="admin-stats">
+  <div class="admin-stat">
     <div class="admin-stat-icon">📦</div>
     <div class="admin-stat-value">{{ stats.total_produtos }}</div>
     <div class="admin-stat-label">Total de produtos</div>
   </div>
-  <div class="admin-stat" style="flex:1;min-width:160px;">
+  <div class="admin-stat">
     <div class="admin-stat-icon">👁️</div>
     <div class="admin-stat-value">{{ stats.visiveis }}</div>
     <div class="admin-stat-label">Visíveis no site</div>
   </div>
-  <div class="admin-stat" style="flex:1;min-width:160px;">
+  <div class="admin-stat">
     <div class="admin-stat-icon">📋</div>
     <div class="admin-stat-value">{{ stats.pedidos_hoje }}</div>
     <div class="admin-stat-label">Pedidos hoje</div>
   </div>
-  <div class="admin-stat" style="flex:1;min-width:160px;">
+  <div class="admin-stat">
     <div class="admin-stat-icon">💰</div>
     <div class="admin-stat-value">R$ {{ "%.0f"|format(stats.faturamento_hoje) }}</div>
     <div class="admin-stat-label">Faturamento hoje</div>
   </div>
 </div>
 
-<div class="admin-card" style="margin-bottom:24px;width:100%;box-sizing:border-box;">
+<div class="admin-card" style="margin-bottom:24px;">
   <div id="add-produto-header" style="font-size:15px;font-weight:600;padding:12px 0;cursor:pointer;display:flex;align-items:center;justify-content:space-between;user-select:none;">
     <span>➕ Adicionar Produto</span>
     <span id="add-produto-icon" style="font-size:12px;color:var(--admin-text-secondary);transition:transform 0.2s;">▼</span>
@@ -72,14 +72,14 @@
 </div>
 
 <form class="admin-search-bar" method="GET" action="/admin" style="margin-bottom:20px;">
-  <input type="text" name="q" placeholder="Buscar produto por nome..." value="{{ q or '' }}" class="admin-input" style="flex:1;min-width:200px;">
+  <input type="text" name="q" placeholder="Buscar produto por nome..." value="{{ q or '' }}" class="admin-input">
   <button type="submit" class="admin-btn admin-btn-primary">🔍 Buscar</button>
   {% if q %}
     <a href="/admin" class="admin-btn admin-btn-ghost">✕ Limpar</a>
   {% endif %}
 </form>
 
-<div class="admin-table-card" style="width:100%;box-sizing:border-box;">
+<div class="admin-table-card">
   <table>
     <thead>
       <tr>

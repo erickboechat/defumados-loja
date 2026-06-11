@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Protótipo Admin - Defumados AC</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; background: #f3f4f6; color: #111827; min-height: 100vh; }
+  
+  .topbar { height: 56px; background: #fff; border-bottom: 1px solid #e5e7eb; display: flex; align-items: center; padding: 0 24px; position: fixed; top: 0; left: 0; right: 0; z-index: 100; }
+  .topbar .logo { font-weight: 700; font-size: 18px; color: #111; text-decoration: none; }
+  .topbar .logo span { color: #6366f1; }
+  .topbar .spacer { flex: 1; }
+  .topbar .user { display: flex; align-items: center; gap: 10px; font-size: 14px; color: #6b7280; }
+  .topbar .avatar { width: 30px; height: 30px; border-radius: 50%; background: #6366f1; color: #fff; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 600; }
+
+  .layout { display: flex; padding-top: 56px; min-height: 100vh; }
+
+  .sidebar { width: 240px; background: #fff; border-right: 1px solid #e5e7eb; padding: 12px 0; position: fixed; top: 56px; bottom: 0; overflow-y: auto; }
+  .sidebar .section { padding: 8px 20px 4px; font-size: 11px; text-transform: uppercase; color: #6b7280; font-weight: 600; letter-spacing: 0.5px; }
+  .sidebar a { display: flex; align-items: center; gap: 10px; padding: 9px 20px; color: #6b7280; text-decoration: none; font-size: 14px; transition: all 0.15s; border-left: 3px solid transparent; }
+  .sidebar a:hover { background: #eef2ff; color: #6366f1; }
+  .sidebar a.active { background: #eef2ff; color: #6366f1; font-weight: 600; border-left-color: #6366f1; }
+  .sidebar a .icon { font-size: 17px; width: 22px; text-align: center; }
+
+  .content { flex: 1; margin-left: 240px; padding: 24px; max-width: calc(100% - 240px); }
+
+  .stats { display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 24px; }
+  .stat { background: #fff; border-radius: 10px; padding: 20px; flex: 1; min-width: 160px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
+  .stat .icon { font-size: 22px; margin-bottom: 6px; }
+  .stat .value { font-size: 26px; font-weight: 700; }
+  .stat .label { font-size: 13px; color: #6b7280; margin-top: 2px; }
+
+  .card { background: #fff; border-radius: 10px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); margin-bottom: 24px; }
+  .card-header { font-size: 15px; font-weight: 600; padding: 20px 20px 12px; border-bottom: 1px solid #e5e7eb; }
+
+  table { width: 100%; border-collapse: collapse; }
+  thead { background: #f9fafb; }
+  th { padding: 12px 16px; text-align: left; font-size: 12px; font-weight: 600; color: #6b7280; text-transform: uppercase; letter-spacing: 0.4px; white-space: nowrap; }
+  td { padding: 12px 16px; font-size: 14px; border-top: 1px solid #e5e7eb; vertical-align: middle; }
+  tbody tr:hover td { background: #fafbff; }
+
+  .thumb { width: 40px; height: 40px; border-radius: 6px; object-fit: cover; background: #f3f4f6; }
+
+  .badge { display: inline-flex; align-items: center; gap: 4px; padding: 3px 10px; border-radius: 20px; font-size: 12px; font-weight: 500; }
+  .badge-ok { background: #dcfce7; color: #166534; }
+  .badge-warn { background: #fef3c7; color: #92400e; }
+  .badge-err { background: #fee2e2; color: #991b1b; }
+
+  .btn { display: inline-flex; align-items: center; gap: 5px; padding: 5px 10px; border: none; border-radius: 6px; font-size: 12px; font-weight: 500; cursor: pointer; text-decoration: none; transition: all 0.15s; }
+  .btn-ghost { background: transparent; color: #6b7280; border: 1px solid #e5e7eb; }
+  .btn-ghost:hover { background: #f9fafb; }
+  .btn-primary { background: #6366f1; color: #fff; }
+  .btn-primary:hover { background: #4f46e5; }
+  .btn-danger { background: #ef4444; color: #fff; }
+  .btn-danger:hover { background: #dc2626; }
+
+  .acoes { display: flex; gap: 4px; flex-wrap: wrap; }
+
+  .pagination { display: flex; align-items: center; justify-content: center; gap: 8px; padding: 16px; }
+  .pagination span { font-size: 13px; color: #6b7280; }
+  .pagination a { padding: 6px 12px; border-radius: 6px; text-decoration: none; font-size: 13px; color: #111; background: #fff; border: 1px solid #e5e7eb; }
+  .pagination a:hover { border-color: #6366f1; color: #6366f1; }
+
+  .pagina-exemplo { background: #fff; border: 2px dashed #6366f1; border-radius: 12px; padding: 20px; margin-bottom: 24px; text-align: center; color: #6b7280; font-size: 14px; }
+  .pagina-exemplo strong { color: #111; }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <a href="#" class="logo">Defumados <span>AC</span></a>
+  <div class="spacer"></div>
+  <div class="user">
+    <span>Admin</span>
+    <div class="avatar">A</div>
+  </div>
+</div>
+
+<div class="layout">
+  <!-- Sidebar Expandida -->
+  <nav class="sidebar">
+    <div class="section">Menu</div>
+    <a href="#" class="active">
+      <span class="icon">📦</span>
+      Produtos
+    </a>
+    <a href="#">
+      <span class="icon">📋</span>
+      Pedidos
+    </a>
+    <a href="#" style="margin-top:auto;">
+      <span class="icon">🚪</span>
+      Sair
+    </a>
+  </nav>
+
+  <main class="content">
+
+    <!-- Cards de Estatísticas -->
+    <div class="stats">
+      <div class="stat">
+        <div class="icon">📦</div>
+        <div class="value">23</div>
+        <div class="label">Total de produtos</div>
+      </div>
+      <div class="stat">
+        <div class="icon">👁️</div>
+        <div class="value">23</div>
+        <div class="label">Visíveis no site</div>
+      </div>
+      <div class="stat">
+        <div class="icon">📋</div>
+        <div class="value">3</div>
+        <div class="label">Pedidos hoje</div>
+      </div>
+      <div class="stat">
+        <div class="icon">💰</div>
+        <div class="value">R$ 357</div>
+        <div class="label">Faturamento hoje</div>
+      </div>
+    </div>
+
+    <!-- Tabela de Produtos -->
+    <div class="card">
+      <div class="card-header" style="display:flex;align-items:center;justify-content:space-between;">
+        <span>📦 Catálogo de Produtos</span>
+        <span style="font-weight:400;color:#6b7280;font-size:13px;">15 produto(s)</span>
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th style="width:40px;">ID</th>
+            <th style="width:56px;">Foto</th>
+            <th>Produto</th>
+            <th>Preço</th>
+            <th>Estoque</th>
+            <th style="min-width:140px;">Ações</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="color:#6b7280;">1</td>
+            <td><div class="thumb" style="background:#f3f4f6;display:flex;align-items:center;justify-content:center;color:#999;">📷</div></td>
+            <td><strong>Jamon Serrano Premium</strong></td>
+            <td>R$ 89,90</td>
+            <td><span class="badge badge-ok">✅ Em estoque</span></td>
+            <td>
+              <div class="acoes">
+                <a href="#" class="btn btn-ghost">✏️</a>
+                <a href="#" class="btn btn-ghost">👁️</a>
+                <a href="#" class="btn btn-danger">🗑️</a>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td style="color:#6b7280;">2</td>
+            <td><div class="thumb" style="background:#f3f4f6;display:flex;align-items:center;justify-content:center;color:#999;">📷</div></td>
+            <td><strong>Lombo Canadense Defumado</strong> <span class="badge badge-warn">🔔 2</span></td>
+            <td>R$ 45,50</td>
+            <td><span class="badge badge-err">❌ Esgotado</span></td>
+            <td>
+              <div class="acoes">
+                <a href="#" class="btn btn-ghost">🔔</a>
+                <a href="#" class="btn btn-ghost">✏️</a>
+                <a href="#" class="btn btn-ghost">👁️</a>
+                <a href="#" class="btn btn-danger">🗑️</a>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td style="color:#6b7280;">3</td>
+            <td><div class="thumb" style="background:#f3f4f6;display:flex;align-items:center;justify-content:center;color:#999;">📷</div></td>
+            <td><strong>Salaminho Italiano</strong></td>
+            <td>R$ 32,00</td>
+            <td><span class="badge badge-ok">✅ Em estoque</span></td>
+            <td>
+              <div class="acoes">
+                <a href="#" class="btn btn-ghost">✏️</a>
+                <a href="#" class="btn btn-ghost">👁️</a>
+                <a href="#" class="btn btn-danger">🗑️</a>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="pagination">
+        <span>Página 1 de 5</span>
+        <a href="#">⬅ Anterior</a>
+        <a href="#">Próximo ➡</a>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+</body>
+</html>

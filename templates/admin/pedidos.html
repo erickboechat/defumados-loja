@@ -9,8 +9,8 @@
 </div>
 
 <form class="admin-search-bar" method="GET" action="/admin/pedidos" style="margin-bottom:20px;">
-  <input type="text" name="q" placeholder="Buscar por nome ou telefone..." value="{{ q or '' }}" class="admin-input" style="flex:1;min-width:200px;">
-  <select name="status" class="admin-select" style="min-width:150px;">
+  <input type="text" name="q" placeholder="Buscar por nome ou telefone..." value="{{ q or '' }}" class="admin-input">
+  <select name="status" class="admin-select">
     <option value="">Todos os status</option>
     <option value="registrado" {{ 'selected' if status_filter == 'registrado' }}>📋 Registrado</option>
     <option value="concluido" {{ 'selected' if status_filter == 'concluido' }}>✅ Concluído</option>
