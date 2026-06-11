@@ -437,6 +437,26 @@ def get_pedidos_paginados(page=1, per_page=20, search='', status=''):
     return rows, total_paginas
 
 
+def get_pedidos_filtrados(search='', status=''):
+    """Retorna TODOS os pedidos filtrados (sem paginação, para export CSV)"""
+    with get_db() as conn:
+        query = 'SELECT * FROM pedidos'
+        params = []
+        conditions = []
+        if search:
+            conditions.append('(cliente_nome LIKE ? OR cliente_telefone LIKE ?)')
+            params.extend([f'%{search}%', f'%{search}%'])
+        if status:
+            conditions.append('status = ?')
+            params.append(status)
+        if conditions:
+            query += ' WHERE ' + ' AND '.join(conditions)
+        query += ' ORDER BY data_criacao DESC'
+        rows = conn.execute(query, params).fetchall()
+
+    return rows
+
+
 def get_pedidos_by_telefone(telefone):
     """Busca pedidos pelo telefone do cliente (normalizado)"""
     digitos = ''.join(c for c in telefone if c.isdigit())

@@ -34,6 +34,7 @@
         <option value="delete">Excluir</option>
       </select>
       <button type="submit" class="admin-btn admin-btn-primary admin-btn-sm" onclick="return confirmBulk()">Aplicar</button>
+      <a href="/admin/pedidos/export{% if q %}?q={{ q }}{% endif %}{% if status_filter %}{% if q %}&{% else %}?{% endif %}status={{ status_filter }}{% endif %}" class="admin-btn admin-btn-ghost admin-btn-sm">📥 Exportar CSV</a>
     </div>
     <table>
       <thead>

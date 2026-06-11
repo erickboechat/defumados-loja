@@ -2,6 +2,8 @@ import os
 import json
 import time
 import logging
+import csv
+import io
 from urllib.parse import quote
 from datetime import datetime, timedelta, timezone
 
@@ -20,7 +22,7 @@ from models import (BRT, init_db, get_db,
                     get_produtos_paginados, count_produtos,
                     add_produto, edit_produto, toggle_visivel, toggle_estoque,
                     deletar_produto, get_pedidos, get_pedido, add_pedido,
-                    get_pedidos_paginados, get_pedidos_by_telefone,
+                    get_pedidos_paginados, get_pedidos_filtrados, get_pedidos_by_telefone,
                     update_pedido_status, delete_pedido, login_required,
                     processar_imagens_request,
                     add_aviso, count_avisos_pendentes, get_avisos_pendentes,
@@ -691,6 +693,64 @@ def admin_pedidos_bulk():
         flash(f'{count} pedido(s) atualizado(s) para "{action}"!', 'success')
 
     return redirect(url_for('admin_pedidos'))
+
+
+@app.route('/admin/pedidos/export')
+@login_required
+def admin_pedidos_export():
+    q = request.args.get('q', '').strip()
+    status = request.args.get('status', '').strip()
+    pedidos = get_pedidos_filtrados(search=q, status=status)
+
+    output = io.StringIO()
+    writer = csv.writer(output, delimiter=';')
+
+    # Header
+    writer.writerow([
+        'ID', 'Cliente', 'Telefone', 'Email', 'CEP',
+        'Endereço', 'Número', 'Complemento', 'Bairro', 'Cidade', 'Estado', 'Referência',
+        'Forma Entrega', 'Frete Valor', 'Frete Texto',
+        'Itens', 'Total', 'Status', 'Data Criação'
+    ])
+
+    for p in pedidos:
+        # Parse itens JSON para texto legível
+        itens_texto = ''
+        try:
+            itens = json.loads(p['itens']) if p['itens'] else []
+            itens_texto = '; '.join([f"{i.get('qtd', 1)}x {i.get('nome', '')}" for i in itens])
+        except (json.JSONDecodeError, TypeError):
+            itens_texto = p['itens'] or ''
+
+        writer.writerow([
+            p['id'],
+            p['cliente_nome'] or '',
+            p['cliente_telefone'] or '',
+            p['email'] or '',
+            p['cep'] or '',
+            p['endereco'] or '',
+            p['numero_casa'] or '',
+            p['complemento'] or '',
+            p['bairro'] or '',
+            p['cidade'] or '',
+            p['estado'] or '',
+            p['referencia'] or '',
+            p['forma_entrega'] or '',
+            f"{p['frete_valor']:.2f}" if p['frete_valor'] else '',
+            p['frete_texto'] or '',
+            itens_texto,
+            f"{p['total']:.2f}" if p['total'] else '',
+            p['status'] or '',
+            p['data_criacao'] or ''
+        ])
+
+    output.seek(0)
+    filename = f'pedidos_{datetime.now(BRT).strftime("%Y%m%d_%H%M%S")}.csv'
+    return Response(
+        output.getvalue(),
+        mimetype='text/csv; charset=utf-8',
+        headers={'Content-Disposition': f'attachment; filename={filename}'}
+    )
 
 
 # ===== INICIALIZAÇÃO =====

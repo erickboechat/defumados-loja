@@ -52,8 +52,9 @@
         </div>
         <div class="full">
           <label>Imagens</label>
-          <textarea name="imagens" class="admin-textarea" rows="2" placeholder="URLs das imagens, uma por linha" style="width:100%;"></textarea>
-          <input type="file" name="imagens_upload" multiple accept="image/*" class="admin-input" style="margin-top:6px;">
+          <div id="add-img-preview" class="admin-img-preview" style="margin-bottom:8px;"></div>
+          <textarea name="imagens" class="admin-textarea" rows="2" placeholder="URLs das imagens, uma por linha" style="width:100%;" id="add-img-urls"></textarea>
+          <input type="file" name="imagens_upload" multiple accept="image/*" class="admin-input" style="margin-top:6px;" id="add-img-upload" onchange="previewAddImages(this)">
         </div>
         <div class="full">
           <label>Descrição</label>
@@ -150,9 +151,16 @@
               <div class="full"><label>Descrição</label><textarea name="descricao" class="admin-textarea" rows="2" required style="width:100%;">{{ p.descricao }}</textarea></div>
               <div class="full">
                 <label>Imagens</label>
-                <textarea name="imagens" class="admin-textarea" rows="2" style="width:100%;">{% for img in p.imagens %}{{ img }}
+                <div id="edit-img-preview-{{ p.id }}" class="admin-img-preview" style="margin-bottom:8px;">
+                  {% for img in p.imagens %}
+                  <div class="admin-img-preview-item" style="display:inline-block;margin:4px;position:relative;">
+                    <img src="{{ img | webp_smart }}" alt="" style="width:60px;height:60px;object-fit:cover;border-radius:4px;border:1px solid var(--admin-border);">
+                  </div>
+                  {% endfor %}
+                </div>
+                <textarea name="imagens" class="admin-textarea" rows="2" style="width:100%;" id="edit-img-urls-{{ p.id }}">{% for img in p.imagens %}{{ img }}
 {% endfor %}</textarea>
-                <input type="file" name="imagens_upload" multiple accept="image/*" class="admin-input" style="margin-top:6px;">
+                <input type="file" name="imagens_upload" multiple accept="image/*" class="admin-input" style="margin-top:6px;" id="edit-img-upload-{{ p.id }}" onchange="previewEditImages({{ p.id }}, this)">
               </div>
               <div class="toggle-wrap">
                 <input type="checkbox" name="estoque" id="edit-est-{{ p.id }}" {{ 'checked' if p.estoque else '' }}>
@@ -187,6 +195,48 @@
 function toggleEdit(id) {
   document.getElementById('edit-' + id).classList.toggle('hidden');
 }
+function previewEditImages(id, input) {
+  var preview = document.getElementById('edit-img-preview-' + id);
+  var urlsTextarea = document.getElementById('edit-img-urls-' + id);
+  if (!preview || !input.files) return;
+
+  // Clear existing previews
+  preview.innerHTML = '';
+
+  Array.from(input.files).forEach(function(file) {
+    if (!file.type.startsWith('image/')) return;
+    var reader = new FileReader();
+    reader.onload = function(e) {
+      var div = document.createElement('div');
+      div.className = 'admin-img-preview-item';
+      div.style.cssText = 'display:inline-block;margin:4px;position:relative;';
+      div.innerHTML = '<img src="' + e.target.result + '" alt="" style="width:60px;height:60px;object-fit:cover;border-radius:4px;border:1px solid var(--admin-border);">';
+      preview.appendChild(div);
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+function previewAddImages(input) {
+  var preview = document.getElementById('add-img-preview');
+  if (!preview || !input.files) return;
+
+  preview.innerHTML = '';
+
+  Array.from(input.files).forEach(function(file) {
+    if (!file.type.startsWith('image/')) return;
+    var reader = new FileReader();
+    reader.onload = function(e) {
+      var div = document.createElement('div');
+      div.className = 'admin-img-preview-item';
+      div.style.cssText = 'display:inline-block;margin:4px;position:relative;';
+      div.innerHTML = '<img src="' + e.target.result + '" alt="" style="width:60px;height:60px;object-fit:cover;border-radius:4px;border:1px solid var(--admin-border);">';
+      preview.appendChild(div);
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
 document.getElementById('add-produto-header').addEventListener('click', function() {
   var form = document.getElementById('add-produto-form');
   var icon = document.getElementById('add-produto-icon');
