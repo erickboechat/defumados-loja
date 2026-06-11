@@ -15,8 +15,9 @@ from werkzeug.security import check_password_hash
 from werkzeug.middleware.proxy_fix import ProxyFix
 
 from config import Config, WHATSAPP_NUMBER, WHATSAPP_URL
-from models import (BRT, init_db, get_produtos, get_produto,
-                    get_produtos_paginados,
+from models import (BRT, init_db, get_db,
+                    get_produtos, get_produto,
+                    get_produtos_paginados, count_produtos,
                     add_produto, edit_produto, toggle_visivel, toggle_estoque,
                     deletar_produto, get_pedidos, get_pedido, add_pedido,
                     get_pedidos_paginados, get_pedidos_by_telefone,
@@ -454,11 +455,22 @@ def admin_dashboard():
     page = request.args.get('page', 1, type=int)
     produtos, total_paginas = get_produtos_paginados(page=page, per_page=15, todos=True)
     avisos_count = {p['id']: count_avisos_pendentes(p['id']) for p in produtos}
+    total_produtos = count_produtos(todos=True)
+    visiveis = count_produtos(todos=False)
+    hoje = datetime.now(BRT).strftime('%Y-%m-%d')
+    with get_db() as conn:
+        pedidos_hoje = conn.execute("SELECT COUNT(*), COALESCE(SUM(total), 0) FROM pedidos WHERE date(data_criacao) = ? AND status != 'cancelado'", (hoje,)).fetchone()
     return render_template('admin/dashboard.html',
                            produtos=produtos,
                            page=page,
                            total_paginas=total_paginas,
-                           avisos_count=avisos_count)
+                           avisos_count=avisos_count,
+                           stats={
+                               'total_produtos': total_produtos,
+                               'visiveis': visiveis,
+                               'pedidos_hoje': pedidos_hoje[0],
+                               'faturamento_hoje': pedidos_hoje[1],
+                           })
 
 
 @app.route('/admin/add', methods=['POST'])
@@ -583,7 +595,6 @@ def api_avisar_estoque():
 
 @app.route('/health')
 def health():
-    from models import get_db, close_db
     db_ok = False
     try:
         conn = get_db()

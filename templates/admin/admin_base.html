@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="admin-body">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}Admin | Defumados AC{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.min.css') }}?v={{ static_version }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='admin.css') }}?v={{ static_version }}">
+  <link rel="icon" type="image/png" href="/static/uploads/logo-1.png">
+  {% block extra_head %}{% endblock %}
+</head>
+<body>
+  <div class="admin-topbar">
+    <a href="/admin" class="admin-topbar-logo">Defumados <span>AC</span></a>
+    <div class="admin-topbar-spacer"></div>
+    <div class="admin-topbar-user">
+      <span>Admin</span>
+      <div class="admin-topbar-avatar">A</div>
+    </div>
+  </div>
+
+  <div class="admin-layout">
+    <nav class="admin-sidebar">
+      <div class="admin-sidebar-section">Menu</div>
+      <a href="/admin" class="admin-sidebar-item {% if request.path == '/admin' %}active{% endif %}">
+        <span class="side-icon">📦</span>
+        <span class="side-label">Produtos</span>
+      </a>
+      <a href="/admin/pedidos" class="admin-sidebar-item {% if request.path.startswith('/admin/pedidos') %}active{% endif %}">
+        <span class="side-icon">📋</span>
+        <span class="side-label">Pedidos</span>
+      </a>
+      <a href="/admin/logout" class="admin-sidebar-item" style="margin-top:auto;">
+        <span class="side-icon">🚪</span>
+        <span class="side-label">Sair</span>
+      </a>
+    </nav>
+
+    <main class="admin-content">
+      {% block content %}{% endblock %}
+    </main>
+  </div>
+</body>
+</html>

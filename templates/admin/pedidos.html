@@ -1,132 +1,93 @@
-{% extends 'base.html' %}
+{% extends 'admin/admin_base.html' %}
 {% block title %}Pedidos - Admin | Defumados AC{% endblock %}
-{% block extra_head %}
-<style>
-.bulk-bar {
-  display: flex; align-items: center; gap: 10px;
-  margin-bottom: 15px; padding: 10px 15px;
-  background: #f8f9fa; border-radius: 6px;
-  flex-wrap: wrap;
-}
-.select-all-label { display: flex; align-items: center; gap: 6px; cursor: pointer; font-size: 14px; }
-.bulk-select {
-  padding: 6px 10px; border: 1px solid #ccc; border-radius: 4px; font-size: 14px;
-}
-.btn-bulk {
-  padding: 6px 16px; background: #28a745; color: #fff; border: none; border-radius: 4px;
-  cursor: pointer; font-size: 14px;
-}
-.btn-bulk:hover { background: #218838; }
-.admin-table th:first-child, .admin-table td:first-child { width: 40px; text-align: center; }
-.row-checkbox { width: 16px; height: 16px; cursor: pointer; }
-</style>
-{% endblock %}
 {% block content %}
-<main class="admin-container">
-  <div class="admin-tabs">
-    <a href="/admin" class="admin-tab">📦 Produtos</a>
-    <a href="/admin/pedidos" class="admin-tab active">📋 Pedidos</a>
-  </div>
 
-  <div class="admin-header">
-    <h1> Gestão de Pedidos</h1>
-  </div>
+<div class="admin-page-header">
+  <h1>📋 Pedidos</h1>
+</div>
 
-  {% if pedidos %}
+<div class="admin-table-card">
   <form method="POST" action="/admin/pedidos/bulk" id="bulk-form">
     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-
-    <div class="bulk-bar">
-      <label class="select-all-label">
-        <input type="checkbox" id="select-all"> Selecionar todos
-      </label>
-      <select name="action" class="bulk-select" required>
-        <option value="">Ações em massa</option>
+    <div style="margin-bottom:12px;display:flex;gap:8px;align-items:center;">
+      <input type="checkbox" id="select-all" onchange="selectAll(this)">
+      <label for="select-all" style="cursor:pointer;">Selecionar todos</label>
+      <select name="bulk_action" class="admin-input" style="width:auto;">
+        <option value="">--- Ação em massa ---</option>
         <option value="concluido">Marcar como concluído</option>
         <option value="cancelado">Marcar como cancelado</option>
         <option value="registrado">Marcar como registrado</option>
-        <option value="delete">Excluir selecionados</option>
+        <option value="excluir">Excluir</option>
       </select>
-      <button type="submit" class="btn-bulk">Aplicar</button>
+      <button type="submit" class="admin-btn admin-btn-primary admin-btn-sm" onclick="return confirmBulk()">Aplicar</button>
     </div>
-
-    <div class="admin-table-wrapper">
-      <table class="admin-table">
-        <thead>
-          <tr>
-            <th></th>
-            <th>ID</th>
-            <th>Cliente</th>
-            <th>Total</th>
-            <th>Status</th>
-            <th>Data</th>
-            <th>Ações</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for p in pedidos %}
-          <tr>
-            <td><input type="checkbox" name="pedido_ids" value="{{ p.id }}" class="row-checkbox"></td>
-            <td>#{{ p.id }}</td>
-            <td>{{ p.cliente_nome }}</td>
-            <td>R$ {{ "%.2f"|format(p.total) }}</td>
-            <td>
-              <span class="status-badge status-{{ p.status }}">
-                {{ p.status|title }}
-              </span>
-            </td>
-            <td>{{ p.data_criacao.split(' ')[0] }}</td>
-            <td>
-              <a href="/admin/pedidos/{{ p.id }}" class="btn-view">👁️ Detalhes</a>
-            </td>
-          </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-    </div>
+    <table>
+      <thead>
+        <tr>
+          <th style="width:32px;"></th>
+          <th style="width:40px;">ID</th>
+          <th>Cliente</th>
+          <th>Telefone</th>
+          <th>Itens</th>
+          <th>Total</th>
+          <th>Status</th>
+          <th>Data</th>
+          <th style="min-width:100px;">Ações</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for ped in pedidos %}
+        <tr>
+          <td><input type="checkbox" name="pedido_ids" value="{{ ped.id }}" class="bulk-check"></td>
+          <td style="color:var(--admin-text-secondary);font-size:13px;">{{ ped.id }}</td>
+          <td><strong>{{ ped.nome }}</strong></td>
+          <td>{{ ped.telefone }}</td>
+          <td>{{ ped.itens }}</td>
+          <td>R$ {{ "%.2f"|format(ped.total) }}</td>
+          <td>
+            {% set st = ped.status %}
+            <span class="badge
+              {% if st == 'concluido' %}badge-ok
+              {% elif st == 'cancelado' %}badge-err
+              {% else %}badge-warn
+              {% endif %}">{{ st }}</span>
+          </td>
+          <td style="white-space:nowrap;">{{ ped.data.split(' ')[0] }}</td>
+          <td>
+            <a href="/admin/pedido/{{ ped.id }}" class="admin-btn admin-btn-ghost admin-btn-sm">Detalhes</a>
+          </td>
+        </tr>
+        {% endfor %}
+        {% if pedidos|length == 0 %}
+        <tr><td colspan="9" style="text-align:center;color:var(--admin-text-secondary);padding:32px;">Nenhum pedido encontrado.</td></tr>
+        {% endif %}
+      </tbody>
+    </table>
   </form>
+</div>
 
-  {% if total_paginas > 1 %}
-  <div class="pagination-bar">
-    <span class="pagination-info">Página {{ page }} de {{ total_paginas }}</span>
-    <div class="pagination-links">
-      {% if page > 1 %}
-      <a href="/admin/pedidos?page={{ page - 1 }}" class="pagination-link">⬅ Anterior</a>
-      {% endif %}
-      {% if page < total_paginas %}
-      <a href="/admin/pedidos?page={{ page + 1 }}" class="pagination-link next">Próximo ➡</a>
-      {% endif %}
-    </div>
-  </div>
+{% if total_paginas > 1 %}
+<div class="admin-pagination">
+  <span>Página {{ page }} de {{ total_paginas }}</span>
+  {% if page > 1 %}
+  <a href="/admin/pedidos?page={{ page - 1 }}">⬅ Anterior</a>
   {% endif %}
-  {% else %}
-  <div class="empty-state">
-    <p class="empty-msg">Nenhum pedido registrado ainda.</p>
-  </div>
+  {% if page < total_paginas %}
+  <a href="/admin/pedidos?page={{ page + 1 }}">Próximo ➡</a>
   {% endif %}
-</main>
+</div>
+{% endif %}
 
 <script>
-document.getElementById('select-all').addEventListener('change', function() {
-  document.querySelectorAll('.row-checkbox').forEach(cb => cb.checked = this.checked);
-});
-
-document.getElementById('bulk-form').addEventListener('submit', function(e) {
-  var checked = document.querySelectorAll('.row-checkbox:checked').length;
-  if (checked === 0) {
-    e.preventDefault();
-    alert('Selecione pelo menos um pedido.');
-    return;
-  }
-  var action = document.querySelector('.bulk-select').value;
-  if (!action) {
-    e.preventDefault();
-    alert('Selecione uma ação.');
-    return;
-  }
-  if (action === 'delete' && !confirm('Excluir ' + checked + ' pedido(s)? Esta ação não pode ser desfeita.')) {
-    e.preventDefault();
-  }
-});
+function selectAll(source) {
+  document.querySelectorAll('.bulk-check').forEach(function(cb) { cb.checked = source.checked; });
+}
+function confirmBulk() {
+  var action = document.querySelector('select[name="bulk_action"]').value;
+  var checked = document.querySelectorAll('.bulk-check:checked').length;
+  if (!action || checked === 0) { alert('Selecione uma ação e pelo menos um pedido.'); return false; }
+  if (action === 'excluir') { return confirm('Excluir permanentemente ' + checked + ' pedido(s)?'); }
+  return true;
+}
 </script>
 {% endblock %}
