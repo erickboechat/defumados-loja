@@ -77,7 +77,7 @@
         </select>
         <button type="submit" class="admin-btn admin-btn-primary" style="width:100%;">Salvar</button>
       </form>
-      <form method="POST" action="/admin/pedidos/{{ pedido.id }}/delete" onsubmit="return confirm('Excluir este pedido permanentemente?');" style="margin-top:8px;">
+      <form method="POST" action="/admin/pedidos/{{ pedido.id }}/delete" class="admin-confirm-form" data-message="Excluir este pedido permanentemente?" style="margin-top:8px;">
         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
         <button type="submit" class="admin-btn admin-btn-danger" style="width:100%;">🗑️ Excluir Pedido</button>
       </form>

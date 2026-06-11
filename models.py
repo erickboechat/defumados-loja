@@ -457,6 +457,51 @@ def get_pedidos_filtrados(search='', status=''):
     return rows
 
 
+def buscar_global(search='', limit=10):
+    """Busca global: produtos + pedidos. Retorna dict com resultados limitados."""
+    if not search or len(search.strip()) < 2:
+        return {'produtos': [], 'pedidos': []}
+    
+    search = search.strip()
+    like = f'%{search}%'
+    
+    with get_db() as conn:
+        # Buscar produtos
+        produtos_rows = conn.execute('''
+            SELECT id, nome, preco, estoque, visivel, imagens
+            FROM produtos
+            WHERE nome LIKE ?
+            ORDER BY 
+                CASE WHEN nome LIKE ? THEN 0 ELSE 1 END,
+                nome
+            LIMIT ?
+        ''', (like, f'{search}%', limit)).fetchall()
+        
+        # Buscar pedidos
+        pedidos_rows = conn.execute('''
+            SELECT id, cliente_nome, cliente_telefone, total, status, data_criacao
+            FROM pedidos
+            WHERE cliente_nome LIKE ? OR cliente_telefone LIKE ?
+            ORDER BY data_criacao DESC
+            LIMIT ?
+        ''', (like, like, limit)).fetchall()
+        
+        produtos = []
+        for p in produtos_rows:
+            p = dict(p)
+            # Get first image for thumbnail
+            try:
+                imgs = json.loads(p['imagens']) if p['imagens'] else []
+                p['thumb'] = imgs[0] if imgs else None
+            except:
+                p['thumb'] = None
+            produtos.append(p)
+        
+        pedidos = [dict(p) for p in pedidos_rows]
+        
+        return {'produtos': produtos, 'pedidos': pedidos}
+
+
 def get_pedidos_by_telefone(telefone):
     """Busca pedidos pelo telefone do cliente (normalizado)"""
     digitos = ''.join(c for c in telefone if c.isdigit())

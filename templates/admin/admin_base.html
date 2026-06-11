@@ -57,6 +57,7 @@
     {% endif %}
   {% endwith %}
 
+  <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
   <script src="{{ url_for('static', filename='admin.js') }}?v={{ static_version }}"></script>
   <script>
     if ('serviceWorker' in navigator) {

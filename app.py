@@ -23,6 +23,7 @@ from models import (BRT, init_db, get_db,
                     add_produto, edit_produto, toggle_visivel, toggle_estoque,
                     deletar_produto, get_pedidos, get_pedido, add_pedido,
                     get_pedidos_paginados, get_pedidos_filtrados, get_pedidos_by_telefone,
+                    buscar_global,
                     update_pedido_status, delete_pedido, login_required,
                     processar_imagens_request,
                     add_aviso, count_avisos_pendentes, get_avisos_pendentes,
@@ -693,6 +694,36 @@ def admin_pedidos_bulk():
         flash(f'{count} pedido(s) atualizado(s) para "{action}"!', 'success')
 
     return redirect(url_for('admin_pedidos'))
+
+
+@app.route('/admin/api/search')
+@login_required
+def admin_api_search():
+    q = request.args.get('q', '').strip()
+    limit = request.args.get('limit', 10, type=int)
+    results = buscar_global(search=q, limit=min(limit, 20))
+    
+    # Format for frontend
+    return jsonify({
+        'produtos': [{
+            'id': p['id'],
+            'nome': p['nome'],
+            'preco': p['preco'],
+            'estoque': p['estoque'],
+            'visivel': p['visivel'],
+            'thumb': p['thumb'],
+            'url': f'/admin/edit/{p["id"]}'  # placeholder, could be detail view
+        } for p in results['produtos']],
+        'pedidos': [{
+            'id': p['id'],
+            'cliente_nome': p['cliente_nome'],
+            'cliente_telefone': p['cliente_telefone'],
+            'total': p['total'],
+            'status': p['status'],
+            'data_criacao': p['data_criacao'],
+            'url': f'/admin/pedidos/{p["id"]}'
+        } for p in results['pedidos']]
+    })
 
 
 @app.route('/admin/pedidos/export')

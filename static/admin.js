@@ -139,13 +139,15 @@ const Admin = (function() {
   };
 
   // =========================================
-  // IMAGE PREVIEW (Add/Edit Produto)
+  // IMAGE PREVIEW (Add/Edit Produto) + Drag-Drop Reorder
   // =========================================
   const ImagePreview = {
     init() {
       $$('input[type="file"][accept="image/*"]').forEach(input => {
         input.addEventListener('change', (e) => this.render(e.target));
       });
+      // Initialize sortable on existing preview containers
+      $$('.admin-img-preview').forEach(container => this.initSortable(container));
     },
 
     render(input) {
@@ -158,14 +160,58 @@ const Admin = (function() {
         if (!file.type.startsWith('image/')) return;
         const reader = new FileReader();
         reader.onload = (e) => {
-          const div = document.createElement('div');
-          div.className = 'admin-img-preview-item';
-          div.style.cssText = 'display:inline-block;margin:4px;position:relative;';
-          div.innerHTML = `<img src="${e.target.result}" alt="" style="width:60px;height:60px;object-fit:cover;border-radius:4px;border:1px solid var(--admin-border);">`;
+          const div = this.createPreviewItem(e.target.result, true);
           preview.appendChild(div);
         };
         reader.readAsDataURL(file);
       });
+      this.initSortable(preview);
+    },
+
+    createPreviewItem(src, isNewUpload = false) {
+      const div = document.createElement('div');
+      div.className = 'admin-img-preview-item';
+      div.style.cssText = 'display:inline-block;margin:4px;position:relative;cursor:grab;';
+      div.dataset.src = src;
+      div.dataset.isNew = isNewUpload ? '1' : '0';
+      div.innerHTML = `
+        <img src="${src}" alt="" style="width:60px;height:60px;object-fit:cover;border-radius:4px;border:1px solid var(--admin-border);">
+        <button type="button" class="admin-img-remove" aria-label="Remover" style="position:absolute;top:-6px;right:-6px;width:20px;height:20px;border-radius:50%;background:#ef4444;color:#fff;border:none;font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1;">&times;</button>
+      `;
+      div.querySelector('.admin-img-remove').onclick = () => this.removeItem(div);
+      return div;
+    },
+
+    removeItem(item) {
+      const preview = item.closest('.admin-img-preview');
+      item.remove();
+      this.updateTextarea(preview);
+    },
+
+    initSortable(preview) {
+      if (typeof Sortable === 'undefined') return;
+      if (preview._sortable) return; // already initialized
+      
+      preview._sortable = new Sortable(preview, {
+        animation: 150,
+        ghostClass: 'admin-img-preview-ghost',
+        dragClass: 'admin-img-preview-drag',
+        handle: 'img', // drag only by image, not remove button
+        onEnd: () => this.updateTextarea(preview)
+      });
+    },
+
+    updateTextarea(preview) {
+      const textareaId = preview.id.replace('-preview', '-urls');
+      const textarea = $('#' + textareaId);
+      if (!textarea) return;
+      
+      const urls = [];
+      preview.querySelectorAll('.admin-img-preview-item').forEach(item => {
+        const src = item.dataset.src;
+        if (src) urls.push(src);
+      });
+      textarea.value = urls.join('\n');
     }
   };
 
@@ -227,16 +273,140 @@ const Admin = (function() {
   };
 
   // =========================================
-  // GLOBAL SEARCH (Cmd+K) — placeholder for Fase 2
+  // GLOBAL SEARCH (Cmd+K)
   // =========================================
   const GlobalSearch = {
+    _modal: null,
+    _input: null,
+    _results: null,
+    _debounceTimer: null,
+
     init() {
       document.addEventListener('keydown', (e) => {
         if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
           e.preventDefault();
-          // TODO Fase 2: abrir modal de busca global
+          this.open();
+        }
+        if (e.key === 'Escape' && this._modal?.classList.contains('open')) {
+          this.close();
         }
       });
+    },
+
+    open() {
+      if (!this._modal) this._createModal();
+      this._modal.classList.add('open');
+      this._input.value = '';
+      this._results.innerHTML = '';
+      this._input.focus();
+    },
+
+    close() {
+      this._modal?.classList.remove('open');
+    },
+
+    _createModal() {
+      this._modal = document.createElement('div');
+      this._modal.className = 'admin-modal-overlay';
+      this._modal.innerHTML = `
+        <div class="admin-modal admin-modal-search" role="dialog" aria-modal="true">
+          <div class="admin-modal-header">
+            <span class="admin-modal-title">🔍 Busca Global (Cmd+K)</span>
+            <button class="admin-modal-close" aria-label="Fechar">&times;</button>
+          </div>
+          <div class="admin-modal-body">
+            <input type="text" class="admin-input admin-search-input" placeholder="Buscar produtos ou pedidos..." autocomplete="off" spellcheck="false">
+            <div class="admin-search-results"></div>
+          </div>
+        </div>`;
+      document.body.appendChild(this._modal);
+      
+      this._input = this._modal.querySelector('.admin-search-input');
+      this._results = this._modal.querySelector('.admin-search-results');
+      
+      this._modal.querySelector('.admin-modal-close').onclick = () => this.close();
+      this._modal.onclick = (e) => { if (e.target === this._modal) this.close(); };
+      
+      this._input.addEventListener('input', debounce((e) => this.search(e.target.value), 150));
+      this._input.addEventListener('keydown', (e) => this._handleKeydown(e));
+    },
+
+    _handleKeydown(e) {
+      const items = this._results.querySelectorAll('.admin-search-result-item');
+      if (!items.length) return;
+      
+      const active = this._results.querySelector('.active');
+      let index = active ? Array.from(items).indexOf(active) : -1;
+      
+      if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        index = Math.min(index + 1, items.length - 1);
+        this._activate(items[index]);
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        index = Math.max(index - 1, 0);
+        this._activate(items[index]);
+      } else if (e.key === 'Enter' && active) {
+        e.preventDefault();
+        window.location.href = active.dataset.url;
+      }
+    },
+
+    _activate(item) {
+      this._results.querySelectorAll('.admin-search-result-item').forEach(i => i.classList.remove('active'));
+      item.classList.add('active');
+      item.scrollIntoView({ block: 'nearest' });
+    },
+
+    search(query) {
+      if (!query || query.length < 2) {
+        this._results.innerHTML = '';
+        return;
+      }
+      
+      fetch(`/admin/api/search?q=${encodeURIComponent(query)}`)
+        .then(r => r.json())
+        .then(data => this.render(data))
+        .catch(() => this._results.innerHTML = '<div class="admin-search-empty">Erro ao buscar</div>');
+    },
+
+    render(data) {
+      const { produtos, pedidos } = data;
+      if (!produtos.length && !pedidos.length) {
+        this._results.innerHTML = '<div class="admin-search-empty">Nenhum resultado</div>';
+        return;
+      }
+      
+      let html = '';
+      if (produtos.length) {
+        html += '<div class="admin-search-section"><span class="admin-search-section-title">📦 Produtos</span>';
+        produtos.forEach(p => {
+          html += `
+            <a class="admin-search-result-item" href="${p.url}" data-url="${p.url}">
+              <span class="admin-search-result-thumb" style="background-image:url('${p.thumb || '/static/uploads/logo-1.png'}')"></span>
+              <div class="admin-search-result-info">
+                <span class="admin-search-result-name">${p.nome}</span>
+                <span class="admin-search-result-meta">R$ ${p.preco.toFixed(2)} ${!p.estoque ? '· ❌ Esgotado' : ''} ${!p.visivel ? '· 🚫 Oculto' : ''}</span>
+              </div>
+            </a>`;
+        });
+        html += '</div>';
+      }
+      if (pedidos.length) {
+        html += '<div class="admin-search-section"><span class="admin-search-section-title">📋 Pedidos</span>';
+        pedidos.forEach(p => {
+          const statusIcon = p.status === 'concluido' ? '✅' : p.status === 'cancelado' ? '❌' : '⏳';
+          html += `
+            <a class="admin-search-result-item" href="${p.url}" data-url="${p.url}">
+              <div class="admin-search-result-info">
+                <span class="admin-search-result-name">${p.cliente_nome} ${statusIcon}</span>
+                <span class="admin-search-result-meta">${p.cliente_telefone} · R$ ${p.total.toFixed(2)} · ${p.status}</span>
+              </div>
+            </a>`;
+        });
+        html += '</div>';
+      }
+      this._results.innerHTML = html;
     }
   };
 
@@ -258,9 +428,21 @@ const Admin = (function() {
   // =========================================
   // SWIPE ACTIONS (Mobile) — placeholder for Fase 3
   // =========================================
-  const SwipeActions = {
+  // CONFIRM FORMS (replace native confirm on delete forms)
+  // =========================================
+  const ConfirmForms = {
     init() {
-      // TODO Fase 3
+      document.addEventListener('submit', (e) => {
+        const form = e.target.closest('.admin-confirm-form');
+        if (!form) return;
+        
+        const message = form.dataset.message || 'Tem certeza?';
+        e.preventDefault();
+        
+        Modal.confirm('Confirmar', message, { danger: true }).then((confirmed) => {
+          if (confirmed) form.submit();
+        });
+      });
     }
   };
 
@@ -273,6 +455,7 @@ const Admin = (function() {
     ImagePreview.init();
     ProductForm.init();
     OrdersBulk.init();
+    ConfirmForms.init();
     GlobalSearch.init();
     PullToRefresh.init();
     SwipeActions.init();
@@ -301,6 +484,7 @@ const Admin = (function() {
     ProductForm,
     EditRow,
     OrdersBulk,
+    ConfirmForms,
     GlobalSearch,
     PullToRefresh,
     SwipeActions

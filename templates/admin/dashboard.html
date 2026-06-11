@@ -132,7 +132,7 @@
               <button type="submit" class="admin-btn admin-btn-ghost admin-btn-sm">{{ '👁️' if p.visivel else '🚫' }}</button>
             </form>
             <button onclick="toggleEdit({{ p.id }})" class="admin-btn admin-btn-ghost admin-btn-sm">✏️</button>
-            <form method="POST" action="/admin/deletar/{{ p.id }}" style="display:inline;" onsubmit="return confirm('Excluir este produto permanentemente?');">
+            <form method="POST" action="/admin/deletar/{{ p.id }}" style="display:inline;" class="admin-confirm-form" data-message="Excluir este produto permanentemente?">
               <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
               <button type="submit" class="admin-btn admin-btn-danger admin-btn-sm">🗑️</button>
             </form>
@@ -149,19 +149,20 @@
               <div><label>Peso</label><input type="text" name="peso" value="{{ p.peso if p.peso else '' }}" class="admin-input" style="width:100%;"></div>
               <div><label>Ingredientes</label><textarea name="ingredientes" class="admin-textarea" rows="2" style="width:100%;">{{ p.ingredientes if p.ingredientes else '' }}</textarea></div>
               <div class="full"><label>Descrição</label><textarea name="descricao" class="admin-textarea" rows="2" required style="width:100%;">{{ p.descricao }}</textarea></div>
-              <div class="full">
-                <label>Imagens</label>
-                <div id="edit-img-preview-{{ p.id }}" class="admin-img-preview" style="margin-bottom:8px;">
-                  {% for img in p.imagens %}
-                  <div class="admin-img-preview-item" style="display:inline-block;margin:4px;position:relative;">
-                    <img src="{{ img | webp_smart }}" alt="" style="width:60px;height:60px;object-fit:cover;border-radius:4px;border:1px solid var(--admin-border);">
+                <div class="full">
+                  <label>Imagens</label>
+                  <div id="edit-img-preview-{{ p.id }}" class="admin-img-preview" style="margin-bottom:8px;">
+                    {% for img in p.imagens %}
+                    <div class="admin-img-preview-item" style="display:inline-block;margin:4px;position:relative;cursor:grab;" data-src="{{ img | webp_smart }}" data-is-new="0">
+                      <img src="{{ img | webp_smart }}" alt="" style="width:60px;height:60px;object-fit:cover;border-radius:4px;border:1px solid var(--admin-border);">
+                      <button type="button" class="admin-img-remove" aria-label="Remover" style="position:absolute;top:-6px;right:-6px;width:20px;height:20px;border-radius:50%;background:#ef4444;color:#fff;border:none;font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1;">&times;</button>
+                    </div>
+                    {% endfor %}
                   </div>
-                  {% endfor %}
-                </div>
-                <textarea name="imagens" class="admin-textarea" rows="2" style="width:100%;" id="edit-img-urls-{{ p.id }}">{% for img in p.imagens %}{{ img }}
+                  <textarea name="imagens" class="admin-textarea" rows="2" style="width:100%;" id="edit-img-urls-{{ p.id }}">{% for img in p.imagens %}{{ img }}
 {% endfor %}</textarea>
-                <input type="file" name="imagens_upload" multiple accept="image/*" class="admin-input" style="margin-top:6px;" id="edit-img-upload-{{ p.id }}" data-preview="edit-img-preview-{{ p.id }}">
-              </div>
+                  <input type="file" name="imagens_upload" multiple accept="image/*" class="admin-input" style="margin-top:6px;" id="edit-img-upload-{{ p.id }}" data-preview="edit-img-preview-{{ p.id }}">
+                </div>
               <div class="toggle-wrap">
                 <input type="checkbox" name="estoque" id="edit-est-{{ p.id }}" {{ 'checked' if p.estoque else '' }}>
                 <label for="edit-est-{{ p.id }}">Em estoque</label>
