@@ -1,15 +1,19 @@
 {% extends 'admin/admin_base.html' %}
 {% block title %}Pedido #{{ pedido.id }} - Admin{% endblock %}
 {% block content %}
-<div class="admin-page-header">
-  <a href="/admin/pedidos" class="admin-back-link">← Voltar aos pedidos</a>
-  <h1>📋 Pedido #{{ pedido.id }}</h1>
+
+<div style="display:block;width:100%;">
+
+<div style="margin-bottom:20px;">
+  <a href="/admin/pedidos" style="color:var(--admin-text-secondary);text-decoration:none;font-size:13px;">← Voltar aos pedidos</a>
+  <h1 style="font-size:20px;font-weight:700;margin-top:4px;">📋 Pedido #{{ pedido.id }}</h1>
+  <div style="color:var(--admin-text-secondary);font-size:13px;margin-top:2px;">{{ pedido.data_criacao or '' }}</div>
 </div>
 
-<div class="pedido-detail">
-  <div class="pedido-detail-col">
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
+  <div style="display:flex;flex-direction:column;gap:20px;">
     <div class="admin-card">
-      <h3>👤 Cliente</h3>
+      <div style="font-size:15px;font-weight:600;margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid var(--admin-border);">👤 Cliente</div>
       <div class="info-row"><span class="info-label">Nome:</span><span class="info-value">{{ pedido.cliente_nome }}</span></div>
       <div class="info-row"><span class="info-label">Telefone:</span><span class="info-value">{{ pedido.cliente_telefone }}</span></div>
       {% if pedido.email %}
@@ -18,7 +22,7 @@
     </div>
 
     <div class="admin-card">
-      <h3>📍 Endereço</h3>
+      <div style="font-size:15px;font-weight:600;margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid var(--admin-border);">📍 Endereço</div>
       <div class="info-row"><span class="info-label">CEP:</span><span class="info-value">{{ pedido.cep or '-' }}</span></div>
       <div class="info-row"><span class="info-label">Endereço:</span><span class="info-value">{{ pedido.endereco }}, {{ pedido.numero_casa or 's/n' }}{% if pedido.complemento %} - {{ pedido.complemento }}{% endif %}</span></div>
       <div class="info-row"><span class="info-label">Bairro:</span><span class="info-value">{{ pedido.bairro }}</span></div>
@@ -29,7 +33,7 @@
     </div>
 
     <div class="admin-card">
-      <h3>🚚 Frete</h3>
+      <div style="font-size:15px;font-weight:600;margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid var(--admin-border);">🚚 Frete</div>
       <div class="info-row"><span class="info-label">Tipo:</span><span class="info-value">{{ pedido.forma_entrega }}</span></div>
       <div class="info-row"><span class="info-label">Frete:</span><span class="info-value">{{ pedido.frete_texto or 'A combinar' }}</span></div>
       {% if pedido.frete_valor > 0 %}
@@ -38,34 +42,34 @@
     </div>
   </div>
 
-  <div class="pedido-detail-col">
+  <div style="display:flex;flex-direction:column;gap:20px;">
     <div class="admin-card">
-      <h3>🛒 Itens</h3>
+      <div style="font-size:15px;font-weight:600;margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid var(--admin-border);">🛒 Itens</div>
       {% for item in pedido.itens %}
-      <div class="info-row" style="justify-content:space-between;">
+      <div style="display:flex;justify-content:space-between;padding:6px 0;font-size:14px;">
         <span>{{ item.qtd }}x {{ item.nome }}</span>
         <span>R$ {{ "%.2f"|format(item.preco * item.qtd) }}</span>
       </div>
       {% endfor %}
       <hr style="margin:12px 0;border:none;border-top:1px solid var(--admin-border);">
-      <div class="info-row" style="justify-content:space-between;">
+      <div style="display:flex;justify-content:space-between;font-size:14px;padding:4px 0;">
         <span>Subtotal</span>
         <span>R$ {{ "%.2f"|format(pedido.total) }}</span>
       </div>
       {% if pedido.frete_valor and pedido.frete_valor > 0 %}
-      <div class="info-row" style="justify-content:space-between;">
+      <div style="display:flex;justify-content:space-between;font-size:14px;padding:4px 0;">
         <span>Frete</span>
         <span>R$ {{ "%.2f"|format(pedido.frete_valor) }}</span>
       </div>
       {% endif %}
-      <div class="info-row" style="justify-content:space-between;font-weight:700;font-size:18px;margin-top:8px;">
+      <div style="display:flex;justify-content:space-between;font-weight:700;font-size:18px;margin-top:8px;padding-top:8px;border-top:1px solid var(--admin-border);">
         <span>Total</span>
         <span>R$ {{ "%.2f"|format(pedido.total + (pedido.frete_valor or 0)) }}</span>
       </div>
     </div>
 
     <div class="admin-card">
-      <h3>⚙️ Status</h3>
+      <div style="font-size:15px;font-weight:600;margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid var(--admin-border);">⚙️ Status</div>
       <form method="POST" action="/admin/pedidos/{{ pedido.id }}/status">
         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
         <select name="status" class="admin-input" style="width:100%;margin-bottom:8px;">
@@ -81,5 +85,7 @@
       </form>
     </div>
   </div>
+</div>
+
 </div>
 {% endblock %}
