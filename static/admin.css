@@ -29,6 +29,9 @@
   color: var(--admin-text);
   min-height: 100vh;
 }
+.admin-body body {
+  background: var(--admin-bg);
+}
 
 /* === TOP BAR === */
 .admin-topbar {
