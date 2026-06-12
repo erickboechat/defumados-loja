@@ -811,12 +811,12 @@ html { overflow-x: hidden; }
   .admin-table-card tbody,
   .admin-table-card th,
   .admin-table-card td,
-  .admin-table-card tr { display: block; }
+  .admin-table-card tr:not(.edit-row) { display: block; }
   .admin-table-card table { min-width: 0 !important; width: 100% !important; }
   .admin-table-card th { min-width: 0 !important; }
   .admin-table-card thead { display: none; }
 
-  .admin-table-card tr {
+  .admin-table-card tr:not(.edit-row) {
     background: var(--admin-white);
     border-radius: 10px;
     box-shadow: 0 1px 3px rgba(0,0,0,0.06);
@@ -892,10 +892,23 @@ html { overflow-x: hidden; }
   .admin-table-card td[data-label="Status"] .badge { font-size: 11px; }
 
   /* Edit row responsivo - no mobile segue o padrão de card */
+  /* Edit row no mobile: vira card simples sem o tratamento de td flex */
   .admin-table-card tr.edit-row,
-  .admin-table-card tr[class*="edit"] { padding: 10px !important; }
-  .admin-table-card td[colspan] { padding: 10px !important; }
-  .admin-table-card td[colspan] .admin-form-grid { grid-template-columns: 1fr; }
+  .admin-table-card tr[class*="edit"] { 
+    padding: 10px !important; 
+    display: block !important; 
+    background: #fafbff;
+    border-radius: 10px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+    margin-bottom: 10px;
+    border: 1px solid var(--admin-border);
+  }
+  .admin-table-card tr.edit-row td[colspan] { 
+    padding: 0 !important; 
+    display: block !important; 
+    background: transparent;
+  }
+  .admin-table-card tr.edit-row td[colspan] .admin-form-grid { grid-template-columns: 1fr; }
 
   /* No mobile, edit-row hidden deve sumir completamente */
   .admin-table-card tr.edit-row.hidden { display: none !important; }
@@ -915,7 +928,7 @@ html { overflow-x: hidden; }
   .admin-stat-value { font-size: 20px; }
   .admin-stat-label { font-size: 10px; }
   .admin-card { padding: 12px; }
-  .admin-table-card tr { padding: 10px; margin-bottom: 8px; }
+  .admin-table-card tr:not(.edit-row) { padding: 10px; margin-bottom: 8px; }
   .admin-table-card td { font-size: 12px; padding: 4px 0; }
   .admin-table-card td::before { font-size: 10px; min-width: 50px; }
   .admin-table-card td[data-label="Foto"] .prod-thumb {
