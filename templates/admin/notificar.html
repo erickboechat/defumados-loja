@@ -10,16 +10,23 @@
   {% if produto.imagens and produto.imagens[0] %}
   <img src="{{ produto.imagens[0] }}" alt="{{ produto.nome }}" style="width:60px;height:60px;object-fit:cover;border-radius:8px;">
   {% endif %}
-  <div>
+  <div style="flex:1;">
     <h2 style="margin:0 0 4px;font-size:16px;">{{ produto.nome }}</h2>
-    <p style="margin:0;color:var(--admin-text-secondary);font-size:14px;">Estoque ativado com sucesso!</p>
+    {% if produto.estoque %}
+    <span style="color:#16a34a;font-size:13px;font-weight:600;">● Em estoque</span>
+    {% else %}
+    <span style="color:#dc2626;font-size:13px;font-weight:600;">● Esgotado</span>
+    {% endif %}
   </div>
 </div>
 
 {% if avisos %}
-<p style="margin-bottom:16px;color:var(--admin-text-secondary);">
-  <strong>{{ avisos|length }}</strong> cliente(s) serão notificados. Clique no WhatsApp de cada um para enviar a mensagem:
-</p>
+
+{% if ativado %}
+<div style="background:#dcfce7;border:1px solid #86efac;border-radius:8px;padding:12px 16px;margin-bottom:16px;">
+  <strong style="color:#16a34a;">Estoque ativado!</strong>
+  <span style="color:#166534;"> {{ avisos|length }} cliente(s) serão notificados. Envie a mensagem pelo WhatsApp:</span>
+</div>
 
 {% for a in avisos %}
 {% set msg_notif = "🎉 *" + produto.nome + "* voltou ao estoque!%0A%0A✅ Já disponível para compra no site: https://defumadosac.com.br/produto/" + produto.id|string %}
@@ -44,14 +51,50 @@
 <div style="margin-top:16px;text-align:center;">
   <button onclick="copiarLinks()" class="admin-btn admin-btn-ghost admin-btn-sm">📋 Copiar Links</button>
 </div>
+
 {% else %}
-<p style="text-align:center;padding:32px;color:var(--admin-text-secondary);">✅ Nenhum aviso pendente para este produto.</p>
+
+<p style="margin-bottom:16px;color:var(--admin-text-secondary);">
+  <strong>{{ avisos|length }}</strong> cliente(s) interessados neste produto:
+</p>
+
+{% for a in avisos %}
+<div style="display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--admin-border);">
+  <div style="flex:1;">
+    <div style="font-weight:600;">{{ a.nome }}</div>
+    <div style="color:var(--admin-text-secondary);font-size:13px;">
+      {% if a.telefone %}📱 {{ a.telefone }}{% endif %}
+      {% if a.email and a.telefone %} | {% endif %}
+      {% if a.email %}✉️ {{ a.email }}{% endif %}
+    </div>
+  </div>
+  <div style="color:var(--admin-text-secondary);font-size:12px;">
+    {{ a.data_criacao[:10] if a.data_criacao else '' }}
+  </div>
+</div>
+{% endfor %}
+
+<form method="POST" action="/admin/notificar/{{ produto.id }}/ativar" style="margin-top:20px;text-align:center;"
+      onsubmit="return confirm('Ativar estoque e notificar {{ avisos|length }} cliente(s)?')">
+  <button type="submit" class="admin-btn" style="background:#2563eb;color:#fff;padding:12px 24px;font-size:15px;">
+    ✅ Ativar Estoque e Notificar
+  </button>
+</form>
+
+{% endif %}
+
+{% else %}
+
+<p style="text-align:center;padding:32px;color:var(--admin-text-secondary);">
+  ✅ Nenhum cliente aviso pendente para este produto.
+</p>
+
 {% endif %}
 
 <script>
 function copiarLinks() {
   const links = document.querySelectorAll('a[href*="whatsapp"]');
-  const urls = Array.from(links).map(l => l.href);
+  const urls = Array.from(links).map(function(l) { return l.href; });
   if (!urls.length) return;
   navigator.clipboard.writeText(urls.join('\n')).then(function() {
     alert('Links copiados!');

@@ -166,14 +166,27 @@ def admin_notificar(produto_id):
         return render_template('404.html', mensagem='Produto não encontrado'), 404
 
     avisos = list(get_avisos_pendentes(produto_id))
+    ativado = request.args.get('ativado') == '1'
+
+    return render_template('admin/notificar.html',
+                           produto=produto, avisos=avisos,
+                           whatsapp_url=WHATSAPP_URL, ativado=ativado)
+
+
+@admin_bp.route('/notificar/<int:produto_id>/ativar', methods=['POST'])
+@login_required
+def admin_ativar_estoque(produto_id):
+    produto = get_produto(produto_id)
+    if not produto:
+        return render_template('404.html', mensagem='Produto não encontrado'), 404
+
+    avisos = list(get_avisos_pendentes(produto_id))
     marcar_notificados(produto_id)
 
     if not produto['estoque']:
         toggle_estoque(produto_id)
 
-    return render_template('admin/notificar.html',
-                           produto=produto, avisos=avisos,
-                           whatsapp_url=WHATSAPP_URL)
+    return redirect(url_for('admin.admin_notificar', produto_id=produto_id, ativado='1'))
 
 
 # ===== PEDIDOS =====
