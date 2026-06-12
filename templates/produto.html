@@ -238,6 +238,8 @@
         <div class="imagem-container">
           <img src="{{ p.imagens[0] | webp_smart }}" 
    alt="{{ p.nome }}" 
+   loading="lazy"
+   decoding="async"
    onerror="this.src='https://via.placeholder.com/200x200?text=Sem+Foto'">
            {% if not p.estoque %}
     <span class="badge-estoque esgotado">Esgotado</span>
