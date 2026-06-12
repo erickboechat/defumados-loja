@@ -130,6 +130,8 @@
   function abrirModalAviso(id, nome) {
     document.getElementById('aviso-produto-id').value = id;
     document.getElementById('aviso-produto-nome').textContent = 'Receba uma mensagem quando ' + nome + ' voltar ao estoque.';
+    document.getElementById('form-aviso').reset();
+    document.getElementById('aviso-msg').textContent = '';
     document.getElementById('modal-aviso').style.display = 'flex';
   }
   function fecharModalAviso(e) {
