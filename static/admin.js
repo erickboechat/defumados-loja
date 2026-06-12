@@ -420,20 +420,134 @@ const Admin = (function() {
   // PULL TO REFRESH (Mobile) — placeholder for Fase 3
   // =========================================
   const PullToRefresh = {
+    _indicator: null,
+    _startY: 0,
+    _pulling: false,
+
     init() {
-      let startY = 0;
-      document.addEventListener('touchstart', (e) => { if (window.scrollY === 0) startY = e.touches[0].clientY; }, { passive: true });
+      if (window.innerWidth > 768) return;
+      this._createIndicator();
+      document.addEventListener('touchstart', (e) => {
+        if (window.scrollY === 0) this._startY = e.touches[0].clientY;
+      }, { passive: true });
       document.addEventListener('touchmove', (e) => {
-        if (window.scrollY === 0 && e.touches[0].clientY - startY > 80) {
-          // TODO Fase 3: trigger refresh
+        if (window.scrollY === 0 && this._startY > 0) {
+          const dy = e.touches[0].clientY - this._startY;
+          if (dy > 10) {
+            this._pulling = true;
+            this._showIndicator(Math.min(dy / 120, 1));
+          }
         }
       }, { passive: true });
+      document.addEventListener('touchend', () => {
+        if (this._pulling) this._refresh();
+        this._pulling = false;
+        this._startY = 0;
+      }, { passive: true });
+    },
+
+    _createIndicator() {
+      this._indicator = document.createElement('div');
+      this._indicator.className = 'admin-pull-indicator';
+      this._indicator.innerHTML = '<div class="admin-pull-spinner"></div><span>Solte para atualizar</span>';
+      document.body.appendChild(this._indicator);
+    },
+
+    _showIndicator(progress) {
+      this._indicator.style.opacity = progress;
+      this._indicator.style.transform = `translateY(${Math.min(progress * 60 - 20, 40)}px)`;
+      this._indicator.style.display = progress > 0.1 ? 'flex' : 'none';
+    },
+
+    _refresh() {
+      this._indicator.style.opacity = '1';
+      this._indicator.querySelector('.admin-pull-spinner').classList.add('spin');
+      this._indicator.querySelector('span').textContent = 'Atualizando...';
+      setTimeout(() => location.reload(), 300);
     }
   };
 
   // =========================================
-  // SWIPE ACTIONS (Mobile) — placeholder for Fase 3
+  // SWIPE ACTIONS (Mobile) — swipe left to reveal edit/delete
   // =========================================
+  const SwipeActions = {
+    _activeCard: null,
+
+    init() {
+      if (window.innerWidth > 768) return;
+      const tableCard = $('.admin-table-card');
+      if (!tableCard) return;
+
+      let startX = 0, currentX = 0, swiping = false;
+
+      tableCard.addEventListener('touchstart', (e) => {
+        const card = e.target.closest('tr:not(.edit-row)');
+        if (!card || card.classList.contains('edit-row')) return;
+        startX = e.touches[0].clientX;
+        currentX = startX;
+        swiping = false;
+        card._startX = startX;
+      }, { passive: true });
+
+      tableCard.addEventListener('touchmove', (e) => {
+        const card = e.target.closest('tr:not(.edit-row)');
+        if (!card || !card._startX) return;
+
+        currentX = e.touches[0].clientX;
+        const dx = currentX - card._startX;
+
+        if (Math.abs(dx) > 15) {
+          swiping = true;
+          e.preventDefault();
+        }
+
+        if (swiping) {
+          if (dx < 0) {
+            const offset = Math.max(dx, -120);
+            card.style.transform = `translateX(${offset}px)`;
+            card.style.transition = 'none';
+          } else if (this._activeCard === card) {
+            const offset = Math.min(-120 + dx, 0);
+            card.style.transform = `translateX(${offset}px)`;
+            card.style.transition = 'none';
+          }
+        }
+      }, { passive: false });
+
+      tableCard.addEventListener('touchend', (e) => {
+        const card = e.target.closest('tr:not(.edit-row)');
+        if (!card) return;
+        delete card._startX;
+
+        if (!swiping) return;
+        const dx = currentX - card._startX || 0;
+
+        card.style.transition = 'transform 0.25s ease';
+
+        if (dx < -60) {
+          if (this._activeCard && this._activeCard !== card) {
+            this._activeCard.style.transform = 'translateX(0)';
+          }
+          card.style.transform = 'translateX(-120px)';
+          this._activeCard = card;
+        } else {
+          card.style.transform = 'translateX(0)';
+          if (this._activeCard === card) this._activeCard = null;
+        }
+      }, { passive: true });
+
+      document.addEventListener('click', (e) => {
+        if (e.target.closest('.admin-swipe-action')) {
+          const card = e.target.closest('tr');
+          if (card) {
+            card.style.transition = 'transform 0.25s ease';
+            card.style.transform = 'translateX(0)';
+            this._activeCard = null;
+          }
+        }
+      });
+    }
+  };
   // CONFIRM FORMS (replace native confirm on delete forms)
   // =========================================
   const ConfirmForms = {
@@ -464,7 +578,7 @@ const Admin = (function() {
     ConfirmForms.init();
     GlobalSearch.init();
     PullToRefresh.init();
-    // SwipeActions.init(); // Fase 3
+    SwipeActions.init();
 
     // Botão de busca global na topbar (event delegation para garantir que funcione)
     document.addEventListener('click', (e) => {
@@ -499,7 +613,7 @@ const Admin = (function() {
     OrdersBulk,
     ConfirmForms,
     GlobalSearch,
-    PullToRefresh
-    // SwipeActions  // Fase 3
+    PullToRefresh,
+    SwipeActions
   };
 })();

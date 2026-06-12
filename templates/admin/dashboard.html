@@ -93,6 +93,13 @@
     <tbody>
       {% for p in produtos %}
       <tr>
+        <div class="admin-swipe-actions">
+          <button class="admin-swipe-action swipe-edit" onclick="toggleEdit({{ p.id }})" aria-label="Editar">✏️</button>
+          <form method="POST" action="/admin/deletar/{{ p.id }}" style="display:inline;margin:0;padding:0;" class="admin-confirm-form" data-message="Excluir este produto permanentemente?">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <button type="submit" class="admin-swipe-action swipe-delete" aria-label="Excluir">🗑️</button>
+          </form>
+        </div>
         <td data-label="#">{{ p.id }}</td>
         <td data-label="Foto">
           {% if p.imagens and p.imagens[0] %}

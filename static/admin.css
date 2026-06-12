@@ -708,6 +708,68 @@ html { overflow-x: hidden; }
 .admin-img-preview-ghost { opacity: 0.5; transform: scale(1.05); }
 .admin-img-preview-drag { box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
 
+/* === PULL TO REFRESH (Mobile) === */
+.admin-pull-indicator {
+  position: fixed;
+  top: 60px;
+  left: 50%;
+  transform: translateX(-50%) translateY(-40px);
+  background: var(--admin-white);
+  border-radius: 20px;
+  padding: 8px 16px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+  display: none;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--admin-text-secondary);
+  z-index: 500;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+.admin-pull-spinner {
+  width: 18px; height: 18px;
+  border: 2px solid var(--admin-border);
+  border-top-color: var(--admin-accent);
+  border-radius: 50%;
+}
+.admin-pull-spinner.spin {
+  animation: pull-spin 0.6s linear infinite;
+}
+@keyframes pull-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* === SWIPE ACTIONS (Mobile) === */
+.admin-table-card tr:not(.edit-row) {
+  position: relative;
+  overflow: hidden;
+}
+.admin-swipe-actions {
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  display: flex;
+  align-items: stretch;
+  pointer-events: none;
+  z-index: 5;
+}
+.admin-swipe-action {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 60px;
+  font-size: 20px;
+  color: #fff;
+  pointer-events: auto;
+  cursor: pointer;
+  border: none;
+  background: none;
+}
+.admin-swipe-action.swipe-edit { background: var(--admin-accent); }
+.admin-swipe-action.swipe-delete { background: var(--admin-danger); }
+
 /* === RESPONSIVO === */
 @media (max-width: 768px) {
   /* Sidebar vira menu mobile */

@@ -57,3 +57,11 @@ app.log
 # OS
 Thumbs.db
 .DS_Store
+
+# Node.js
+node_modules/
+package-lock.json
+
+# Playwright
+test-results/
+playwright-report/
