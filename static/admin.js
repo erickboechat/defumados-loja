@@ -478,11 +478,26 @@ const Admin = (function() {
       const tableCard = $('.admin-table-card');
       if (!tableCard) return;
 
+      tableCard.querySelectorAll('tr[data-id]').forEach(tr => {
+        const id = tr.dataset.id;
+        const actions = document.createElement('div');
+        actions.className = 'admin-swipe-actions';
+        actions.innerHTML = `
+          <button class="admin-swipe-action swipe-edit" aria-label="Editar">✏️</button>
+          <button class="admin-swipe-action swipe-delete" aria-label="Excluir">🗑️</button>`;
+        actions.querySelector('.swipe-edit').onclick = () => window.toggleEdit(id);
+        actions.querySelector('.swipe-delete').onclick = () => {
+          const form = tr.querySelector('form.admin-confirm-form');
+          if (form) form.querySelector('button[type="submit"]').click();
+        };
+        tr.appendChild(actions);
+      });
+
       let startX = 0, currentX = 0, swiping = false;
 
       tableCard.addEventListener('touchstart', (e) => {
-        const card = e.target.closest('tr:not(.edit-row)');
-        if (!card || card.classList.contains('edit-row')) return;
+        const card = e.target.closest('tr[data-id]');
+        if (!card) return;
         startX = e.touches[0].clientX;
         currentX = startX;
         swiping = false;
@@ -490,7 +505,7 @@ const Admin = (function() {
       }, { passive: true });
 
       tableCard.addEventListener('touchmove', (e) => {
-        const card = e.target.closest('tr:not(.edit-row)');
+        const card = e.target.closest('tr[data-id]');
         if (!card || !card._startX) return;
 
         currentX = e.touches[0].clientX;
@@ -515,12 +530,12 @@ const Admin = (function() {
       }, { passive: false });
 
       tableCard.addEventListener('touchend', (e) => {
-        const card = e.target.closest('tr:not(.edit-row)');
+        const card = e.target.closest('tr[data-id]');
         if (!card) return;
         delete card._startX;
 
         if (!swiping) return;
-        const dx = currentX - card._startX || 0;
+        const dx = currentX - (card._startX || startX);
 
         card.style.transition = 'transform 0.25s ease';
 
@@ -538,7 +553,7 @@ const Admin = (function() {
 
       document.addEventListener('click', (e) => {
         if (e.target.closest('.admin-swipe-action')) {
-          const card = e.target.closest('tr');
+          const card = e.target.closest('tr[data-id]');
           if (card) {
             card.style.transition = 'transform 0.25s ease';
             card.style.transform = 'translateX(0)';
