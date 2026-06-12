@@ -143,11 +143,11 @@
         </div>
         <div class="form-group">
           <label for="aviso-email">E-mail</label>
-          <input type="email" id="aviso-email" placeholder="seu@email.com">
+          <input type="email" id="aviso-email" required placeholder="seu@email.com">
         </div>
         <div class="form-group">
           <label for="aviso-telefone">WhatsApp</label>
-          <input type="tel" id="aviso-telefone" placeholder="(21) 99999-9999">
+          <input type="tel" id="aviso-telefone" required placeholder="(21) 99999-9999">
         </div>
         <button type="submit" class="btn-add-grande" style="width:100%;">📩 Enviar Aviso</button>
         <label class="lgpd-checkbox" style="margin-top:0.8rem;">
@@ -385,8 +385,10 @@
     limparErrosAviso();
 
     const nome = document.getElementById('aviso-nome').value.trim();
+    const email = document.getElementById('aviso-email').value.trim();
+    const telefone = document.getElementById('aviso-telefone').value.trim();
     const consent = document.getElementById('aviso-consent').checked;
-    if (!nome || !consent) {
+    if (!nome || !email || !telefone || !consent) {
       mostrarErrosAviso();
       const msg = document.getElementById('aviso-msg');
       msg.style.color = '#dc2626';
@@ -405,8 +407,8 @@
         body: JSON.stringify({
           produto_id: parseInt(document.getElementById('aviso-produto-id').value),
           nome: nome,
-          email: document.getElementById('aviso-email').value.trim(),
-          telefone: document.getElementById('aviso-telefone').value.trim()
+          email: email,
+          telefone: telefone
         })
       });
       const data = await res.json();
