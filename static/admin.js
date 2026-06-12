@@ -464,7 +464,7 @@ const Admin = (function() {
     ConfirmForms.init();
     GlobalSearch.init();
     PullToRefresh.init();
-    SwipeActions.init();
+    // SwipeActions.init(); // Fase 3
 
     // Botão de busca global na topbar (event delegation para garantir que funcione)
     document.addEventListener('click', (e) => {
@@ -499,7 +499,7 @@ const Admin = (function() {
     OrdersBulk,
     ConfirmForms,
     GlobalSearch,
-    PullToRefresh,
-    SwipeActions
+    PullToRefresh
+    // SwipeActions  // Fase 3
   };
 })();
