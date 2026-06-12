@@ -1,44 +1,5 @@
 {% extends 'base.html' %}
 {% block title %}Finalizar Pedido - Defumados AC{% endblock %}
-{% block extra_head %}
-<style>
-  .checkout-container { max-width: 600px; margin: 2rem auto; background: white; padding: 2rem; border-radius: var(--borda-radius); box-shadow: var(--sombra); }
-  .form-group { margin-bottom: 1.2rem; }
-  .form-group label { display: block; font-weight: 500; margin-bottom: 0.4rem; }
-  .form-group input, .form-group textarea {
-    width: 100%; padding: 0.8rem; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 1rem; box-sizing: border-box;
-  }
-  .cep-wrapper { display: flex; gap: 0.5rem; align-items: center; }
-  .cep-wrapper input { flex: 1; }
-  #cep-status { font-size: 0.85rem; margin-top: 0.3rem; display: block; min-height: 1.2rem; }
-  .frete-badge { display: inline-block; padding: 0.4rem 0.8rem; border-radius: 6px; font-weight: 500; margin: 0.5rem 0; }
-  .frete-badge.fixo { background: #dcfce7; color: #166534; }
-  .frete-badge.consulta { background: #fef3c7; color: #92400e; }
-  .resumo-pedido { background: #f8fafc; padding: 1rem; border-radius: 8px; border: 1px solid #e2e8f0; margin: 1.5rem 0; }
-   .resumo-pedido p { margin: 0.5rem 0; display: flex; justify-content: space-between; }
-   .total-final { font-size: 1.3rem; font-weight: bold; color: var(--cor-primaria); border-top: 2px dashed #e2e8f0; padding-top: 0.5rem; margin-top: 0.5rem; }
-   .resumo-collapse { border: 1px solid #e2e8f0; border-radius: 8px; margin-bottom: 1.5rem; overflow: hidden; }
-   .resumo-collapse-header { display: flex; align-items: center; justify-content: space-between; padding: 0.8rem 1rem; cursor: pointer; background: #f8fafc; font-weight: 500; user-select: none; }
-   .resumo-collapse-header:hover { background: #f1f5f9; }
-   .resumo-collapse-chevron { width: 20px; height: 20px; transition: transform 0.3s; }
-   .resumo-collapse-chevron.open { transform: rotate(180deg); }
-   .resumo-collapse-body { max-height: 0; overflow: hidden; transition: max-height 0.35s ease; }
-   .resumo-collapse-body.open { max-height: 600px; }
-   .resumo-collapse-body-inner { padding: 0.5rem 1rem 1rem; border-top: 1px solid #e2e8f0; }
-   .resumo-item { display: flex; justify-content: space-between; align-items: center; padding: 0.4rem 0; font-size: 0.9rem; border-bottom: 1px solid #f1f5f9; }
-   .resumo-item:last-child { border-bottom: none; }
-   .resumo-item-qtd { color: #666; min-width: 2.5rem; }
-   .resumo-item-nome { flex: 1; }
-   .resumo-item-subtotal { font-weight: 500; white-space: nowrap; }
-   .btn-enviar { width: 100%; background: var(--cor-sucesso); color: white; padding: 1rem; border-radius: 8px; font-weight: 600; font-size: 1.1rem; border: none; cursor: pointer; transition: all 0.2s; }
-   .btn-enviar:hover { background: #128C7E; transform: translateY(-2px); }
-   .btn-enviar:disabled { background: #ccc; cursor: not-allowed; transform: none; }
-   .btn-enviar.loading { background: #128C7E; pointer-events: none; display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; }
-   .spinner { width: 18px; height: 18px; border: 3px solid rgba(255,255,255,0.3); border-top-color: #fff; border-radius: 50%; animation: spin 0.7s linear infinite; display: inline-block; }
-   @keyframes spin { to { transform: rotate(360deg); } }
-  .voltar { display: block; text-align: center; margin-top: 1rem; color: var(--cor-texto-claro); text-decoration: none; }
-</style>
-{% endblock %}
 {% block content %}
 <main class="checkout-container">
   <h2>Finalizar Pedido</h2>
