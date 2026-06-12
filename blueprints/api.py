@@ -1,7 +1,7 @@
 from flask import Blueprint, request, jsonify
 
 from models import get_produtos, get_produto, add_aviso
-from extensions import limiter
+from extensions import csrf, limiter
 
 api_bp = Blueprint('api', __name__, url_prefix='/api')
 
@@ -48,6 +48,7 @@ def api_produto_detalhe(produto_id):
 
 
 @api_bp.route('/avisar-estoque', methods=['POST'])
+@csrf.exempt
 def api_avisar_estoque():
     data = request.json
     if not data:
