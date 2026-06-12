@@ -132,6 +132,7 @@
     document.getElementById('aviso-produto-nome').textContent = 'Receba uma mensagem quando ' + nome + ' voltar ao estoque.';
     document.getElementById('form-aviso').reset();
     document.getElementById('aviso-msg').textContent = '';
+    limparErrosAviso();
     document.getElementById('modal-aviso').style.display = 'flex';
   }
   function fecharModalAviso(e) {
@@ -151,8 +152,67 @@
     e.target.value = val;
   });
 
+  function limparErrosAviso() {
+    document.querySelectorAll('#form-aviso [required]').forEach(el => {
+      if (el.type === 'checkbox') {
+        const label = el.closest('.lgpd-checkbox');
+        if (label) { label.style.borderColor = ''; label.style.boxShadow = ''; }
+      } else {
+        el.style.borderColor = '';
+        el.style.boxShadow = '';
+      }
+    });
+  }
+
+  function mostrarErrosAviso() {
+    let primeiro = null;
+    document.querySelectorAll('#form-aviso [required]').forEach(el => {
+      const vazio = el.type === 'checkbox' ? !el.checked : el.value.trim() === '';
+      if (vazio) {
+        if (el.type === 'checkbox') {
+          const label = el.closest('.lgpd-checkbox');
+          if (label) { label.style.borderColor = '#dc2626'; label.style.boxShadow = '0 0 0 2px rgba(220,38,38,0.15)'; }
+        } else {
+          el.style.borderColor = '#dc2626';
+          el.style.boxShadow = '0 0 0 2px rgba(220,38,38,0.15)';
+        }
+        if (!primeiro) primeiro = el;
+        el.addEventListener('input', function limpar() {
+          if (el.type === 'checkbox') {
+            const label = el.closest('.lgpd-checkbox');
+            if (label) { label.style.borderColor = ''; label.style.boxShadow = ''; }
+          } else {
+            el.style.borderColor = '';
+            el.style.boxShadow = '';
+          }
+          el.removeEventListener('input', limpar);
+        }, { once: true });
+        el.addEventListener('change', function limpar() {
+          if (el.type === 'checkbox') {
+            const label = el.closest('.lgpd-checkbox');
+            if (label) { label.style.borderColor = ''; label.style.boxShadow = ''; }
+          }
+          el.removeEventListener('change', limpar);
+        }, { once: true });
+      }
+    });
+    if (primeiro) primeiro.focus();
+  }
+
   async function enviarAviso(event) {
     event.preventDefault();
+    limparErrosAviso();
+
+    const nome = document.getElementById('aviso-nome').value.trim();
+    const consent = document.getElementById('aviso-consent').checked;
+    if (!nome || !consent) {
+      mostrarErrosAviso();
+      const msg = document.getElementById('aviso-msg');
+      msg.style.color = '#dc2626';
+      msg.textContent = '❌ Preencha todos os campos obrigatórios e aceite a Política de Privacidade.';
+      return;
+    }
+
     const btn = event.target.querySelector('button[type="submit"]');
     const msg = document.getElementById('aviso-msg');
     btn.disabled = true;
@@ -163,7 +223,7 @@
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           produto_id: parseInt(document.getElementById('aviso-produto-id').value),
-          nome: document.getElementById('aviso-nome').value.trim(),
+          nome: nome,
           email: document.getElementById('aviso-email').value.trim(),
           telefone: document.getElementById('aviso-telefone').value.trim()
         })
@@ -172,7 +232,7 @@
       if (data.success) {
         msg.style.color = '#166534';
         msg.textContent = '✅ Aviso registrado! Você será notificado quando o produto voltar.';
-        event.target.querySelectorAll('input').forEach(i => i.value = '');
+        event.target.querySelectorAll('input').forEach(i => { if (i.type !== 'hidden' && i.type !== 'checkbox') i.value = ''; });
       } else {
         throw new Error(data.erro || 'Erro ao registrar');
       }
