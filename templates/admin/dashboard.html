@@ -139,7 +139,7 @@
           </div>
         </td>
       </tr>
-      <tr class="edit-row hidden" id="edit-{{ p.id }}">
+      <tr class="edit-row" style="display:none" id="edit-{{ p.id }}">
         <td colspan="6" style="background:#fafbff;padding:16px;">
           <form method="POST" action="/admin/edit/{{ p.id }}" enctype="multipart/form-data">
             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">

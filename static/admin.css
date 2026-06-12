@@ -896,7 +896,6 @@ html { overflow-x: hidden; }
   .admin-table-card tr.edit-row,
   .admin-table-card tr[class*="edit"] { 
     padding: 10px !important; 
-    display: block !important; 
     background: #fafbff;
     border-radius: 10px;
     box-shadow: 0 1px 3px rgba(0,0,0,0.06);
@@ -909,10 +908,6 @@ html { overflow-x: hidden; }
     background: transparent;
   }
   .admin-table-card tr.edit-row td[colspan] .admin-form-grid { grid-template-columns: 1fr; }
-
-  /* No mobile, edit-row hidden deve sumir completamente */
-  .admin-table-card tr.edit-row.hidden { display: none !important; }
-  .admin-table-card tr.edit-row:not(.hidden) { display: block !important; }
 
   .admin-bulk { flex-wrap: wrap; gap: 6px; padding: 10px 12px; }
   .admin-bulk label { font-size: 12px; }
@@ -935,6 +930,4 @@ html { overflow-x: hidden; }
     width: 36px !important;
     height: 36px !important;
   }
-  .admin-table-card tr.edit-row.hidden { display: none !important; }
-  .admin-table-card tr.edit-row:not(.hidden) { display: block !important; }
 }

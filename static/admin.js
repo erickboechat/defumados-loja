@@ -238,7 +238,13 @@ const Admin = (function() {
   // =========================================
   const EditRow = {
     toggle(id) {
-      $('#edit-' + id)?.classList.toggle('hidden');
+      const el = $('#edit-' + id);
+      if (!el) return;
+      if (el.style.display === 'none' || !el.style.display) {
+        el.style.display = (window.innerWidth <= 768) ? 'block' : 'table-row';
+      } else {
+        el.style.display = 'none';
+      }
     }
   };
 
