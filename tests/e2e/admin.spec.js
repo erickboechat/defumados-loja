@@ -138,6 +138,50 @@ test.describe('Orders Page', () => {
   });
 });
 
+test.describe('Activity Logs', () => {
+  test.beforeEach(async ({ page }) => {
+    await login(page);
+  });
+
+  test('logs page loads', async ({ page }) => {
+    await page.goto('/admin/logs');
+    await expect(page.locator('.admin-content')).toBeVisible();
+    await expect(page.locator('h1:has-text("Logs de Atividades")')).toBeVisible();
+  });
+
+  test('logs table is visible', async ({ page }) => {
+    await page.goto('/admin/logs');
+    await expect(page.locator('.admin-table-card')).toBeVisible();
+  });
+
+  test('search bar works', async ({ page }) => {
+    await page.goto('/admin/logs');
+    await page.fill('.admin-search-bar input[name="q"]', 'admin');
+    await page.click('.admin-search-bar button[type="submit"]');
+    await expect(page).toHaveURL(/q=admin/);
+  });
+
+  test('level filter works', async ({ page }) => {
+    await page.goto('/admin/logs');
+    await page.selectOption('select[name="level"]', 'WARNING');
+    await page.click('.admin-search-bar button[type="submit"]');
+    await expect(page).toHaveURL(/level=WARNING/);
+  });
+
+  test('clear filter link appears when filtering', async ({ page }) => {
+    await page.goto('/admin/logs?q=test');
+    const clearBtn = page.locator('a:has-text("Limpar")');
+    await expect(clearBtn).toBeVisible();
+    await clearBtn.click();
+    await expect(page).toHaveURL(/\/admin\/logs$/);
+  });
+
+  test('sidebar has logs link', async ({ page }) => {
+    await page.goto('/admin');
+    await expect(page.locator('.admin-sidebar-item:has-text("Logs")')).toBeVisible();
+  });
+});
+
 test.describe('Delete Product (Modal Confirm)', () => {
   test.beforeEach(async ({ page }) => {
     await login(page);

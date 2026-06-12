@@ -265,6 +265,11 @@ html { overflow-x: hidden; }
 .badge-info { background: #e0e7ff; color: #3730a3; }
 .badge-soft { background: #f3f4f6; color: #6b7280; }
 
+/* === LOG BADGES === */
+.log-badge-info { background: #dcfce7; color: #166534; }
+.log-badge-warn { background: #fef3c7; color: #92400e; }
+.log-badge-error { background: #fee2e2; color: #991b1b; }
+
 /* === BOTÕES === */
 .admin-btn {
   display: inline-flex;

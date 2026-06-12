@@ -1,4 +1,5 @@
 import os
+import re
 import uuid
 import sqlite3
 import json
@@ -500,6 +501,63 @@ def buscar_global(search='', limit=10):
         pedidos = [dict(p) for p in pedidos_rows]
         
         return {'produtos': produtos, 'pedidos': pedidos}
+
+
+def get_admin_logs(page=1, per_page=50, level='', search=''):
+    """Lê app.log e retorna apenas ações do admin (filtra HTTP requests e startup)."""
+    import os
+    log_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'app.log')
+    
+    if not os.path.exists(log_path):
+        return [], 0, 1
+    
+    # Regex: datetime [LEVEL] message
+    pattern = re.compile(
+        r'^(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2},\d{3}) \[(\w+)\] (.+)$'
+    )
+    
+    # Linhas de ruído a filtrar
+    NOISE = [' - - [', 'development server', 'Running on', 'Press CTRL+C',
+             'StatUpdater', 'GET /static/', 'POST /static/']
+    
+    logs = []
+    try:
+        with open(log_path, 'r', encoding='utf-8', errors='replace') as f:
+            for line in f:
+                line = line.strip()
+                if not line:
+                    continue
+                # Filtrar ruído HTTP e startup
+                if any(n in line for n in NOISE):
+                    continue
+                m = pattern.match(line)
+                if not m:
+                    continue
+                dt_str, lvl, msg = m.groups()
+                # Filtro por nível
+                if level and lvl.upper() != level.upper():
+                    continue
+                # Filtro por busca
+                if search and search.lower() not in msg.lower():
+                    continue
+                logs.append({
+                    'datetime': dt_str,
+                    'level': lvl.upper(),
+                    'message': msg,
+                })
+    except Exception:
+        return [], 0, 1
+    
+    # Mais recentes primeiro
+    logs.reverse()
+    
+    total = len(logs)
+    total_paginas = max(1, (total + per_page - 1) // per_page)
+    page = max(1, min(page, total_paginas))
+    start = (page - 1) * per_page
+    page_logs = logs[start:start + per_page]
+    
+    return page_logs, total_paginas, total
 
 
 def get_pedidos_by_telefone(telefone):

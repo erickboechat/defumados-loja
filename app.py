@@ -23,7 +23,7 @@ from models import (BRT, init_db, get_db,
                     add_produto, edit_produto, toggle_visivel, toggle_estoque,
                     deletar_produto, get_pedidos, get_pedido, add_pedido,
                     get_pedidos_paginados, get_pedidos_filtrados, get_pedidos_by_telefone,
-                    buscar_global,
+                    buscar_global, get_admin_logs,
                     update_pedido_status, delete_pedido, login_required,
                     processar_imagens_request,
                     add_aviso, count_avisos_pendentes, get_avisos_pendentes,
@@ -540,6 +540,7 @@ def admin_edit_produto(produto_id):
 @login_required
 def admin_toggle_visivel(produto_id):
     toggle_visivel(produto_id)
+    log.info(f"Produto #{produto_id} visível alternado")
     flash('Visibilidade do produto alterada!', 'success')
     return redirect(url_for('admin_dashboard'))
 
@@ -548,6 +549,7 @@ def admin_toggle_visivel(produto_id):
 @login_required
 def admin_toggle_estoque(produto_id):
     toggle_estoque(produto_id)
+    log.info(f"Produto #{produto_id} estoque alternado")
     flash('Estoque do produto alterado!', 'success')
     return redirect(url_for('admin_dashboard'))
 
@@ -724,6 +726,22 @@ def admin_api_search():
             'url': f'/admin/pedidos/{p["id"]}'
         } for p in results['pedidos']]
     })
+
+
+@app.route('/admin/logs')
+@login_required
+def admin_logs():
+    page = request.args.get('page', 1, type=int)
+    level = request.args.get('level', '').strip()
+    q = request.args.get('q', '').strip()
+    logs, total_paginas, total = get_admin_logs(page=page, per_page=50, level=level, search=q)
+    return render_template('admin/logs.html',
+                           logs=logs,
+                           page=page,
+                           total_paginas=total_paginas,
+                           total=total,
+                           level=level,
+                           q=q)
 
 
 @app.route('/admin/pedidos/export')

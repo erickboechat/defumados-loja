@@ -1,0 +1,72 @@
+{% extends 'admin/admin_base.html' %}
+{% block title %}Logs de Atividades - Admin | Defumados AC{% endblock %}
+{% block content %}
+
+<div class="admin-page-header">
+  <h1>📊 Logs de Atividades</h1>
+  <span style="font-size:13px;color:var(--admin-text-secondary);">{{ total }} registro(s)</span>
+</div>
+
+<form class="admin-search-bar" method="GET" action="/admin/logs" style="margin-bottom:20px;">
+  <input type="text" name="q" placeholder="Buscar nos logs..." value="{{ q or '' }}" class="admin-input">
+  <select name="level" class="admin-select" style="width:auto;">
+    <option value="">Todos os níveis</option>
+    <option value="INFO" {{ 'selected' if level == 'INFO' }}>INFO</option>
+    <option value="WARNING" {{ 'selected' if level == 'WARNING' }}>WARNING</option>
+    <option value="ERROR" {{ 'selected' if level == 'ERROR' }}>ERROR</option>
+  </select>
+  <button type="submit" class="admin-btn admin-btn-primary">🔍 Filtrar</button>
+  {% if q or level %}
+    <a href="/admin/logs" class="admin-btn admin-btn-ghost">✕ Limpar</a>
+  {% endif %}
+</form>
+
+<div class="admin-table-card">
+  <table>
+    <thead>
+      <tr>
+        <th style="width:180px;">Data/Hora</th>
+        <th style="width:90px;">Nível</th>
+        <th>Mensagem</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for entry in logs %}
+      <tr>
+        <td data-label="Data/Hora" style="font-size:13px;white-space:nowrap;color:var(--admin-text-secondary);">{{ entry.datetime }}</td>
+        <td data-label="Nível">
+          {% if entry.level == 'ERROR' %}
+            <span class="badge log-badge-error">ERROR</span>
+          {% elif entry.level == 'WARNING' %}
+            <span class="badge log-badge-warn">WARNING</span>
+          {% else %}
+            <span class="badge log-badge-info">INFO</span>
+          {% endif %}
+        </td>
+        <td data-label="Mensagem" style="word-break:break-word;">{{ entry.message }}</td>
+      </tr>
+      {% endfor %}
+      {% if not logs %}
+      <tr>
+        <td colspan="3" style="text-align:center;padding:40px;color:var(--admin-text-secondary);">
+          Nenhum log encontrado.
+        </td>
+      </tr>
+      {% endif %}
+    </tbody>
+  </table>
+</div>
+
+{% if total_paginas > 1 %}
+<div class="admin-pagination">
+  <span>Página {{ page }} de {{ total_paginas }}</span>
+  {% if page > 1 %}
+    <a href="/admin/logs?page={{ page - 1 }}{% if q %}&q={{ q }}{% endif %}{% if level %}&level={{ level }}{% endif %}">⬅ Anterior</a>
+  {% endif %}
+  {% if page < total_paginas %}
+    <a href="/admin/logs?page={{ page + 1 }}{% if q %}&q={{ q }}{% endif %}{% if level %}&level={{ level }}{% endif %}">Próximo ➡</a>
+  {% endif %}
+</div>
+{% endif %}
+
+{% endblock %}

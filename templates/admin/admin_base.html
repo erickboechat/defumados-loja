@@ -36,6 +36,10 @@
         <span class="side-icon">📋</span>
         <span class="side-label">Pedidos</span>
       </a>
+      <a href="/admin/logs" class="admin-sidebar-item {% if request.path.startswith('/admin/logs') %}active{% endif %}">
+        <span class="side-icon">📊</span>
+        <span class="side-label">Logs</span>
+      </a>
       <a href="/admin/logout" class="admin-sidebar-item" style="margin-top:auto;">
         <span class="side-icon">🚪</span>
         <span class="side-label">Sair</span>
