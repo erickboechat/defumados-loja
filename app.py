@@ -409,6 +409,7 @@ def process_checkout():
 # ===== MEUS PEDIDOS (PÚBLICO) =====
 
 @app.route('/meus-pedidos', methods=['GET', 'POST'])
+@csrf.exempt
 @limite_pedidos
 def meus_pedidos():
     pedidos = []
