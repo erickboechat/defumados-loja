@@ -460,8 +460,12 @@ const Admin = (function() {
     PullToRefresh.init();
     SwipeActions.init();
 
-    // Botão de busca global na topbar
-    $('.admin-topbar-search-btn')?.addEventListener('click', () => GlobalSearch.open());
+    // Botão de busca global na topbar (event delegation para garantir que funcione)
+    document.addEventListener('click', (e) => {
+      if (e.target.closest('.admin-topbar-search-btn')) {
+        GlobalSearch.open();
+      }
+    });
 
     // Expor funções globais usadas inline nos templates (transição)
     window.toggleEdit = EditRow.toggle;

@@ -500,7 +500,7 @@ html { overflow-x: hidden; }
 
 /* === EDIT ROW === */
 .edit-row.hidden { display: none !important; }
-.edit-row { display: table-row; background: #fafbff; }
+.edit-row { display: table-row !important; background: #fafbff; }
 
 /* === LOGIN PAGE === */
 .admin-login-page {
@@ -892,8 +892,8 @@ html { overflow-x: hidden; }
   .admin-table-card td[data-label="Status"] .badge { font-size: 11px; }
 
   /* Edit row responsivo */
-  .admin-table-card tr .edit-row,
-  .admin-table-card tr[class*="edit"] { padding: 10px !important; }
+  .admin-table-card tr.edit-row,
+  .admin-table-card tr[class*="edit"] { padding: 10px !important; display: table-row !important; }
   .admin-table-card td[colspan] { padding: 10px !important; }
   .admin-table-card td[colspan] .admin-form-grid { grid-template-columns: 1fr; }
 
