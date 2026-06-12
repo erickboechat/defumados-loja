@@ -150,6 +150,16 @@ def rate_limit_exceeded(e):
     return render_template('429.html'), 429
 
 
+@app.errorhandler(400)
+def bad_request(e):
+    from flask_wtf.csrf import CSRFError
+    if isinstance(e.description, CSRFError) or 'csrf' in str(e.description).lower():
+        log.warning(f"CSRF error: {e.description}")
+        return render_template('400.html', mensagem='Sessão expirada. Volte à página anterior e recarregue para tentar novamente.'), 400
+    log.warning(f"Erro 400: {e.description}")
+    return render_template('400.html', mensagem=str(e.description) if e.description else None), 400
+
+
 # ===== FILTROS JINJA2 =====
 
 @app.template_filter('webp_smart')
@@ -318,7 +328,8 @@ _Obrigado pela preferência! Aguarde a confirmação do pedido._ 🐷✨"""
 def process_checkout():
     consentimento = request.form.get('lgpd_consent')
     if consentimento != '1':
-        return "❌ É necessário aceitar a Política de Privacidade para finalizar o pedido.", 400
+        flash('É necessário aceitar a Política de Privacidade para finalizar o pedido.', 'error')
+        return redirect(url_for('checkout'))
 
     nome = request.form.get('nome', '').strip()
     telefone = request.form.get('telefone', '').strip()
@@ -347,7 +358,8 @@ def process_checkout():
         itens = []
 
     if not nome or not telefone or not endereco or len(itens) == 0:
-        return "❌ Dados incompletos. Por favor, preencha todos os campos obrigatórios.", 400
+        flash('Dados incompletos. Por favor, preencha todos os campos obrigatórios.', 'error')
+        return redirect(url_for('checkout'))
 
     total = sum(item['preco'] * item['qtd'] for item in itens)
     pedido_id = add_pedido(nome, telefone, endereco, numero, complemento,

@@ -43,6 +43,17 @@
 <main class="checkout-container">
   <h2>Finalizar Pedido</h2>
   
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      {% for category, message in messages %}
+        <div style="background:#fef2f2;border:1px solid #fecaca;border-radius:8px;padding:1rem;margin-bottom:1rem;color:#dc2626;font-size:0.95rem;">
+          ❌ {{ message }}
+          <a href="/checkout" style="float:right;color:#dc2626;font-weight:bold;text-decoration:none;margin-left:1rem;">✕</a>
+        </div>
+      {% endfor %}
+    {% endif %}
+  {% endwith %}
+  
   <form action="/checkout/process" method="POST" id="checkout-form">
     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
     <div class="form-group">
