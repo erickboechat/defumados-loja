@@ -741,7 +741,6 @@ html { overflow-x: hidden; }
 }
 
 /* === SWIPE ACTIONS (Mobile) === */
-.admin-swipe-actions { display: none; }
 
 /* === RESPONSIVO === */
 @media (max-width: 768px) {
@@ -948,33 +947,6 @@ html { overflow-x: hidden; }
   .admin-bulk label { font-size: 12px; }
 
   .admin-pagination { font-size: 12px; gap: 6px; padding: 8px; }
-
-  /* Swipe actions - only visible on mobile */
-  .admin-table-card tr[data-id] { position: relative; overflow: hidden; }
-  .admin-swipe-actions {
-    position: absolute;
-    right: 0;
-    top: 0;
-    bottom: 0;
-    display: flex;
-    align-items: stretch;
-    pointer-events: none;
-    z-index: 5;
-  }
-  .admin-swipe-action {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 60px;
-    font-size: 20px;
-    color: #fff;
-    pointer-events: auto;
-    cursor: pointer;
-    border: none;
-    background: none;
-  }
-  .admin-swipe-action.swipe-edit { background: var(--admin-accent); }
-  .admin-swipe-action.swipe-delete { background: var(--admin-danger); }
 }
 
 @media (max-width: 480px) {

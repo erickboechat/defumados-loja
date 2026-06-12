@@ -92,7 +92,7 @@
     </thead>
     <tbody>
       {% for p in produtos %}
-      <tr data-id="{{ p.id }}" data-has-delete="true">
+      <tr>
         <td data-label="#">{{ p.id }}</td>
         <td data-label="Foto">
           {% if p.imagens and p.imagens[0] %}
