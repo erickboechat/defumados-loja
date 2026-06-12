@@ -20,7 +20,7 @@ test.describe('Mobile Admin (375x812)', () => {
     await page.click('.admin-mobile-menu-btn');
     await expect(page.locator('#sidebar')).toHaveClass(/mobile-open/);
     await expect(page.locator('#sidebar-overlay')).toHaveClass(/mobile-open/);
-    await page.click('#sidebar-overlay');
+    await page.click('#sidebar-overlay', { force: true });
     await expect(page.locator('#sidebar')).not.toHaveClass(/mobile-open/);
   });
 

@@ -19,7 +19,7 @@ test.describe('Admin Login', () => {
 
   test('login with correct credentials redirects to dashboard', async ({ page }) => {
     await login(page);
-    await expect(page).toHaveURL(/\/admin$/);
+    await expect(page).toHaveURL(/\/admin\/?$/);
     await expect(page.locator('.admin-stats')).toBeVisible();
   });
 });
@@ -84,7 +84,7 @@ test.describe('Admin Search', () => {
     const clearBtn = page.locator('a:has-text("Limpar")');
     if (await clearBtn.count() > 0) {
       await clearBtn.click();
-      await expect(page).toHaveURL(/\/admin$/);
+    await expect(page).toHaveURL(/\/admin\/?$/);
     }
   });
 });

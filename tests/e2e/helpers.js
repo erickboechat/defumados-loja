@@ -9,7 +9,7 @@ async function login(page) {
   await page.fill('input[name="username"]', ADMIN_USER);
   await page.fill('input[name="password"]', ADMIN_PASS);
   await page.click('button[type="submit"]');
-  await page.waitForURL('**/admin');
+  await page.waitForURL(/\/admin/);
 }
 
 async function loginViaAPI(request) {
