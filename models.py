@@ -766,7 +766,7 @@ def login_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
         if not admin_logado():
-            return redirect(url_for('admin_login'))
+            return redirect(url_for('admin.admin_login'))
         return f(*args, **kwargs)
     return decorated_function
 
