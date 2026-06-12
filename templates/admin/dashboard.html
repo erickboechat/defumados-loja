@@ -96,7 +96,7 @@
         <td data-label="#">{{ p.id }}</td>
         <td data-label="Foto">
           {% if p.imagens and p.imagens[0] %}
-          <img src="{{ p.imagens[0] | webp_smart }}" alt="" class="prod-thumb" onerror="this.style.display='none'">
+          <img src="{{ p.imagens[0] | webp_smart }}" alt="{{ p.nome }}" class="prod-thumb" onerror="this.style.display='none'">
           {% else %}
           <div class="prod-thumb" style="background:#f3f4f6;display:flex;align-items:center;justify-content:center;font-size:16px;">📷</div>
           {% endif %}
@@ -154,7 +154,7 @@
                   <div id="edit-img-preview-{{ p.id }}" class="admin-img-preview" style="margin-bottom:8px;">
                     {% for img in p.imagens %}
                     <div class="admin-img-preview-item" style="display:inline-block;margin:4px;position:relative;cursor:grab;" data-src="{{ img | webp_smart }}" data-is-new="0">
-                      <img src="{{ img | webp_smart }}" alt="" style="width:60px;height:60px;object-fit:cover;border-radius:4px;border:1px solid var(--admin-border);">
+                      <img src="{{ img | webp_smart }}" alt="{{ p.nome }} - Foto {{ loop.index }}" style="width:60px;height:60px;object-fit:cover;border-radius:4px;border:1px solid var(--admin-border);">
                       <button type="button" class="admin-img-remove" aria-label="Remover" style="position:absolute;top:-6px;right:-6px;width:20px;height:20px;border-radius:50%;background:#ef4444;color:#fff;border:none;font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1;">&times;</button>
                     </div>
                     {% endfor %}

@@ -306,7 +306,9 @@ document.addEventListener('DOMContentLoaded', () => {
   function abrirLightbox(e) {
     const img = e.target.closest('.gallery-img, #img-principal');
     if (!img) return;
-    lbImg.src = img.src || img.querySelector('img').src;
+    const srcImg = img.tagName === 'IMG' ? img : img.querySelector('img');
+    lbImg.src = srcImg.src;
+    lbImg.alt = srcImg.alt || 'Imagem do produto';
     overlay.classList.add('active');
     document.body.style.overflow = 'hidden';
   }

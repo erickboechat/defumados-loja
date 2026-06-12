@@ -175,7 +175,7 @@ const Admin = (function() {
       div.dataset.src = src;
       div.dataset.isNew = isNewUpload ? '1' : '0';
       div.innerHTML = `
-        <img src="${src}" alt="" style="width:60px;height:60px;object-fit:cover;border-radius:4px;border:1px solid var(--admin-border);">
+        <img src="${src}" alt="Preview da imagem" style="width:60px;height:60px;object-fit:cover;border-radius:4px;border:1px solid var(--admin-border);">
         <button type="button" class="admin-img-remove" aria-label="Remover" style="position:absolute;top:-6px;right:-6px;width:20px;height:20px;border-radius:50%;background:#ef4444;color:#fff;border:none;font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1;">&times;</button>
       `;
       div.querySelector('.admin-img-remove').onclick = () => this.removeItem(div);
