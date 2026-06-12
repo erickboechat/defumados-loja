@@ -3,7 +3,7 @@ import re
 import uuid
 import sqlite3
 import json
-from datetime import datetime, timezone, timedelta
+from datetime import datetime
 from functools import wraps
 from PIL import Image
 
@@ -11,8 +11,7 @@ import flask
 from flask import g, session, redirect, url_for
 
 from config import Config
-
-BRT = timezone(timedelta(hours=-3))
+from utils import BRT
 
 # Sinônimos e variações ortográficas para busca inteligente
 SINONIMOS = {
@@ -411,6 +410,17 @@ def count_pedidos(search='', status=''):
         if conditions:
             query += ' WHERE ' + ' AND '.join(conditions)
         return conn.execute(query, params).fetchone()[0]
+
+
+def count_pedidos_hoje():
+    """Retorna (quantidade, faturamento) dos pedidos de hoje (excluindo cancelados)"""
+    hoje = datetime.now(BRT).strftime('%Y-%m-%d')
+    with get_db() as conn:
+        row = conn.execute(
+            "SELECT COUNT(*), COALESCE(SUM(total), 0) FROM pedidos WHERE date(data_criacao) = ? AND status != 'cancelado'",
+            (hoje,)
+        ).fetchone()
+        return row[0], row[1]
 
 
 def get_pedidos_paginados(page=1, per_page=20, search='', status=''):

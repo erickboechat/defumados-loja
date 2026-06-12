@@ -4,7 +4,6 @@ import time
 import logging
 import csv
 import io
-from urllib.parse import quote
 from datetime import datetime, timedelta, timezone
 
 from flask import (Flask, render_template, request, jsonify,
@@ -17,7 +16,8 @@ from werkzeug.security import check_password_hash
 from werkzeug.middleware.proxy_fix import ProxyFix
 
 from config import Config, WHATSAPP_NUMBER, WHATSAPP_URL
-from models import (BRT, init_db, get_db,
+from utils import BRT, parse_preco, build_whatsapp_msg_checkout, build_whatsapp_msg_finalizar, whatsapp_url
+from models import (init_db, get_db,
                     get_produtos, get_produto,
                     get_produtos_paginados, count_produtos,
                     add_produto, edit_produto, toggle_visivel, toggle_estoque,
@@ -28,6 +28,7 @@ from models import (BRT, init_db, get_db,
                     processar_imagens_request,
                     add_aviso, count_avisos_pendentes, get_avisos_pendentes,
                     marcar_notificados, criar_indices,
+                    count_pedidos_hoje,
                     close_db)
 
 app = Flask(__name__)
@@ -280,45 +281,12 @@ def finalizar():
     endereco = dados.get('endereco', 'Não informado')
     cep = dados.get('cep', 'Não informado')
     frete_metodo = dados.get('frete_metodo', 'Não selecionado')
-    frete_valor = dados.get('frete_valor', 0.0)
-    total = dados.get('total', 0.0)
+    frete_valor = float(dados.get('frete_valor', 0) or 0)
+    total = float(dados.get('total', 0) or 0)
 
-    try:
-        frete_valor = float(frete_valor) if frete_valor else 0.0
-        total = float(total) if total else 0.0
-    except (ValueError, TypeError):
-        frete_valor = 0.0
-        total = 0.0
-
-    itens_formatados = '\n'.join([
-        f"• {i['nome']} x{i['qtd']} = R$ {i['preco']*i['qtd']:.2f}"
-        for i in itens
-    ])
-
-    if frete_valor > 0:
-        linha_frete = f"📦 *Frete:* R$ {frete_valor:.2f} (Tarifa fixa RJ)"
-        linha_total = f"💵 *TOTAL:* R$ {total:.2f}"
-    else:
-        linha_frete = "📦 *Frete:* Sob consulta (Correios/Transportadora)"
-        linha_total = f"💵 *TOTAL:* R$ {total:.2f} + frete a combinar"
-
-    msg = f"""🛒 *NOVO PEDIDO - DEFUMADOS AC*
-    
-👤 *Cliente:* {nome}
-📱 *Contato:* {telefone}
-📍 *CEP:* {cep}
-🏠 *Endereço:* {endereco}
-🚚 *Entrega:* {frete_metodo}
-
-📦 *Itens:*
-{itens_formatados}
-
-{linha_frete}
-{linha_total}
-
-_Obrigado pela preferência! Aguarde a confirmação do pedido._ 🐷✨"""
-
-    url = f"{WHATSAPP_URL}&text={quote(msg, safe='', encoding='utf-8')}"
+    msg = build_whatsapp_msg_finalizar(itens, nome, telefone, cep, endereco,
+                                       frete_metodo, frete_valor, total)
+    url = whatsapp_url(msg)
     return jsonify({'redirect': url})
 
 
@@ -369,40 +337,11 @@ def process_checkout():
 
     log.info(f"Pedido #{pedido_id} registrado por {nome} ({telefone})")
 
-    endereco_completo = f"{endereco}, {numero}" + (f" - {complemento}" if complemento else "")
-    msg = f"*🛒 NOVO PEDIDO #{pedido_id} - DEFUMADOS AC*\n\n"
-    msg += f"📋 *DADOS DO CLIENTE:*\n"
-    msg += f"👤 Nome: {nome}\n"
-    msg += f"📱 Telefone: {telefone}\n"
-    if email:
-        msg += f"📧 E-mail: {email}\n"
-    msg += f"\n📍 *ENDEREÇO DE ENTREGA:*\n"
-    msg += f"📮 CEP: {cep}\n"
-    msg += f"🏠 {endereco_completo}\n"
-    msg += f"🏘️ Bairro: {bairro}\n"
-    msg += f"🌆 Cidade: {cidade}/{estado}\n"
-    if referencia:
-        msg += f"📍 Referência: {referencia}\n"
-    msg += f"\n🚚 *ENTREGA:*\n"
-    msg += f"Tipo: {forma_entrega}\n"
-    msg += f"Frete: {frete_texto}\n\n"
-    msg += f"📦 *PRODUTOS:*\n"
-    for item in itens:
-        msg += f"▪️ {item['qtd']}x {item['nome']}\n"
-        msg += f"   R$ {(item['preco']*item['qtd']):.2f}\n"
-    msg += f"\n💰 *TOTAL DO PEDIDO:*\n"
-    msg += f"Subtotal: R$ {total:.2f}\n"
-    if frete_valor > 0:
-        msg += f"Frete: R$ {frete_valor:.2f}\n"
-        msg += f"*TOTAL: R$ {(total + frete_valor):.2f}*\n"
-    else:
-        msg += f"Frete: A combinar\n"
-        msg += f"*TOTAL: R$ {total:.2f} (sem frete)*\n"
-    msg += f"\n✅ *Obrigado pela preferência!*\n"
-    msg += f"Aguarde a confirmação do pedido.\n"
-    msg += f"💬 *Pedido #{pedido_id} gerado automaticamente pelo site*"
-
-    wa_link = f"{WHATSAPP_URL}&text={quote(msg, safe='', encoding='utf-8')}"
+    msg = build_whatsapp_msg_checkout(pedido_id, nome, telefone, email, cep,
+                                      endereco, numero, complemento, bairro,
+                                      cidade, estado, referencia, forma_entrega,
+                                      itens, total, frete_valor, frete_texto)
+    wa_link = whatsapp_url(msg)
     return redirect(wa_link)
 
 
@@ -474,9 +413,7 @@ def admin_dashboard():
     avisos_count = {p['id']: count_avisos_pendentes(p['id']) for p in produtos}
     total_produtos = count_produtos(todos=True, search=q)
     visiveis = count_produtos(todos=False, search=q)
-    hoje = datetime.now(BRT).strftime('%Y-%m-%d')
-    with get_db() as conn:
-        pedidos_hoje = conn.execute("SELECT COUNT(*), COALESCE(SUM(total), 0) FROM pedidos WHERE date(data_criacao) = ? AND status != 'cancelado'", (hoje,)).fetchone()
+    pedidos_hoje_qtd, pedidos_hoje_total = count_pedidos_hoje()
     return render_template('admin/dashboard.html',
                            produtos=produtos,
                            page=page,
@@ -486,18 +423,16 @@ def admin_dashboard():
                            stats={
                                'total_produtos': total_produtos,
                                'visiveis': visiveis,
-                               'pedidos_hoje': pedidos_hoje[0],
-                               'faturamento_hoje': pedidos_hoje[1],
+                               'pedidos_hoje': pedidos_hoje_qtd,
+                               'faturamento_hoje': pedidos_hoje_total,
                            })
 
 
 @app.route('/admin/add', methods=['POST'])
 @login_required
 def admin_add_produto():
-    try:
-        preco_str = request.form.get('preco', '0').replace(',', '.')
-        preco = float(preco_str)
-    except (ValueError, TypeError):
+    preco = parse_preco(request.form.get('preco', '0'))
+    if preco <= 0:
         return "❌ Preço inválido.", 400
 
     imagens = processar_imagens_request(request)
@@ -519,10 +454,8 @@ def admin_add_produto():
 @app.route('/admin/edit/<int:produto_id>', methods=['POST'])
 @login_required
 def admin_edit_produto(produto_id):
-    try:
-        preco_str = request.form.get('preco', '0').replace(',', '.')
-        preco = float(preco_str)
-    except (ValueError, TypeError):
+    preco = parse_preco(request.form.get('preco', '0'))
+    if preco <= 0:
         return "❌ Preço inválido.", 400
 
     imagens_raw = request.form.get('imagens', '').strip()
