@@ -258,7 +258,10 @@ const Admin = (function() {
       
       const bulkForm = $('#bulk-form');
       if (bulkForm) bulkForm.addEventListener('submit', (e) => {
-        if (!this.confirmBulk()) e.preventDefault();
+        e.preventDefault();
+        this.confirmBulk().then((confirmed) => {
+          if (confirmed) e.target.submit();
+        });
       });
     },
     selectAll(source) {
@@ -269,12 +272,12 @@ const Admin = (function() {
       const checked = $$('.bulk-check:checked').length;
       if (!action || checked === 0) {
         Modal.alert('Atenção', 'Selecione uma ação e pelo menos um pedido.');
-        return false;
+        return Promise.resolve(false);
       }
       if (action === 'delete') {
         return Modal.confirm('Confirmar exclusão', `Excluir permanentemente ${checked} pedido(s)?`, { danger: true });
       }
-      return true;
+      return Promise.resolve(true);
     }
   };
 
