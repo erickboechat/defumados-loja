@@ -3,7 +3,7 @@
 // Cache-first para assets estáticos, network-first para API
 // =========================================
 
-const CACHE_NAME = 'defumados-admin-v1';
+const CACHE_NAME = 'defumados-admin-v2';
 const STATIC_ASSETS = [
   '/admin',
   '/static/admin.css',
