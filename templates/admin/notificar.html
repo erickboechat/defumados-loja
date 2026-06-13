@@ -8,7 +8,7 @@
 
 <div class="admin-card" style="display:flex;align-items:center;gap:16px;margin-bottom:20px;">
   {% if produto.imagens and produto.imagens[0] %}
-  <img src="{{ produto.imagens[0] }}" alt="{{ produto.nome }}" style="width:60px;height:60px;object-fit:cover;border-radius:8px;">
+  <img src="{{ produto.imagens[0] | webp_smart }}" alt="{{ produto.nome }}" style="width:60px;height:60px;object-fit:cover;border-radius:8px;">
   {% endif %}
   <div style="flex:1;">
     <h2 style="margin:0 0 4px;font-size:16px;">{{ produto.nome }}</h2>
