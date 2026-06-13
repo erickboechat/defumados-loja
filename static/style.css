@@ -140,6 +140,7 @@ button { font-family: inherit; cursor: pointer; border: none; }
   width: 85%;
   max-width: 320px;
   height: 100vh;
+  height: 100dvh;
   background: linear-gradient(180deg, #fff 0%, #fafafa 100%);
   box-shadow: -25px 0 60px rgba(0,0,0,0.4);
   padding: 1.5rem 1.5rem 2rem;
@@ -147,6 +148,7 @@ button { font-family: inherit; cursor: pointer; border: none; }
   z-index: 9999;
   display: flex;
   flex-direction: column;
+  overflow-y: auto;
 }
 .mobile-nav.active { right: 0; }
 
