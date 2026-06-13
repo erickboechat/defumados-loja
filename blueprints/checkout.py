@@ -4,7 +4,7 @@ import logging
 from flask import Blueprint, render_template, request, jsonify, redirect, url_for, flash
 from flask_wtf.csrf import CSRFProtect
 
-from utils import build_whatsapp_msg_checkout, build_whatsapp_msg_finalizar, whatsapp_url
+from utils import build_whatsapp_msg_checkout, whatsapp_url
 from models import add_pedido
 from extensions import csrf, limiter
 
@@ -16,26 +16,6 @@ checkout_bp = Blueprint('checkout', __name__)
 @checkout_bp.route('/checkout')
 def checkout():
     return render_template('checkout.html')
-
-
-@checkout_bp.route('/finalizar', methods=['POST'])
-@csrf.exempt
-@limiter.limit("10 per minute")
-def finalizar():
-    dados = request.json
-    itens = dados.get('itens', [])
-    nome = dados.get('nome', 'Não informado')
-    telefone = dados.get('telefone', 'Não informado')
-    endereco = dados.get('endereco', 'Não informado')
-    cep = dados.get('cep', 'Não informado')
-    frete_metodo = dados.get('frete_metodo', 'Não selecionado')
-    frete_valor = float(dados.get('frete_valor', 0) or 0)
-    total = float(dados.get('total', 0) or 0)
-
-    msg = build_whatsapp_msg_finalizar(itens, nome, telefone, cep, endereco,
-                                       frete_metodo, frete_valor, total)
-    url = whatsapp_url(msg)
-    return jsonify({'redirect': url})
 
 
 @checkout_bp.route('/checkout/process', methods=['POST'])

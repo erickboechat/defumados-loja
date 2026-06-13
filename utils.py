@@ -52,39 +52,6 @@ def build_whatsapp_msg_checkout(pedido_id, nome, telefone, email, cep,
     return msg
 
 
-def build_whatsapp_msg_finalizar(itens, nome, telefone, cep, endereco,
-                                  frete_metodo, frete_valor, total):
-    """Monta mensagem WhatsApp para o checkout via JSON (finalizar)."""
-    itens_formatados = '\n'.join([
-        f"  ▪️ {i['nome']} x{i['qtd']} = R$ {i['preco']*i['qtd']:.2f}"
-        for i in itens
-    ])
-
-    if frete_valor > 0:
-        linha_frete = f"🚚 Frete: R$ {frete_valor:.2f} (Tarifa fixa RJ)"
-        linha_total = f"💰 *TOTAL: R$ {total:.2f}*"
-    else:
-        linha_frete = "🚚 Frete: Sob consulta (Correios/Transportadora)"
-        linha_total = f"💰 *TOTAL: R$ {total:.2f} + frete a combinar*"
-
-    msg = f"""🛒 *NOVO PEDIDO - DEFUMADOS AC*
-
-👤 *Cliente:* {nome}
-📱 *Contato:* {telefone}
-📍 *CEP:* {cep}
-🏠 *Endereço:* {endereco}
-🚚 *Entrega:* {frete_metodo}
-
-📦 *Itens:*
-{itens_formatados}
-
-{linha_frete}
-{linha_total}
-
-_Obrigado pela preferência! Aguarde a confirmação do pedido._ 🐷✨"""
-    return msg
-
-
 def whatsapp_url(msg):
     """Retorna URL do WhatsApp com a mensagem codificada."""
     from config import WHATSAPP_URL

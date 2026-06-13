@@ -10,43 +10,6 @@ class TestCheckout:
         resp = client.get('/checkout')
         assert resp.status_code == 200
 
-    def test_finalizar_returns_whatsapp_link(self, client):
-        payload = {
-            'itens': [{'nome': 'Insensat', 'preco': 39.90, 'qtd': 2}],
-            'nome': 'João',
-            'telefone': '21999990000',
-            'endereco': 'Rua X, 123',
-            'cep': '21000-000',
-            'frete_metodo': 'PAC',
-            'frete_valor': 15.50,
-            'total': 95.30,
-        }
-        resp = client.post('/finalizar',
-                           data=json.dumps(payload),
-                           content_type='application/json')
-        assert resp.status_code == 200
-        data = resp.get_json()
-        assert 'redirect' in data
-        assert 'api.whatsapp.com' in data['redirect']
-
-    def test_finalizar_empty_cart(self, client):
-        payload = {
-            'itens': [],
-            'nome': 'João',
-            'telefone': '21999990000',
-            'endereco': 'Rua X',
-            'cep': '21000-000',
-            'frete_metodo': 'PAC',
-            'frete_valor': 0,
-            'total': 0,
-        }
-        resp = client.post('/finalizar',
-                           data=json.dumps(payload),
-                           content_type='application/json')
-        assert resp.status_code == 200
-        data = resp.get_json()
-        assert 'redirect' in data
-
     def test_process_checkout_requires_lgpd(self, client):
         resp = client.post('/checkout/process', data={
             'nome': 'João',
