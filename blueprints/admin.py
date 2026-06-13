@@ -3,7 +3,7 @@ import json
 import csv
 import io
 import logging
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from flask import (Blueprint, render_template, request, jsonify,
                    redirect, url_for, session, flash, Response)
@@ -18,6 +18,7 @@ from models import (get_produtos_paginados, count_produtos, get_produto,
                     count_avisos_pendentes, get_avisos_pendentes,
                     marcar_notificados, processar_imagens_request,
                     buscar_global, get_admin_logs, count_pedidos_hoje,
+                    count_pedidos_periodo, count_pedidos_pendentes,
                     login_required)
 from extensions import limiter
 
@@ -63,6 +64,20 @@ def admin_dashboard():
     total_produtos = count_produtos(todos=True, search=q)
     visiveis = count_produtos(todos=False, search=q)
     pedidos_hoje_qtd, pedidos_hoje_total = count_pedidos_hoje()
+
+    agora = datetime.now(BRT)
+    hoje_str = agora.strftime('%Y-%m-%d')
+    mes_inicio = agora.replace(day=1).strftime('%Y-%m-%d')
+    semana_inicio = (agora - timedelta(days=6)).strftime('%Y-%m-%d')
+    dias30_inicio = (agora - timedelta(days=29)).strftime('%Y-%m-%d')
+
+    pedidos_mes_qtd, pedidos_mes_total = count_pedidos_periodo(mes_inicio, hoje_str)
+    pedidos_semana_qtd, pedidos_semana_total = count_pedidos_periodo(semana_inicio, hoje_str)
+    pedidos_30d_qtd, pedidos_30d_total = count_pedidos_periodo(dias30_inicio, hoje_str)
+    pedidos_pendentes = count_pedidos_pendentes()
+
+    ticket_medio = pedidos_mes_total / pedidos_mes_qtd if pedidos_mes_qtd > 0 else 0
+
     return render_template('admin/dashboard.html',
                            produtos=produtos,
                            page=page,
@@ -74,6 +89,12 @@ def admin_dashboard():
                                'visiveis': visiveis,
                                'pedidos_hoje': pedidos_hoje_qtd,
                                'faturamento_hoje': pedidos_hoje_total,
+                               'faturamento_mes': pedidos_mes_total,
+                               'pedidos_mes': pedidos_mes_qtd,
+                               'ticket_medio': ticket_medio,
+                               'faturamento_7d': pedidos_semana_total,
+                               'faturamento_30d': pedidos_30d_total,
+                               'pedidos_pendentes': pedidos_pendentes,
                            })
 
 

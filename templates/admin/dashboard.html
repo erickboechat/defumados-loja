@@ -4,24 +4,34 @@
 
 <div class="admin-stats">
   <div class="admin-stat">
-    <div class="admin-stat-icon">📦</div>
-    <div class="admin-stat-value">{{ stats.total_produtos }}</div>
-    <div class="admin-stat-label">Total de produtos</div>
-  </div>
-  <div class="admin-stat">
-    <div class="admin-stat-icon">👁️</div>
-    <div class="admin-stat-value">{{ stats.visiveis }}</div>
-    <div class="admin-stat-label">Visíveis no site</div>
-  </div>
-  <div class="admin-stat">
-    <div class="admin-stat-icon">📋</div>
-    <div class="admin-stat-value">{{ stats.pedidos_hoje }}</div>
-    <div class="admin-stat-label">Pedidos hoje</div>
-  </div>
-  <div class="admin-stat">
     <div class="admin-stat-icon">💰</div>
-    <div class="admin-stat-value">R$ {{ "%.0f"|format(stats.faturamento_hoje) }}</div>
-    <div class="admin-stat-label">Faturamento hoje</div>
+    <div class="admin-stat-value">R$ {{ "%.0f"|format(stats.faturamento_mes) }}</div>
+    <div class="admin-stat-label">Faturamento mês</div>
+  </div>
+  <div class="admin-stat">
+    <div class="admin-stat-icon">📊</div>
+    <div class="admin-stat-value">{{ stats.pedidos_mes }}</div>
+    <div class="admin-stat-label">Pedidos do mês</div>
+  </div>
+  <div class="admin-stat">
+    <div class="admin-stat-icon">🎫</div>
+    <div class="admin-stat-value">R$ {{ "%.0f"|format(stats.ticket_medio) }}</div>
+    <div class="admin-stat-label">Ticket médio</div>
+  </div>
+  <div class="admin-stat">
+    <div class="admin-stat-icon">📅</div>
+    <div class="admin-stat-value">R$ {{ "%.0f"|format(stats.faturamento_7d) }}</div>
+    <div class="admin-stat-label">Faturamento 7 dias</div>
+  </div>
+  <div class="admin-stat">
+    <div class="admin-stat-icon">📅</div>
+    <div class="admin-stat-value">R$ {{ "%.0f"|format(stats.faturamento_30d) }}</div>
+    <div class="admin-stat-label">Faturamento 30 dias</div>
+  </div>
+  <div class="admin-stat">
+    <div class="admin-stat-icon">⏳</div>
+    <div class="admin-stat-value">{{ stats.pedidos_pendentes }}</div>
+    <div class="admin-stat-label">Pedidos pendentes</div>
   </div>
 </div>
 

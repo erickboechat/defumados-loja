@@ -423,6 +423,25 @@ def count_pedidos_hoje():
         return row[0], row[1]
 
 
+def count_pedidos_periodo(data_inicio, data_fim):
+    """Retorna (quantidade, faturamento) dos pedidos em um período (exclui cancelados)"""
+    with get_db() as conn:
+        row = conn.execute(
+            "SELECT COUNT(*), COALESCE(SUM(total), 0) FROM pedidos "
+            "WHERE date(data_criacao) >= ? AND date(data_criacao) <= ? AND status != 'cancelado'",
+            (data_inicio, data_fim)
+        ).fetchone()
+        return row[0], row[1]
+
+
+def count_pedidos_pendentes():
+    """Retorna quantidade de pedidos com status 'registrado'"""
+    with get_db() as conn:
+        return conn.execute(
+            "SELECT COUNT(*) FROM pedidos WHERE status = 'registrado'"
+        ).fetchone()[0]
+
+
 def get_pedidos_paginados(page=1, per_page=20, search='', status=''):
     """Retorna (pedidos, total_paginas) com paginação"""
     total = count_pedidos(search=search, status=status)
