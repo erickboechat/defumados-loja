@@ -18,37 +18,37 @@ def build_whatsapp_msg_checkout(pedido_id, nome, telefone, email, cep,
                                  itens, total, frete_valor, frete_texto):
     """Monta mensagem WhatsApp para o pedido do formulário de checkout."""
     endereco_completo = f"{endereco}, {numero}" + (f" - {complemento}" if complemento else "")
-    msg = f"*NOVO PEDIDO #{pedido_id} - DEFUMADOS AC*\n\n"
-    msg += f"DADOS DO CLIENTE:\n"
-    msg += f"Nome: {nome}\n"
-    msg += f"Telefone: {telefone}\n"
+    msg = f"*🛒 NOVO PEDIDO #{pedido_id} - DEFUMADOS AC*\n\n"
+    msg += f"📋 *DADOS DO CLIENTE:*\n"
+    msg += f"👤 Nome: {nome}\n"
+    msg += f"📱 Telefone: {telefone}\n"
     if email:
-        msg += f"E-mail: {email}\n"
-    msg += f"\nENDERECO DE ENTREGA:\n"
-    msg += f"CEP: {cep}\n"
-    msg += f"{endereco_completo}\n"
-    msg += f"Bairro: {bairro}\n"
-    msg += f"Cidade: {cidade}/{estado}\n"
+        msg += f"📧 E-mail: {email}\n"
+    msg += f"\n📍 *ENDEREÇO DE ENTREGA:*\n"
+    msg += f"📮 CEP: {cep}\n"
+    msg += f"🏠 {endereco_completo}\n"
+    msg += f"🏘️ Bairro: {bairro}\n"
+    msg += f"🌆 Cidade: {cidade}/{estado}\n"
     if referencia:
-        msg += f"Referencia: {referencia}\n"
-    msg += f"\nENTREGA:\n"
+        msg += f"📍 Referência: {referencia}\n"
+    msg += f"\n🚚 *ENTREGA:*\n"
     msg += f"Tipo: {forma_entrega}\n"
     msg += f"Frete: {frete_texto}\n\n"
-    msg += f"PRODUTOS:\n"
+    msg += f"📦 *PRODUTOS:*\n"
     for item in itens:
-        msg += f"  {item['qtd']}x {item['nome']}\n"
+        msg += f"▪️ {item['qtd']}x {item['nome']}\n"
         msg += f"   R$ {(item['preco']*item['qtd']):.2f}\n"
-    msg += f"\nTOTAL DO PEDIDO:\n"
+    msg += f"\n💰 *TOTAL DO PEDIDO:*\n"
     msg += f"Subtotal: R$ {total:.2f}\n"
     if frete_valor > 0:
         msg += f"Frete: R$ {frete_valor:.2f}\n"
-        msg += f"TOTAL: R$ {(total + frete_valor):.2f}\n"
+        msg += f"*TOTAL: R$ {(total + frete_valor):.2f}*\n"
     else:
         msg += f"Frete: A combinar\n"
-        msg += f"TOTAL: R$ {total:.2f} (sem frete)\n"
-    msg += f"\nObrigado pela preferencia!\n"
-    msg += f"Aguarde a confirmacao do pedido.\n"
-    msg += f"Pedido #{pedido_id} gerado automaticamente pelo site"
+        msg += f"*TOTAL: R$ {total:.2f} (sem frete)*\n"
+    msg += f"\n✅ *Obrigado pela preferência!*\n"
+    msg += f"Aguarde a confirmação do pedido.\n"
+    msg += f"💬 *Pedido #{pedido_id} gerado automaticamente pelo site*"
     return msg
 
 
@@ -56,32 +56,32 @@ def build_whatsapp_msg_finalizar(itens, nome, telefone, cep, endereco,
                                   frete_metodo, frete_valor, total):
     """Monta mensagem WhatsApp para o checkout via JSON (finalizar)."""
     itens_formatados = '\n'.join([
-        f"  {i['nome']} x{i['qtd']} = R$ {i['preco']*i['qtd']:.2f}"
+        f"  ▪️ {i['nome']} x{i['qtd']} = R$ {i['preco']*i['qtd']:.2f}"
         for i in itens
     ])
 
     if frete_valor > 0:
-        linha_frete = f"Frete: R$ {frete_valor:.2f} (Tarifa fixa RJ)"
-        linha_total = f"TOTAL: R$ {total:.2f}"
+        linha_frete = f"🚚 Frete: R$ {frete_valor:.2f} (Tarifa fixa RJ)"
+        linha_total = f"💰 *TOTAL: R$ {total:.2f}*"
     else:
-        linha_frete = "Frete: Sob consulta (Correios/Transportadora)"
-        linha_total = f"TOTAL: R$ {total:.2f} + frete a combinar"
+        linha_frete = "🚚 Frete: Sob consulta (Correios/Transportadora)"
+        linha_total = f"💰 *TOTAL: R$ {total:.2f} + frete a combinar*"
 
-    msg = f"""NOVO PEDIDO - DEFUMADOS AC
+    msg = f"""🛒 *NOVO PEDIDO - DEFUMADOS AC*
 
-Cliente: {nome}
-Contato: {telefone}
-CEP: {cep}
-Endereco: {endereco}
-Entrega: {frete_metodo}
+👤 *Cliente:* {nome}
+📱 *Contato:* {telefone}
+📍 *CEP:* {cep}
+🏠 *Endereço:* {endereco}
+🚚 *Entrega:* {frete_metodo}
 
-Itens:
+📦 *Itens:*
 {itens_formatados}
 
 {linha_frete}
 {linha_total}
 
-Obrigado pela preferencia! Aguarde a confirmacao do pedido."""
+_Obrigado pela preferência! Aguarde a confirmação do pedido._ 🐷✨"""
     return msg
 
 
