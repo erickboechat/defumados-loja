@@ -4,6 +4,7 @@ import tempfile
 import pytest
 
 os.environ['SECRET_KEY'] = 'test-secret-key-1234567890'
+os.environ['ADMIN_PASSWORD'] = 'test-password-secure-123'
 os.environ['FLASK_DEBUG'] = '0'
 os.environ['SESSION_COOKIE_SECURE'] = '0'
 os.environ['RATE_LIMIT_STORAGE'] = 'memory://'

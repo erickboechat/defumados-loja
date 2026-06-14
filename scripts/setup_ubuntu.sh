@@ -23,7 +23,17 @@ apt update && apt upgrade -y
 
 echo ""
 echo "Passo 2/8 — Instalando dependências do sistema..."
-apt install -y python3 python3-venv python3-pip nginx certbot python3-certbot-nginx git curl
+apt install -y python3 python3-venv python3-pip nginx certbot python3-certbot-nginx git curl ufw
+
+echo ""
+echo "Passo 3/8 — Configurando firewall (UFW)..."
+ufw default deny incoming
+ufw default allow outgoing
+ufw allow 22/tcp    # SSH
+ufw allow 80/tcp    # HTTP
+ufw allow 443/tcp   # HTTPS
+ufw --force enable
+echo "Firewall UFW configurado."
 
 echo ""
 echo "Passo 3/8 — Criando usuário deploy..."

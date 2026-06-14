@@ -11,7 +11,12 @@ class Config:
             'ou veja .env.example para referência.'
         )
     ADMIN_USER = os.environ.get('ADMIN_USER', 'admin')
-    ADMIN_PASSWORD = os.environ.get('ADMIN_PASSWORD', 'mudarme123')
+    ADMIN_PASSWORD = os.environ.get('ADMIN_PASSWORD')
+    if not ADMIN_PASSWORD:
+        raise RuntimeError(
+            'ADMIN_PASSWORD não definida. '
+            'Configure no arquivo .env'
+        )
     ADMIN_PASS_HASH = generate_password_hash(ADMIN_PASSWORD)
     DATABASE = 'loja.db'
     DEBUG = os.environ.get('FLASK_DEBUG', '0') == '1'

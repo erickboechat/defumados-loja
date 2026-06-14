@@ -112,7 +112,7 @@ class TestAdminLogin:
     def test_login_wrong_username(self, client):
         resp = client.post('/admin/login', data={
             'username': 'wronguser',
-            'password': 'mudarme123',
+            'password': 'wrong-password-here',
         })
         assert resp.status_code == 200
         assert b'inv' in resp.data.lower()
