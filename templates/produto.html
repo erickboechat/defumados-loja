@@ -46,6 +46,7 @@
     {% for img in produto.imagens %}
     <img src="{{ img | webp_smart }}"
          alt="{{ produto.nome }} - Foto {{ loop.index }}"
+         width="600" height="600"
          class="gallery-img{% if loop.first %} active{% endif %}"
          data-index="{{ loop.index0 }}">
     {% endfor %}
