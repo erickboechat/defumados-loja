@@ -15,6 +15,7 @@
 {% block twitter_desc %}{{ produto.descricao|striptags|truncate(155) }}{% endblock %}
 {% block twitter_image %}https://defumadosac.com.br{{ produto.imagens[0] }}{% endblock %}
 {% block extra_head %}
+<link rel="preload" as="image" href="{{ produto.imagens[0] | webp_smart }}">
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -136,6 +137,7 @@
         <div class="imagem-container">
           <img src="{{ p.imagens[0] | webp_smart }}" 
    alt="{{ p.nome }}" 
+   width="300" height="300"
    loading="lazy"
    decoding="async"
    onerror="this.src='https://via.placeholder.com/200x200?text=Sem+Foto'">

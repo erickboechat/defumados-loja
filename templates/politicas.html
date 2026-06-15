@@ -1,7 +1,16 @@
 {% extends 'base.html' %}
-{% block title %}Políticas & Entregas - Defumados AC{% endblock %}
+{% block title %}Políticas, Entregas e Pagamento — Defumados AC{% endblock %}
 {% block meta_desc_content %}Políticas de entrega, pagamento e privacidade da Defumados AC. Entrega fixa R$15 na Zona Sul, Barra, Tijuca e Centro do RJ.{% endblock %}
 {% block canonical_url %}https://defumadosac.com.br/politicas{% endblock %}
+{% block og_tags %}
+<meta property="og:title" content="Políticas, Entregas e Pagamento — Defumados AC">
+<meta property="og:description" content="Políticas de entrega, pagamento e privacidade da Defumados AC. Entrega fixa R$15 na Zona Sul, Barra, Tijuca e Centro do RJ.">
+<meta property="og:image" content="https://defumadosac.com.br/static/uploads/logo-1.png">
+<meta property="og:url" content="https://defumadosac.com.br/politicas">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Defumados AC">
+<meta property="og:locale" content="pt_BR">
+{% endblock %}
 {% block extra_head %}
 <script type="application/ld+json">
 {
