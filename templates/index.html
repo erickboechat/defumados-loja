@@ -1,12 +1,18 @@
 {% extends 'base.html' %}
 {% block title %}Defumados AC - Loja Online{% endblock %}
+{% block meta_desc_content %}Defumados AC - Defumados artesanais de porco em Vargem Grande, RJ. Linguiças, bacon, copa, costelinha. Entrega na Zona Sul, Barra, Tijuca e todo Brasil.{% endblock %}
+{% block canonical_url %}https://defumadosac.com.br/{% endblock %}
 {% block og_tags %}
 <meta property="og:title" content="Defumados AC - Defumados Artesanais">
 <meta property="og:description" content="Defumados artesanais de alta qualidade. Linguiças, bacon, copa, costelinha e muito mais.">
 <meta property="og:image" content="https://defumadosac.com.br/static/uploads/logo-1.png">
 <meta property="og:url" content="https://defumadosac.com.br">
 <meta property="og:type" content="website">
+<meta property="og:site_name" content="Defumados AC">
+<meta property="og:locale" content="pt_BR">
 {% endblock %}
+{% block twitter_title %}Defumados AC - Defumados Artesanais{% endblock %}
+{% block twitter_desc %}Defumados artesanais de porco em Vargem Grande, RJ. Linguiças, bacon, copa, costelinha.{% endblock %}
 {% block content %}
 <!-- Busca -->
 <div class="search-wrapper">
@@ -41,6 +47,8 @@
       <a href="/" style="color:var(--cor-primaria);font-weight:600;">← Limpar busca</a>
     </div>
     {% endif %}
+
+    <h1 class="visually-hidden">Defumados AC - Defumados Artesanais Artesanais</h1>
 
     <section class="produtos-grid">
       {% for p in produtos %}

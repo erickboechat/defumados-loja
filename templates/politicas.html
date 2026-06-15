@@ -1,5 +1,49 @@
 {% extends 'base.html' %}
 {% block title %}Políticas & Entregas - Defumados AC{% endblock %}
+{% block meta_desc_content %}Políticas de entrega, pagamento e privacidade da Defumados AC. Entrega fixa R$15 na Zona Sul, Barra, Tijuca e Centro do RJ.{% endblock %}
+{% block canonical_url %}https://defumadosac.com.br/politicas{% endblock %}
+{% block extra_head %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Qual a taxa de entrega?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Taxa fixa de R$ 15,00 para Zona Sul, Barra, Recreio, Tijuca e Centro do RJ. Entregas quartas e sábados. Niterói e demais regiões sob consulta via WhatsApp."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Quais formas de pagamento são aceitas?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Aceitamos PIX (chave enviada na notinha do pedido), Transferência Bancária e Cartão de Crédito (via link de pagamento seguro, solicite no WhatsApp)."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Posso trocar ou devolver o produto?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Por se tratar de produto alimentício perecível, não aceitamos devoluções por arrependimento. Em caso de avaria no transporte ou produto divergente, solicitamos fotos no ato do recebimento para análise e reposição imediata."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Vocês entregam em todo o Brasil?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Sim! Entregamos em todo o Brasil. Na Zona Sul, Barra, Recreio, Tijuca e Centro do RJ a taxa é fixa de R$ 15,00. Para outras regiões, consulte via WhatsApp."
+      }
+    }
+  ]
+}
+</script>
+{% endblock %}
 {% block content %}
 <main class="page-institucional">
   <section class="hero-page" style="background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('https://defumadosac.com.br/wp-content/uploads/2023/01/banner-home.jpg'); background-size: cover; background-position: center;">

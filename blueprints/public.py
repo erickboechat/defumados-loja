@@ -90,19 +90,20 @@ def meus_pedidos_detalhe(pedido_id):
 def sitemap():
     from flask import url_for
     produtos = get_produtos(todos=False)
+    now = datetime.now(BRT).strftime('%Y-%m-%d')
     pages = [
-        {'loc': url_for('public.index', _external=True), 'priority': '1.0'},
-        {'loc': url_for('public.nossa_historia', _external=True), 'priority': '0.8'},
-        {'loc': url_for('public.contato', _external=True), 'priority': '0.7'},
-        {'loc': url_for('public.politicas', _external=True), 'priority': '0.6'},
+        {'loc': url_for('public.index', _external=True), 'priority': '1.0', 'lastmod': now},
+        {'loc': url_for('public.nossa_historia', _external=True), 'priority': '0.8', 'lastmod': now},
+        {'loc': url_for('public.contato', _external=True), 'priority': '0.7', 'lastmod': now},
+        {'loc': url_for('public.politicas', _external=True), 'priority': '0.6', 'lastmod': now},
     ]
     xml = '<?xml version="1.0" encoding="UTF-8"?>\n'
     xml += '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
     for p in pages:
-        xml += f'  <url><loc>{p["loc"]}</loc><priority>{p["priority"]}</priority></url>\n'
+        xml += f'  <url><loc>{p["loc"]}</loc><lastmod>{p["lastmod"]}</lastmod><priority>{p["priority"]}</priority></url>\n'
     for prod in produtos:
         url = url_for('public.produto_detalhe', produto_id=prod['id'], _external=True)
-        xml += f'  <url><loc>{url}</loc><priority>0.9</priority></url>\n'
+        xml += f'  <url><loc>{url}</loc><lastmod>{now}</lastmod><priority>0.9</priority></url>\n'
     xml += '</urlset>'
     resp = make_response(xml)
     resp.content_type = 'application/xml'
@@ -112,6 +113,44 @@ def sitemap():
 @public_bp.route('/robots.txt')
 def robots():
     return Response(
-        "User-agent: *\nAllow: /\nSitemap: https://defumadosac.com.br/sitemap.xml\n",
+        "User-agent: *\n"
+        "Allow: /\n"
+        "Disallow: /admin/\n"
+        "Disallow: /checkout\n"
+        "Disallow: /csrf-token\n"
+        "\n"
+        "Sitemap: https://defumadosac.com.br/sitemap.xml\n",
         mimetype='text/plain'
     )
+
+
+@public_bp.route('/llms.txt')
+def llms_txt():
+    content = (
+        "# Defumados AC\n"
+        "> Defumados artesanais de porco em Vargem Grande, Rio de Janeiro\n"
+        "\n"
+        "## Sobre\n"
+        "Produzimos defumados, curados e embutidos artesanais desde 2015.\n"
+        "Marca: Defumados Arcos Carballiño. CNPJ: 34.245.632/0001-37.\n"
+        "\n"
+        "## Produtos\n"
+        "Linguiças, bacon, copa, costelinha, salame e mais.\n"
+        "Produtos artesanais, curados e defumados com defumação natural.\n"
+        "\n"
+        "## Preços\n"
+        "Faixa de preço: R$ 20 a R$ 80.\n"
+        "Consulta atualizada no site: https://defumadosac.com.br\n"
+        "\n"
+        "## Contato\n"
+        "WhatsApp: (21) 98635-8184\n"
+        "Email: defumadosac@outlook.com\n"
+        "Instagram: @defumadosac\n"
+        "\n"
+        "## Localização\n"
+        "Vargem Grande, Rio de Janeiro - RJ\n"
+        "Entrega fixa R$ 15,00: Zona Sul, Barra, Recreio, Tijuca, Centro.\n"
+        "Entregamos em todo Brasil via Correios/transportadoras.\n"
+    )
+    resp = Response(content, mimetype='text/plain')
+    return resp

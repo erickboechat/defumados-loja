@@ -4,10 +4,40 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>{% block title %}Defumados AC{% endblock %}</title>
-  {% block meta_description %}{% endblock %}
+  <meta name="description" content="{% block meta_desc_content %}Defumados AC - Defumados artesanais de porco em Vargem Grande, Rio de Janeiro. Linguiças, bacon, copa, costelinha e mais.{% endblock %}">
+  <link rel="canonical" href="{% block canonical_url %}https://defumadosac.com.br/{% endblock %}">
+  <meta name="robots" content="index, follow">
   <link rel="stylesheet" href="{{ url_for('static', filename='style.min.css') }}?v={{ static_version }}">
   <link rel="icon" type="image/png" href="/static/uploads/logo-1.png">
   {% block og_tags %}{% endblock %}
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="{% block twitter_title %}Defumados AC{% endblock %}">
+  <meta name="twitter:description" content="{% block twitter_desc %}Defumados artesanais de porco em Vargem Grande, RJ{% endblock %}">
+  <meta name="twitter:image" content="{% block twitter_image %}https://defumadosac.com.br/static/uploads/logo-1.png{% endblock %}">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FoodEstablishment",
+    "name": "Defumados Arcos Carballiño",
+    "description": "Defumados artesanais de porco em Vargem Grande, Rio de Janeiro",
+    "url": "https://defumadosac.com.br",
+    "logo": "https://defumadosac.com.br/static/uploads/logo-1.png",
+    "image": "https://defumadosac.com.br/static/uploads/logo-1.png",
+    "telephone": "+5521986358184",
+    "email": "defumadosac@outlook.com",
+    "address": {
+      "@type": "PostalAddress",
+      "addressLocality": "Rio de Janeiro",
+      "addressRegion": "RJ",
+      "addressCountry": "BR"
+    },
+    "sameAs": [
+      "https://www.instagram.com/defumadosac",
+      "https://api.whatsapp.com/send?phone=5521986358184"
+    ],
+    "priceRange": "$$"
+  }
+  </script>
   {% block extra_head %}{% endblock %}
 </head>
 <body>

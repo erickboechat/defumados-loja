@@ -1,14 +1,37 @@
 {% extends 'base.html' %}
 {% block title %}{{ produto.nome }} - Defumados AC{% endblock %}
-{% block meta_description %}
-<meta name="description" content="{{ produto.descricao[:160] }}">
-{% endblock %}
+{% block meta_desc_content %}{{ produto.descricao|striptags|truncate(155) }}{% endblock %}
+{% block canonical_url %}https://defumadosac.com.br/produto/{{ produto.id }}{% endblock %}
 {% block og_tags %}
 <meta property="og:title" content="{{ produto.nome }} - Defumados AC">
-<meta property="og:description" content="{{ produto.descricao[:160] }}">
-<meta property="og:image" content="https://defumadosac.com.br/static/uploads/logo-1.png">
+<meta property="og:description" content="{{ produto.descricao|striptags|truncate(155) }}">
+<meta property="og:image" content="https://defumadosac.com.br{{ produto.imagens[0] }}">
 <meta property="og:url" content="https://defumadosac.com.br/produto/{{ produto.id }}">
 <meta property="og:type" content="product">
+<meta property="og:site_name" content="Defumados AC">
+<meta property="og:locale" content="pt_BR">
+{% endblock %}
+{% block twitter_title %}{{ produto.nome }} - Defumados AC{% endblock %}
+{% block twitter_desc %}{{ produto.descricao|striptags|truncate(155) }}{% endblock %}
+{% block twitter_image %}https://defumadosac.com.br{{ produto.imagens[0] }}{% endblock %}
+{% block extra_head %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Product",
+  "name": "{{ produto.nome }}",
+  "description": "{{ produto.descricao|striptags|truncate(200)|e }}",
+  "image": "https://defumadosac.com.br{{ produto.imagens[0] }}",
+  "brand": { "@type": "Brand", "name": "Defumados AC" },
+  "offers": {
+    "@type": "Offer",
+    "price": "{{ '%.2f'|format(produto.preco) }}",
+    "priceCurrency": "BRL",
+    "availability": "{{ 'https://schema.org/InStock' if produto.estoque else 'https://schema.org/OutOfStock' }}",
+    "url": "https://defumadosac.com.br/produto/{{ produto.id }}"
+  }
+}
+</script>
 {% endblock %}
 {% block content %}
 <main class="produto-page">
