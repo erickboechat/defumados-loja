@@ -254,6 +254,7 @@ button { font-family: inherit; cursor: pointer; border: none; }
 .footer-grid { display: grid; grid-template-columns: 1.4fr 1fr 1fr 1.2fr; gap: 2rem; margin-bottom: 3rem; }
 .footer-col { text-align: left; }
 .footer-col-avaliacoes .ti-widget { min-height: 60px; }
+.featurable-slot { min-height: 200px; }
 .footer-col h4 { color: #fff; font-size: 1rem; font-weight: 600; margin-bottom: 1.2rem; letter-spacing: 0.5px; text-transform: uppercase; position: relative; padding-bottom: 0.5rem; }
 .footer-col h4::after { content: ''; position: absolute; bottom: 0; left: 0; width: 32px; height: 2px; background: var(--cor-secundaria); }
 .footer-col p { line-height: 1.7; font-size: 0.9rem; color: #999; }
