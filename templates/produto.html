@@ -130,7 +130,7 @@
   <!-- Produtos Relacionados -->
   {% if relacionados %}
   <section class="relacionados">
-    <h3>Adicione também - Mais Vendidos 🔥</h3>
+    <h2>Adicione também - Mais Vendidos 🔥</h2>
     <div class="produtos-grid">
       {% for p in relacionados %}
       <div class="produto-card" style="cursor:pointer" onclick="window.location.href='/produto/{{ p.id }}'">
@@ -146,7 +146,7 @@
   {% endif %}
         </div>
         <div class="info">
-          <h3>{{ p.nome }}</h3>
+        <h2 class="produto-card-title">{{ p.nome }}</h2>
           <p class="preco">R$ {{ "%.2f"|format(p.preco) }}</p>
         </div>
       </div>

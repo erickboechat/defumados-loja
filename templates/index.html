@@ -60,7 +60,7 @@
   <img src="{{ p.imagens[0] | webp_smart }}" 
        alt="{{ p.nome }}" 
        width="300" height="300"
-       loading="lazy" 
+       loading="{{ 'eager' if loop.index <= 4 else 'lazy' }}" 
        decoding="async"
        onerror="this.onerror=null; this.src='https://via.placeholder.com/300x300?text=Sem+Foto'"
        class="card-img">
@@ -73,7 +73,7 @@
   {% endif %}
 </div>
   <div class="info">
-    <h3>{{ p.nome }}</h3>
+    <h2 class="produto-card-title">{{ p.nome }}</h2>
     <p class="descricao">{{ p.descricao|striptags|truncate(100) }}</p>
     <p class="preco">R$ {{ "%.2f"|format(p.preco) }}</p>
     {% if p.estoque %}

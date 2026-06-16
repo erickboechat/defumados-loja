@@ -4,7 +4,7 @@
 </button>
 
 <!-- 🛒 BOTÃO FLUTUANTE (MOBILE) -->
-<button id="fab-cart-btn" class="fab-cart">
+<button id="fab-cart-btn" class="fab-cart" aria-label="Abrir carrinho de compras">
   <!-- Ícone de Carrinho -->
   <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
     <circle cx="9" cy="21" r="1"></circle>
@@ -77,8 +77,16 @@
       <div class="footer-col footer-col-avaliacoes">
         <h4>Avaliações ★★★★★</h4>
         <link rel="preconnect" href="https://featurable.com" crossorigin>
-        <div id="featurable-d49b496b-e5a6-43f6-a523-7aba2796f696" data-featurable-async data-location-code="pt-BR"></div>
-        <script src="https://featurable.com/assets/v2/badge_default.min.js" defer charset="UTF-8"></script>
+        <div id="featurable-d49b496b-e5a6-43f6-a523-7aba2796f696" data-featurable-async data-location-code="pt-BR" style="min-height:60px;"></div>
+        <script>
+          window.addEventListener('load', function() {
+            var s = document.createElement('script');
+            s.src = 'https://featurable.com/assets/v2/badge_default.min.js';
+            s.charset = 'UTF-8';
+            s.defer = true;
+            document.body.appendChild(s);
+          });
+        </script>
       </div>
     </div>
       
