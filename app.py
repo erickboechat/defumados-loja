@@ -69,8 +69,17 @@ def inject_globals():
             version = data.get('version', '1')
     except (FileNotFoundError, json.JSONDecodeError):
         pass
+
+    critical_css = ''
+    css_path = os.path.join(app.root_path, 'static', 'critical.css')
+    try:
+        with open(css_path, 'r', encoding='utf-8') as f:
+            critical_css = f.read()
+    except FileNotFoundError:
+        pass
+
     from flask_wtf.csrf import generate_csrf
-    return dict(csrf_token=generate_csrf, static_version=version)
+    return dict(csrf_token=generate_csrf, static_version=version, critical_css=critical_css)
 
 
 # ===== TEMPLATE FILTERS =====
