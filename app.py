@@ -105,13 +105,58 @@ def webp_smart_list_filter(imagens):
 def avif_url_filter(caminho_imagem):
     if not caminho_imagem:
         return ''
-    nome_sem_ext, _ = os.path.splitext(caminho_imagem)
+    from urllib.parse import unquote
+    caminho_real = unquote(caminho_imagem)
+    nome_sem_ext, _ = os.path.splitext(caminho_real)
     caminho_avif = f"{nome_sem_ext}.avif"
     avif_subpath = caminho_avif.replace('/static/uploads/produtos/', 'uploads/produtos/avif/')
     caminho_relativo = avif_subpath.replace('/static/', '', 1)
     if os.path.exists(os.path.join('static', caminho_relativo)):
         return caminho_avif.replace('/static/uploads/produtos/', '/static/uploads/produtos/avif/')
     return webp_smart_filter(caminho_imagem)
+
+
+@app.template_filter('srcset_avif')
+def srcset_avif_filter(caminho_imagem):
+    if not caminho_imagem:
+        return ''
+    from urllib.parse import unquote, quote
+    caminho_real = unquote(caminho_imagem)
+    nome_sem_ext, _ = os.path.splitext(caminho_real)
+    avif_dir = os.path.join('static', 'uploads', 'produtos', 'avif')
+    base_name = os.path.basename(nome_sem_ext)
+
+    urls = []
+    for w in [300, 600]:
+        fname = f'{base_name}.avif' if w == 600 else f'{base_name}-{w}w.avif'
+        fpath = os.path.join(avif_dir, fname)
+        if os.path.exists(fpath):
+            url = f'/static/uploads/produtos/avif/{quote(fname)}'
+            urls.append(f'{url} {w}w')
+    if not urls:
+        return avif_url_filter(caminho_imagem) + ' 600w'
+    return ', '.join(urls)
+
+
+@app.template_filter('srcset_webp')
+def srcset_webp_filter(caminho_imagem):
+    if not caminho_imagem:
+        return ''
+    from urllib.parse import unquote, quote
+    caminho_real = unquote(caminho_imagem)
+    nome_sem_ext, _ = os.path.splitext(caminho_real)
+    base_name = os.path.basename(nome_sem_ext)
+
+    urls = []
+    for w in [300, 600]:
+        fname = f'{base_name}.webp' if w == 600 else f'{base_name}-{w}w.webp'
+        fpath = os.path.join('static', 'uploads', 'produtos', fname)
+        if os.path.exists(fpath):
+            url = f'/static/uploads/produtos/{quote(fname)}'
+            urls.append(f'{url} {w}w')
+    if not urls:
+        return webp_smart_filter(caminho_imagem) + ' 600w'
+    return ', '.join(urls)
 
 
 # ===== CSRF TOKEN (para Instagram WebView) =====

@@ -90,5 +90,5 @@ main{display:flex;gap:2rem;padding:0 2rem 2rem;max-width:1400px;margin:0 auto;fl
 .footer-bottom{border-top:1px solid #222;padding-top:1.5rem;text-align:center;font-size:0.85rem}
 .back-to-top{position:fixed;bottom:5.5rem;right:1.5rem;width:48px;height:48px;border-radius:50%;background:var(--cor-primaria);color:white;display:none;align-items:center;justify-content:center;z-index:998;box-shadow:var(--sombra)}
 .fab-cart{display:none;position:fixed;bottom:1.5rem;right:1.5rem;width:56px;height:56px;border-radius:50%;background:var(--cor-sucesso);color:white;z-index:998;align-items:center;justify-content:center;box-shadow:0 4px 16px rgba(37,211,102,0.4);border:none;cursor:pointer}
-@media(max-width:900px){.back-to-top{bottom:6rem}.fab-cart{display:flex}}
+@media(max-width:900px){main{flex-direction:column}.carrinho-sidebar{position:static}.back-to-top{bottom:6rem}.fab-cart{display:flex}}
 @media(max-width:600px){.footer-grid{grid-template-columns:1fr;gap:2rem}.footer-col{text-align:center!important}.footer-col h4::after{left:50%;transform:translateX(-50%)}.footer-logo{margin:0 auto 1rem}.social-links{justify-content:center}}
