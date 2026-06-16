@@ -42,6 +42,25 @@
     "priceRange": "$$"
   }
   </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "@id": "https://defumadosac.com.br/#website",
+    "name": "Defumados Arcos Carballiño",
+    "url": "https://defumadosac.com.br",
+    "description": "Defumados artesanais de porco em Vargem Grande, Rio de Janeiro",
+    "inLanguage": "pt-BR",
+    "potentialAction": {
+      "@type": "SearchAction",
+      "target": {
+        "@type": "EntryPoint",
+        "urlTemplate": "https://defumadosac.com.br/?q={search_term_string}"
+      },
+      "query-input": "required name=search_term_string"
+    }
+  }
+  </script>
   {% block extra_head %}{% endblock %}
 </head>
 <body>
