@@ -14,8 +14,7 @@
   {% if critical_css %}
   <style>{{ critical_css }}</style>
   {% endif %}
-  <link rel="preload" href="{{ url_for('static', filename='style.min.css') }}?v={{ static_version }}" as="style" onload="this.onload=null;this.rel='stylesheet'">
-  <noscript><link rel="stylesheet" href="{{ url_for('static', filename='style.min.css') }}?v={{ static_version }}"></noscript>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.min.css') }}?v={{ static_version }}">
   {% block og_tags %}{% endblock %}
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="{% block twitter_title %}Defumados AC{% endblock %}">
