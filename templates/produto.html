@@ -45,11 +45,14 @@
   <div class="galeria-main">
   <div class="galeria-track" id="galeria-track">
     {% for img in produto.imagens %}
-    <img src="{{ img | webp_smart }}"
-         alt="{{ produto.nome }} - Foto {{ loop.index }}"
-         width="600" height="600"
-         class="gallery-img{% if loop.first %} active{% endif %}"
-         data-index="{{ loop.index0 }}">
+    <picture>
+      <source srcset="{{ img | avif_url }}" type="image/avif">
+      <img src="{{ img | webp_smart }}"
+           alt="{{ produto.nome }} - Foto {{ loop.index }}"
+           width="600" height="600"
+           class="gallery-img{% if loop.first %} active{% endif %}"
+           data-index="{{ loop.index0 }}">
+    </picture>
     {% endfor %}
   </div>
   {% if not produto.estoque %}
@@ -135,12 +138,15 @@
       {% for p in relacionados %}
       <div class="produto-card" style="cursor:pointer" onclick="window.location.href='/produto/{{ p.id }}'">
         <div class="imagem-container">
-          <img src="{{ p.imagens[0] | webp_smart }}" 
-   alt="{{ p.nome }}" 
-   width="300" height="300"
-   loading="lazy"
-   decoding="async"
-   onerror="this.src='https://via.placeholder.com/200x200?text=Sem+Foto'">
+          <picture>
+            <source srcset="{{ p.imagens[0] | avif_url }}" type="image/avif">
+            <img src="{{ p.imagens[0] | webp_smart }}" 
+     alt="{{ p.nome }}" 
+     width="300" height="300"
+     loading="lazy"
+     decoding="async"
+     onerror="this.src='https://via.placeholder.com/200x200?text=Sem+Foto'">
+          </picture>
            {% if not p.estoque %}
     <span class="badge-estoque esgotado">Esgotado</span>
   {% endif %}

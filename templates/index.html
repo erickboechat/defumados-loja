@@ -57,14 +57,17 @@
       {% for p in produtos %}
 <div class="produto-card" onclick="window.location.href='/produto/{{ p.id }}'" style="cursor:pointer" data-imagens='{{ p.imagens|webp_smart_list|tojson|safe }}'>
   <div class="imagem-container">
-  <img src="{{ p.imagens[0] | webp_smart }}" 
-       alt="{{ p.nome }}" 
-       width="300" height="300"
-       loading="{{ 'eager' if loop.index <= 4 else 'lazy' }}" 
-       fetchpriority="{{ 'high' if loop.index == 1 else 'auto' }}"
-       decoding="async"
-       onerror="this.onerror=null; this.src='https://via.placeholder.com/300x300?text=Sem+Foto'"
-       class="card-img">
+  <picture>
+    <source srcset="{{ p.imagens[0] | avif_url }}" type="image/avif">
+    <img src="{{ p.imagens[0] | webp_smart }}" 
+         alt="{{ p.nome }}" 
+         width="300" height="300"
+         loading="{{ 'eager' if loop.index <= 4 else 'lazy' }}" 
+         fetchpriority="{{ 'high' if loop.index == 1 else 'auto' }}"
+         decoding="async"
+         onerror="this.onerror=null; this.src='https://via.placeholder.com/300x300?text=Sem+Foto'"
+         class="card-img">
+  </picture>
   
   <button class="img-nav img-prev" onclick="event.stopPropagation(); navegarImagem(this, -1)" aria-label="Anterior"></button>
   <button class="img-nav img-next" onclick="event.stopPropagation(); navegarImagem(this, 1)" aria-label="Próximo"></button>

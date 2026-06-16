@@ -80,3 +80,15 @@ main{display:flex;gap:2rem;padding:0 2rem 2rem;max-width:1400px;margin:0 auto;fl
 /* Carrinho sidebar */
 .carrinho-sidebar{background:white;border-radius:var(--borda-radius);padding:1.5rem;box-shadow:var(--sombra)}
 .carrinho-sidebar h2{color:var(--cor-primaria);margin-bottom:1rem;padding-bottom:0.8rem;border-bottom:2px solid var(--cor-fundo)}
+
+/* Footer — layout-only to prevent CLS when full CSS loads */
+.site-footer{margin-top:4rem;padding:4rem 2rem 2rem}
+.footer-container{max-width:1200px;margin:0 auto}
+.footer-grid{display:grid;grid-template-columns:1.4fr 1fr 1fr 1.2fr;gap:2rem;margin-bottom:3rem}
+.footer-col{text-align:left}
+.featurable-slot{height:180px;overflow:hidden;contain:layout}
+.footer-bottom{border-top:1px solid #222;padding-top:1.5rem;text-align:center;font-size:0.85rem}
+.back-to-top{position:fixed;bottom:5.5rem;right:1.5rem;width:48px;height:48px;border-radius:50%;background:var(--cor-primaria);color:white;display:none;align-items:center;justify-content:center;z-index:998;box-shadow:var(--sombra)}
+.fab-cart{display:none;position:fixed;bottom:1.5rem;right:1.5rem;width:56px;height:56px;border-radius:50%;background:var(--cor-sucesso);color:white;z-index:998;align-items:center;justify-content:center;box-shadow:0 4px 16px rgba(37,211,102,0.4);border:none;cursor:pointer}
+@media(max-width:900px){.back-to-top{bottom:6rem}.fab-cart{display:flex}}
+@media(max-width:600px){.footer-grid{grid-template-columns:1fr;gap:2rem}.footer-col{text-align:center!important}.footer-col h4::after{left:50%;transform:translateX(-50%)}.footer-logo{margin:0 auto 1rem}.social-links{justify-content:center}}

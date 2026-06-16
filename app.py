@@ -101,6 +101,19 @@ def webp_smart_list_filter(imagens):
     return [webp_smart_filter(img) for img in imagens]
 
 
+@app.template_filter('avif_url')
+def avif_url_filter(caminho_imagem):
+    if not caminho_imagem:
+        return ''
+    nome_sem_ext, _ = os.path.splitext(caminho_imagem)
+    caminho_avif = f"{nome_sem_ext}.avif"
+    avif_subpath = caminho_avif.replace('/static/uploads/produtos/', 'uploads/produtos/avif/')
+    caminho_relativo = avif_subpath.replace('/static/', '', 1)
+    if os.path.exists(os.path.join('static', caminho_relativo)):
+        return caminho_avif.replace('/static/uploads/produtos/', '/static/uploads/produtos/avif/')
+    return webp_smart_filter(caminho_imagem)
+
+
 # ===== CSRF TOKEN (para Instagram WebView) =====
 
 @app.route('/csrf-token')
