@@ -154,14 +154,3 @@ def llms_txt():
     )
     resp = Response(content, mimetype='text/plain')
     return resp
-
-
-@public_bp.route('/faq-teste')
-def faq_teste():
-    produto = get_produto(1)
-    if not produto:
-        produto = get_produto(2)
-    if not produto:
-        from flask import abort
-        abort(404)
-    return render_template('faq_test.html', produto=produto)
