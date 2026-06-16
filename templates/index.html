@@ -61,6 +61,7 @@
        alt="{{ p.nome }}" 
        width="300" height="300"
        loading="{{ 'eager' if loop.index <= 4 else 'lazy' }}" 
+       fetchpriority="{{ 'high' if loop.index == 1 else 'auto' }}"
        decoding="async"
        onerror="this.onerror=null; this.src='https://via.placeholder.com/300x300?text=Sem+Foto'"
        class="card-img">
