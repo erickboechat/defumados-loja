@@ -261,7 +261,7 @@ button { font-family: inherit; cursor: pointer; border: none; }
 .footer-col ul li { margin: 0.5rem 0; }
 .footer-col ul li a { color: #999; text-decoration: none; transition: all 0.2s; font-size: 0.9rem; }
 .footer-col ul li a:hover { color: #fff; padding-left: 4px; }
-.footer-logo { width: 100px; height: auto; margin-bottom: 1rem; padding: 0.8rem; background: rgba(255,255,255,0.05); border-radius: 12px; }
+.footer-logo { width: 180px; height: 180px; object-fit: contain; margin-bottom: 1rem; padding: 0.8rem; background: rgba(255,255,255,0.05); border-radius: 12px; }
 .footer-brand-text { font-size: 1rem; color: #ccc; line-height: 1.4; margin-bottom: 0.5rem; font-style: italic; }
 .footer-historia { color: var(--cor-secundaria); font-weight: 600; font-size: 0.9rem; text-decoration: none; transition: all 0.2s; display: inline-block; }
 .footer-historia:hover { color: #fff; transform: translateX(4px); }
