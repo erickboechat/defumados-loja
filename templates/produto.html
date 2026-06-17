@@ -248,10 +248,11 @@
     });
   }
 
-  // Zoom ao passar o mouse
+  // Zoom ao passar o mouse (skip nav buttons)
   if (galeriaMain && galleryImgs.length) {
     const imgAtual = () => galleryImgs[currentIdx];
     galeriaMain.addEventListener('mousemove', (e) => {
+      if (e.target.closest('.galeria-nav')) return;
       const img = imgAtual();
       if (!img) return;
       const { left, top, width, height } = galeriaMain.getBoundingClientRect();
