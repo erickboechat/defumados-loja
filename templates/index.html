@@ -57,8 +57,6 @@
       {% for p in produtos %}
 <div class="produto-card" onclick="window.location.href='/produto/{{ p.id }}'" style="cursor:pointer" data-imagens='{{ p.imagens|webp_smart_list|tojson|safe }}'>
   <div class="imagem-container">
-  <picture>
-    <source srcset="{{ p.imagens[0] | srcset_webp }}" type="image/webp" sizes="(max-width: 600px) 100vw, (max-width: 900px) 50vw, 33vw">
     <img src="{{ p.imagens[0] | webp_smart }}?v={{ static_version }}" 
          alt="{{ p.nome }}" 
          width="300" height="300"
@@ -67,7 +65,6 @@
          decoding="async"
          onerror="this.onerror=null; this.src='https://via.placeholder.com/300x300?text=Sem+Foto'"
          class="card-img">
-  </picture>
   
   <button class="img-nav img-prev" onclick="event.stopPropagation(); navegarImagem(this, -1)" aria-label="Anterior"></button>
   <button class="img-nav img-next" onclick="event.stopPropagation(); navegarImagem(this, 1)" aria-label="Próximo"></button>
