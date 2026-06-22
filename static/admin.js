@@ -146,8 +146,14 @@ const Admin = (function() {
       $$('input[type="file"][accept="image/*"]').forEach(input => {
         input.addEventListener('change', (e) => this.render(e.target));
       });
-      // Initialize sortable on existing preview containers
-      $$('.admin-img-preview').forEach(container => this.initSortable(container));
+      // Initialize sortable + remove buttons on existing preview containers
+      $$('.admin-img-preview').forEach(container => {
+        this.initSortable(container);
+        container.querySelectorAll('.admin-img-preview-item').forEach(item => {
+          const btn = item.querySelector('.admin-img-remove');
+          if (btn && !btn.onclick) btn.onclick = () => this.removeItem(item);
+        });
+      });
     },
 
     render(input) {
