@@ -58,6 +58,8 @@
 <div class="produto-card" onclick="window.location.href='/produto/{{ p.id }}'" style="cursor:pointer" data-imagens='{{ p.imagens|webp_smart_list|tojson|safe }}'>
   <div class="imagem-container">
     <img src="{{ p.imagens[0] | webp_smart }}?v={{ static_version }}" 
+         srcset="{{ p.imagens[0] | srcset_webp }}"
+         sizes="(max-width: 600px) 100vw, (max-width: 900px) 50vw, 33vw"
          alt="{{ p.nome }}" 
          width="300" height="300"
          loading="{{ 'eager' if loop.index <= 4 else 'lazy' }}" 
@@ -137,6 +139,8 @@
     let idx = parseInt(img.dataset.idx || '0');
     idx = (idx + direcao + imagens.length) % imagens.length;
     img.src = imagens[idx];
+    const baseName = imagens[idx].replace(/\.\w+$/, '');
+    img.srcset = baseName + '-300w.webp 300w, ' + imagens[idx] + ' 600w';
     img.dataset.idx = idx;
   }
 
