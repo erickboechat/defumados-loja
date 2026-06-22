@@ -69,5 +69,15 @@
   {% include 'header.html' %}
   {% block content %}{% endblock %}
   {% include 'footer.html' %}
+  <script>
+  (function(){
+    var p=new URLSearchParams(location.search);
+    var src=p.get('utm_source')||'';
+    var med=p.get('utm_medium')||'';
+    var ref=document.referrer||'';
+    var o=src?src+'/'+med:(ref?new URL(ref).hostname:'Direto');
+    if(o!=='Direto')localStorage.setItem('defumados_origem',o);
+  })();
+  </script>
 </body>
 </html>

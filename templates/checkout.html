@@ -111,6 +111,7 @@
      <input type="hidden" name="frete_tipo" id="frete-tipo-hidden">
      <input type="hidden" name="frete_valor" id="frete-valor-hidden">
      <input type="hidden" name="frete_texto" id="frete-texto-hidden">
+     <input type="hidden" name="origem" id="origem-hidden">
      <label class="lgpd-checkbox" style="margin:1rem 0;">
        <input type="checkbox" id="checkout-consent" name="lgpd_consent" value="1" required>
        <span>Autorizo o tratamento dos meus dados conforme a <a href="/politicas#privacidade" target="_blank">Política de Privacidade</a>.</span>
@@ -377,6 +378,9 @@ try {
 // 2. Pega os dados do carrinho
 const cart = JSON.parse(localStorage.getItem('defumados_carrinho') || '[]');
 document.getElementById('carrinho-hidden').value = JSON.stringify(cart);
+
+// 2b. Pega a origem (UTM/referrer) salva pelo base.html
+document.getElementById('origem-hidden').value = localStorage.getItem('defumados_origem') || '';
 
 // 3. LIMPA o carrinho IMEDIATAMENTE ao clicar em enviar
 localStorage.removeItem('defumados_carrinho');

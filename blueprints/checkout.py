@@ -40,6 +40,7 @@ def process_checkout():
     estado = request.form.get('estado', '').strip()
     referencia = request.form.get('referencia', '').strip()
     forma_entrega = request.form.get('forma_entrega', 'Entrega').strip()
+    origem = request.form.get('origem', '').strip()
 
     try:
         frete_valor = float(request.form.get('frete_valor', 0) or 0)
@@ -61,7 +62,7 @@ def process_checkout():
     pedido_id = add_pedido(nome, telefone, endereco, numero, complemento,
                            bairro, cidade, estado, referencia, email,
                            cep, forma_entrega, itens_json, total,
-                           frete_valor, frete_texto)
+                           frete_valor, frete_texto, origem=origem)
 
     log.info(f"Pedido #{pedido_id} registrado por {nome} ({telefone})")
 

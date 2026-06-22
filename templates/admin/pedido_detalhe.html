@@ -17,6 +17,9 @@
       {% if pedido.email %}
       <div class="info-row"><span class="info-label">E-mail:</span><span class="info-value">{{ pedido.email }}</span></div>
       {% endif %}
+      {% if pedido.origem %}
+      <div class="info-row"><span class="info-label">Origem:</span><span class="info-value"><span style="display:inline-block;background:#e8f5e9;color:#2e7d32;padding:2px 8px;border-radius:10px;font-size:12px;font-weight:600;">🌐 {{ pedido.origem }}</span></span></div>
+      {% endif %}
     </div>
 
     <div class="admin-card">

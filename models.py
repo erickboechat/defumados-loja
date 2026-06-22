@@ -147,7 +147,7 @@ def init_db():
             )
         ''')
         # Migração segura: adiciona colunas que podem não existir em DBs antigos
-        for col in ['cidade', 'estado', 'referencia', 'email']:
+        for col in ['cidade', 'estado', 'referencia', 'email', 'origem']:
             try:
                 conn.execute(f'ALTER TABLE pedidos ADD COLUMN {col} TEXT DEFAULT ""')
             except sqlite3.OperationalError:
@@ -627,7 +627,7 @@ def get_pedido(pedido_id):
 
 def add_pedido(nome, telefone, endereco, numero, complemento, bairro, cidade, estado,
                referencia, email, cep, forma_entrega, itens_json,
-               total, frete_valor, frete_texto):
+               total, frete_valor, frete_texto, origem=''):
     """Registra um novo pedido e retorna o ID"""
     agora = datetime.now(BRT).strftime('%Y-%m-%d %H:%M:%S')
     with get_db() as conn:
@@ -636,12 +636,12 @@ def add_pedido(nome, telefone, endereco, numero, complemento, bairro, cidade, es
                 (cliente_nome, cliente_telefone, endereco, numero_casa, complemento,
                  bairro, cidade, estado, referencia, email, cep,
                  forma_entrega, itens, total, status, frete_valor, frete_texto,
-                 data_criacao)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'registrado', ?, ?, ?)
+                 data_criacao, origem)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'registrado', ?, ?, ?, ?)
         ''', (nome, telefone, endereco, numero, complemento,
               bairro, cidade, estado, referencia, email, cep,
               forma_entrega, itens_json, total, frete_valor, frete_texto,
-              agora))
+              agora, origem))
         return cursor.lastrowid
 
 
