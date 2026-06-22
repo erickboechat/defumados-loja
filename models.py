@@ -740,6 +740,11 @@ def salvar_imagem_upload(arquivo):
         caminho_webp = os.path.join(UPLOAD_FOLDER, nome_webp)
         img.save(caminho_webp, 'WEBP', quality=85)
 
+        img_300 = img.copy()
+        img_300.thumbnail((300, 300), Image.Resampling.LANCZOS)
+        nome_300 = nome_arquivo.rsplit('.', 1)[0] + '-300w.webp'
+        img_300.save(os.path.join(UPLOAD_FOLDER, nome_300), 'WEBP', quality=85)
+
         os.remove(caminho_temp)
 
         return f"/static/uploads/produtos/{nome_webp}"
