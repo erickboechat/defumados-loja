@@ -309,7 +309,8 @@
       if (data.erro) throw new Error('CEP não encontrado');
 
       const bairroNorm = normalize(data.bairro || '');
-      const isFixa = AREAS_FIXAS.some(area => normalize(area) === bairroNorm);
+      const cidadeNorm = normalize(data.localidade || '');
+      const isFixa = cidadeNorm === 'rio de janeiro' && AREAS_FIXAS.some(area => normalize(area) === bairroNorm);
 
       freteResultado.style.display = 'block';
 

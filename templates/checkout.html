@@ -263,7 +263,8 @@ cepInput.addEventListener('blur', async () => {
     estadoInput.value = data.uf || '';
     
     const bairroNorm = normalize(data.bairro || '');
-    const isFixa = AREAS_FIXAS.some(area => normalize(area) === bairroNorm);
+    const cidadeNorm = normalize(data.localidade || '');
+    const isFixa = cidadeNorm === 'rio de janeiro' && AREAS_FIXAS.some(area => normalize(area) === bairroNorm);
     
     freteBox.style.display = 'block';
     if (isFixa) {
