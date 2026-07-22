@@ -76,6 +76,7 @@
 
 <form method="POST" action="/admin/notificar/{{ produto.id }}/ativar" style="margin-top:20px;text-align:center;"
       onsubmit="return confirm('Ativar estoque e notificar {{ avisos|length }} cliente(s)?')">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
   <button type="submit" class="admin-btn" style="background:#2563eb;color:#fff;padding:12px 24px;font-size:15px;">
     ✅ Ativar Estoque e Notificar
   </button>
